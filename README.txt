@@ -17,7 +17,7 @@ HOW TO RUN:
 4. Once the server has started successfully, kill it.
 5. Your table should be inside the database db_example. Use MySQL to execute post-create.sql
 6. Revert the line in application.properties to none instead of create (this is important so that the data does not get dropped and recreated).
-7. run "./mvnw spring-boot:run"; now you can input a name and email into the form and add items to your database as well as viewing it as JSON.
+7. run "./mvnw spring-boot:run" and go to localhost:8080 in the browser; now you can input a name and email into the form and add items to your database as well as viewing it as JSON.
 
 WORKS CITED
 
