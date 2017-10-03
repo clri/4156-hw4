@@ -14,10 +14,11 @@ HOW TO RUN:
 1. Change the line "spring.jpa.hibernate.ddl-auto=none" to "spring.jpa.hibernate.ddl-auto=create" in ui/src/main/resources/application.properties
 2. Start MySQL server. Execute pre-exec.sql; this will create your database.
 3. On the command line, inside the ui directory, run "./mvnw spring-boot:run"
-4. Once the server has started successfully, kill it.
+4. Once the server has started successfully, kill it (you may also run test.sh to test initial functionality; this will insert 2 rows into the DB--it should hand back two instances of the index2.html).
 5. Your table should be inside the database db_example. Use MySQL to execute post-create.sql
 6. Revert the line in application.properties to none instead of create (this is important so that the data does not get dropped and recreated).
 7. run "./mvnw spring-boot:run" and go to localhost:8080 in the browser; now you can input a name and email into the form and add items to your database as well as viewing it as JSON.
+8. The second test file, test2.sh, will first show what is in the database (demonstrating persistent storage of the first test case which has been added before the server was killed), returning a JSON representation of what's in the database, then add two more (both of which should return index2.html) and show the updated database once more.
 
 WORKS CITED
 
