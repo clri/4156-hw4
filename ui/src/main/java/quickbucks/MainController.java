@@ -1,4 +1,4 @@
-package hello;
+package quickbucks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import hello.User;
-import hello.UserRepository;
+import quickbucks.User;
+import quickbucks.UserRepository;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
@@ -18,13 +19,18 @@ public class MainController {
 	private UserRepository userRepository;
 
 	@GetMapping(path="/add") // Map ONLY GET Requests
-	public String addNewUser (@RequestParam String name
-			, @RequestParam String email) {
+	public String addNewUser (@RequestParam String firstName
+			, @RequestParam String email
+			, @RequestParam String password) {
 		// @RequestParam means it is a parameter from the GET or POST request
+		//@TODO: add all params
 
 		User n = new User();
-		n.setName(name);
-		n.setEmail(email);
+		n.setUserFirstName(firstName);
+		n.setUserEmail(email);
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String hashedPassword = passwordEncoder.encode(password);
+		n.setUserPassword(hashedPassword);
 		userRepository.save(n);
 		return "redirect:/index2.html";
 	}
