@@ -60,7 +60,7 @@ public class User {
 		this.userEmail = userEmail;
 	}
 	
-	//@TODO: check how to encrypt etc
+	//encrypted
 	public void setUserPassword(String password) {
 		this.userPassword = password;
 	}

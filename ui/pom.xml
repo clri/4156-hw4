@@ -63,10 +63,6 @@
 		<version>${spring.security.version}</version>
 	</dependency>
 	
-	<dependency>
-	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-starter-web</artifactId>
-	    </dependency>
 	    <dependency>
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-starter-security</artifactId>
@@ -84,11 +80,6 @@
 	        <artifactId>unboundid-ldapsdk</artifactId>
 	    </dependency>
 	    <dependency>
-	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-starter-test</artifactId>
-	        <scope>test</scope>
-	    </dependency>
-	    <dependency>
 	        <groupId>org.springframework.security</groupId>
 	        <artifactId>spring-security-test</artifactId>
 	        <scope>test</scope>
@@ -99,6 +90,21 @@
 	    <artifactId>jsoup</artifactId>
 	    <version>1.9.1</version>
 	  </dependency>
+	  
+	  <!-- Spring Security JSP Taglib -->
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-taglibs</artifactId>
+		<version>${spring.security.version}</version>
+	</dependency>
+
+	<!-- jstl for jsp page -->
+	<dependency>
+		<groupId>jstl</groupId>
+		<artifactId>jstl</artifactId>
+		<version>${jstl.version}</version>
+	</dependency>
+	  
 	
     </dependencies>
 
