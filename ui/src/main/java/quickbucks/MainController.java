@@ -61,9 +61,9 @@ public class MainController {
 		
 		Job j = new Job();
 		j.setUser(1); //hardcode for now
-		j.setTitle(title);
-		j.setDescription(description);
-		j.setStatus(0); //jobs are created as 'open'
+		j.setJobTitle(title);
+		j.setJobDescription(description);
+		//j.setStatus(0); //jobs are created as 'open'
 		
 		//set tags, date
 		jobRepository.save(j);

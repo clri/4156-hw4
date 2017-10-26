@@ -12,13 +12,22 @@ public class Job {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id; //naming convention this must be id and not userID
+
+    private Integer userID;
     
+    private String jobtitle;
+    private Double payrate;
+    private String jobdesc;
+    private String category; //enum? table lookup?
+    /*
     private Integer userID;
     private String title;
     private String description;
     //private List<String> tags;
     private Integer status;
-    private Date jobDate;
+    private Date jobDate;*/
+    
+    //jobtitle, payrate, jobdesc, category
     
 	public Integer getId() {
 		return id;
@@ -32,7 +41,26 @@ public class Job {
 	public void setUser(Integer id) {
 		this.userID = id;
 	}
-	public String getTitle() {
+	public String getJobTitle() {
+		return jobtitle;
+	}
+	public void setJobTitle(String title) {
+		this.jobtitle = title;
+	}
+	public String getJobDescription() {
+		return jobdesc;
+	}
+	public void setJobDescription(String description) {
+		this.jobdesc = description;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+	/*public String getTitle() {
 		return title;
 	}
 	public void setTitle(String title) {
@@ -44,12 +72,12 @@ public class Job {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	/*public List<String> getTags() {
+	public List<String> getTags() {
 		return tags;
 	}
 	public void setTags(List<String> tags) {
 		this.tags = tags;
-	}*/
+	}
 	public Integer getStatus() {
 		return status;
 	}
@@ -61,6 +89,6 @@ public class Job {
 	}
 	public void setJobDate(Date jobDate) {
 		this.jobDate = jobDate;
-	}
+	}*/
     
 }
