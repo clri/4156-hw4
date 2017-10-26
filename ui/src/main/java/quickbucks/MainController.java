@@ -53,7 +53,7 @@ public class MainController {
 	
 	@GetMapping(path="/demo/postJob") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String jobtitle
-			, @RequestParam String jobdesc) {
+			, @RequestParam String jobdesc, String category, String pay) {
 		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add tags (how are they input in form) and date
 		//@TODO: add authentication and get current user so they
@@ -61,9 +61,17 @@ public class MainController {
 		
 		Job j = new Job();
 		j.setUser(1); //hardcode for now
-		j.setTitle(jobtitle);
-		j.setDescription(jobdesc);
-		j.setStatus(0); //jobs are created as 'open'
+		j.setJobTitle(jobtitle);
+		j.setJobDescription(jobdesc);
+		//j.setCategory(category);
+/*		try{
+			double payrate = Double.parseDouble(pay);
+			j.setPay(payrate);
+		}
+		catch(NumberFormatException e){}
+		*/
+		
+		//j.setStatus(0); //jobs are created as 'open'
 		
 		//set tags, date
 		jobRepository.save(j);
