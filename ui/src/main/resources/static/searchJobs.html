@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>searchJob</title>
+    <script type="text/javascript">
+      function pressSubmit(event)
+      {
+        alert("Submit!");
+        var form = document.getElementById("postjob");
+        form.reset();
+        return false;
+      }
+    </script>
+    </head>
+    <body>
+    <header>
+        
+            <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
+            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p> 
+            <br>
+    </header>
+    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;"> 
+        <a href="" >Home</a> 
+        <a href="">Search Jobs</a> 
+        <a href="">Post Job</a> 
+        <a href="">Legal</a> 
+        <a href="" >FAQ</a> 
+        <a href="">Inbox</a> 
+        <br>
+    </nav>
+    <section id="searchTerms" >
+    <h2 style="text-align:center;">Search for a job!</h2>
+    <form id="searchjob"  onSubmit="pressSubmit()" style = "margin: 20px 15px 0 0;float:none;">
+        <div>
+        Keywords:
+        <input type="text" name="keywords"><br>
+        Employer:
+        <input type="text" name="employer">
+        </div>
+        <fieldset>
+        <legend>Categories:</legend>
+          <div>
+            <input type="checkbox" id="tutor" name="category" value="tutor">
+            <label for="tutor">Tutoring/Editing</label>
+          </div>
+          <div>
+            <input type="checkbox" id="pet" name="category" value="pet">
+            <label for="pet">Pet Care</label>
+          </div>
+           <div>
+            <input type="checkbox" id="house" name="category" value="house">
+            <label for="house">Housekeeping</label>
+          </div>
+           <div>
+            <input type="checkbox" id="other" name="category" value="other">
+            <label for="other">Other</label>
+          </div>
+        </fieldset>
+        <div>
+            <input type="checkbox" id="subscribeNews" name="subscribe" value="newsletter">
+            <label for="subscribeNews">Subscribe to newsletter?</label>
+        </div>
+        
+        <center><div>
+        <input type="submit" value="Search">
+        
+        </div></center>
+    </form>
+    </section>
+    </body>
+</html>

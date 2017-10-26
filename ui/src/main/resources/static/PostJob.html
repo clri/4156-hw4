@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>PostJob</title>
+    <script type="text/javascript">
+      function pressSubmit(event)
+      {
+        alert("Submit!");
+        var form = document.getElementById("postjob");
+        form.reset();
+        return false;
+      }
+    </script>
+    </head>
+    <body>
+    <header>
+        
+            <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
+            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p> 
+            <br>
+    </header>
+    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;"> 
+        <a href="" >Home</a> 
+        <a href="">Search Jobs</a> 
+        <a href="">Post Job</a> 
+        <a href="">Legal</a> 
+        <a href="" >FAQ</a> 
+        <a href="">Inbox</a> 
+        <br>
+    </nav>
+    <section id="formSection" >
+    <h2 style="text-align:center;">Post a Job</h2>
+    <form id="postjob"  onSubmit="pressSubmit()" style = "margin: 20px 15px 0 0;float:none;">
+        Job Title:
+        <input type="text" name="jobtitle"><br>
+        Rate of pay:
+        <input type="text" name="pay"> <input type="radio" name="payrate" value="flat">Flat Rate
+        <input type="radio" name="payrate" value="hourly">Per Hour<br>
+        Job Description:<br>
+        <textarea name="jobdesc" form="postjob"></textarea><br>
+        <fieldset>
+        <legend>Category:</legend>
+        <input type="radio" name="category" value="academic">Tutoring/Editing<br>
+        <input type="radio" name="category" value="pets">Pet Care<br>
+        <input type="radio" name="category" value="house"> Housekeeping<br>
+        <input type="radio" name="category" value="Other"> Other
+        </fieldset>
+        
+        <center>
+        <input type="submit" value="Submit">
+         <input type="reset">
+        
+        </center>
+    </form>
+    </section>
+    </body>
+</html>
