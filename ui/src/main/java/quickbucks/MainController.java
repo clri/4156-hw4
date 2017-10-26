@@ -51,9 +51,9 @@ public class MainController {
 	@Autowired
 	private JobRepository jobRepository;
 	
-	@GetMapping(path="/demo/addjob") // Map ONLY GET Requests
-	public String addNewJob (@RequestParam String title
-			, @RequestParam String description) {
+	@GetMapping(path="/demo/postJob") // Map ONLY GET Requests
+	public String addNewJob (@RequestParam String jobtitle
+			, @RequestParam String jobdesc) {
 		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add tags (how are they input in form) and date
 		//@TODO: add authentication and get current user so they
@@ -61,13 +61,13 @@ public class MainController {
 		
 		Job j = new Job();
 		j.setUser(1); //hardcode for now
-		j.setTitle(title);
-		j.setDescription(description);
+		j.setTitle(jobtitle);
+		j.setDescription(jobdesc);
 		j.setStatus(0); //jobs are created as 'open'
 		
 		//set tags, date
 		jobRepository.save(j);
-		return "redirect:/jobadd2.html";
+		return "redirect:/homepageloggedin.html";
 	}
 	
 	@GetMapping(path="/demo/alljob")
