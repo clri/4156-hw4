@@ -17,7 +17,6 @@ HOW TO RUN:
 5. Your table should be inside the database db_example. Use MySQL to execute post-create.sql
 6. Revert the line in application.properties to none instead of create (this is important so that the data does not get dropped and recreated).
 7. run "./mvnw spring-boot:run" and go to localhost:8090 in the browser; now you can input a name and email into the form and add items to your database as well as viewing it as JSON.
-7.5 PLEASE NOTE: YOU MAY BE ASKED FOR A USERNAME AND PASSWORD IN THE BROWSER. USERNAME IS user AND PASSWORD IS password.
 8. The second test file, test2.sh, will first show what is in the database (demonstrating persistent storage of the first test case which has been added before the server was killed), returning a JSON representation of what's in the database, then add two more (both of which should return index2.html) and show the updated database once more.
 
 WORKS CITED
@@ -30,6 +29,8 @@ WORKS CITED
 6. https://www.mkyong.com/spring-security/spring-security-hello-world-example/
 7. https://www.mkyong.com/spring-security/spring-security-password-hashing-example/
 8. http://scrumbucket.org/sanitize-your-spring-mvc-controller/
-9. http://www.mkyong.com/spring-security/spring-security-form-login-using-database/ 
+9. http://www.mkyong.com/spring-security/spring-security-form-login-using-database/
+10.  https://dzone.com/articles/spring-security-4-authenticate-and-authorize-users
+11. http://www.programming-free.com/2015/09/spring-security-password-encryption.html
 
 
