@@ -65,7 +65,9 @@ public class MainController {
 		//can be attached to the form. 
 		
 		Job j = new Job();
-		j.setUser(1); //hardcode for now
+		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = user.getId();
+		j.setUser(uid); 
 		j.setJobTitle(jobtitle);
 		j.setJobDescription(jobdesc);
 		//j.setCategory(category);
