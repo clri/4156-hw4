@@ -65,8 +65,9 @@ public class MainController {
 		//can be attached to the form. 
 		
 		Job j = new Job();
-		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		int uid = user.getId();
+		org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		
 		j.setUser(uid); 
 		j.setJobTitle(jobtitle);
 		j.setJobDescription(jobdesc);
