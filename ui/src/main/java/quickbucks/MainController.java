@@ -24,31 +24,63 @@ import quickbucks.MvcConfig;
 @Controller    // This means that this class is a Controller
 //@RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
 public class MainController {
-	
-	
-	@Autowired 
+
+	private boolean validateInputStrings(int in, String s)
+	{
+		if (s.length() > 255)
+			return false;
+		boolean ans = true;
+		//in = 1: email; in = 2: password, 3: name
+		switch(in) {
+			case 1: ans = (s != "" && (
+				s.matches(".+@columbia.edu") ||
+				s.matches(".+@barnard.edu")));
+				break;
+			case 2: ans = (s != "" && s.length() >= 4);
+				break;
+			case 3: ans = (s.matches("[a-zA-z\\s\\-]+"));
+				break;
+			default: ans = true;
+		}
+		return ans;
+	}
+
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@GetMapping(path="/demo/adduser")
 	public String addNewUser (@RequestParam String firstName
+			, @RequestParam String lastName
 			, @RequestParam String email
-			, @RequestParam String password) {
-		//@TODO: add all params
-		//@TODO: sanitize input. 
-		if (! (email.matches(".+@columbia.edu") || 
-			email.matches(".+@barnard.edu")))
+			, @RequestParam String password
+			, @RequestParam String degree
+			, @RequestParam String location
+			, @RequestParam String school) {
+		//@TODO: sanitize input?
+
+		if (!(validateInputStrings(3,firstName) &&
+			validateInputStrings(3,lastName) &&
+			validateInputStrings(1,email) &&
+			validateInputStrings(2,password) &&
+			validateInputStrings(0,degree) &&
+			validateInputStrings(0,location) &&
+			validateInputStrings(0,school)))
 			return "redirect:/index3.html";
-			
-		
+
 		try {
 			int uid = userRepository.findIDByEmail(email);
 		} catch (Exception e) {
 			User n = new User();
 			n.setUserFirstName(firstName);
+			n.setUserLastName(lastName);
 			n.setUserEmail(email);
-			BCryptPasswordEncoder passwordEncoder = new 
+			n.setUserDegree(degree);
+			n.setUserLocation(location);
+			n.setUserSchool(school);
+			BCryptPasswordEncoder passwordEncoder = new
 				BCryptPasswordEncoder();
-			String hashedPassword = 
+			String hashedPassword =
 				passwordEncoder.encode(password);
 			n.setUserPassword(hashedPassword);
 			try {
@@ -58,7 +90,7 @@ public class MainController {
 			}
 			return "redirect:/index2.html";
 		}
-		
+
 		return "redirect:/index3.html";
 	}
 
@@ -67,24 +99,24 @@ public class MainController {
 		// This returns a JSON or XML with the users
 		return userRepository.findAll();
 	}
-	
-	
+
+
 	@Autowired
 	private JobRepository jobRepository;
-	
+
 	@GetMapping(path="/demo/postJob") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String jobtitle
 			, @RequestParam String jobdesc, String category, String pay) {
 		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add tags (how are they input in form) and date
 		//@TODO: add authentication and get current user so they
-		//can be attached to the form. 
-		
+		//can be attached to the form.
+
 		Job j = new Job();
 		org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
-		
-		j.setUser(uid); 
+
+		j.setUser(uid);
 		j.setJobTitle(jobtitle);
 		j.setJobDescription(jobdesc);
 		//j.setCategory(category);
@@ -94,27 +126,22 @@ public class MainController {
 		}
 		catch(NumberFormatException e){}
 		*/
-		
+
 		//j.setStatus(0); //jobs are created as 'open'
-		
+
 		//set tags, date
 		jobRepository.save(j);
 		return "redirect:/homepageloggedin.html";
 	}
-	
+
 	@GetMapping(path="/demo/alljob")
 	public @ResponseBody Iterable<Job> getAllJobs() {
 		// This returns a JSON or XML with the jobs
 		return jobRepository.findAll();
 	}
-	
+
 	@Autowired
 	private RequestRepository requestRepository;
-	
-	
+
+
 }
-
-
-
-
-
