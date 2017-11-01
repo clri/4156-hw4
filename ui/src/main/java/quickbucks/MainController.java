@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.hibernate.exception.ConstraintViolationException;
 
 import quickbucks.User;
 import quickbucks.UserRepository;
@@ -33,19 +34,28 @@ public class MainController {
 	public String addNewUser (@RequestParam String firstName
 			, @RequestParam String email
 			, @RequestParam String password) {
-		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add all params
-		int uid = userRepository.findIDByEmail(email);
-		System.err.println("uid " + uid);
-
-		User n = new User();
-		n.setUserFirstName(firstName);
-		n.setUserEmail(email);
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String hashedPassword = passwordEncoder.encode(password);
-		n.setUserPassword(hashedPassword);
-		userRepository.save(n);
-		return "redirect:/index2.html";
+		//@TODO: sanitize input. do regex check on email to make sure it
+		//ends in @barnard.edu or @columbia.edu
+		
+		try {
+			int uid = userRepository.findIDByEmail(email);
+		} catch (Exception e) {
+			User n = new User();
+			n.setUserFirstName(firstName);
+			n.setUserEmail(email);
+			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+			String hashedPassword = passwordEncoder.encode(password);
+			n.setUserPassword(hashedPassword);
+			try {
+				userRepository.save(n);
+			} catch (Exception ee) {
+				return "redirect:/index3.html";
+			}
+			return "redirect:/index2.html";
+		}
+		
+		return "redirect:/index3.html";
 	}
 
 	@GetMapping(path="/demo/alluser")
