@@ -35,6 +35,8 @@ public class MainController {
 			, @RequestParam String password) {
 		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add all params
+		int uid = userRepository.findIDByEmail(email);
+		System.err.println("uid " + uid);
 
 		User n = new User();
 		n.setUserFirstName(firstName);

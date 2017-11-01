@@ -7,5 +7,7 @@ create view db_example.user_roles as
 	id as username,
 	'ROLE_USER' as role
 	from db_example.user;
-alter table user add unique('user_email');
+
+alter table user add unique('user_email'), add not null('user_email');
+
 
