@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.ui.ModelMap;
 
 import quickbucks.User;
 import quickbucks.UserRepository;
 import quickbucks.MvcConfig;
+import java.lang.Integer;
 
 @Controller    // This means that this class is a Controller
 //@RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
@@ -98,11 +100,58 @@ public class MainController {
 		return "redirect:/homepageloggedin.html";
 	}
 	
+	@GetMapping(path="/demo/search") // Map ONLY GET Requests
+	public @ResponseBody Iterable<Job> addNewJob (@RequestParam String keywords
+			, @RequestParam String employer,@RequestParam String category) {
+ 
+		System.out.println(keywords);
+		return jobRepository.findJobByTitle(keywords);
+	}
+	
 	@GetMapping(path="/demo/alljob")
 	public @ResponseBody Iterable<Job> getAllJobs() {
 		// This returns a JSON or XML with the jobs
 		return jobRepository.findAll();
 	}
+	
+	
+	/*@GetMapping(path="/demo/viewjob")
+	public @ResponseBody ModelAndView viewJob(@RequestParam String id) {
+		ModelAndView blep=new ModelAndView();
+		blep.setViewName("redirect:viewJob");
+		Job j = findOne(1);
+		redir.addFlashAttribute("title", j.getJobTitle());
+		
+		
+		return jobRepository.findAll();
+	}
+	*/
+	
+	@RequestMapping(value = "/indexTest", method = RequestMethod.GET)
+	public String index() {
+      return "indexTest";
+   }
+   @RequestMapping(value = "/redirect", method = RequestMethod.GET)
+   public String redirect() {
+      return "redirect:finalPage";
+   }
+   @RequestMapping(value = "/finalPage", method = RequestMethod.GET)
+   public String finalPage(ModelMap model) {
+	   Job j = jobRepository.findJobByID("1");
+	   if(j ==null){
+		   model.addAttribute("title", "u suck");
+		   model.addAttribute("desc", "u suck");
+		   model.addAttribute("tags", "u suck");
+	   }
+	   else{
+		   model.addAttribute("title", j.getJobTitle());
+		   model.addAttribute("desc", j. getJobDescription());
+		   model.addAttribute("tags", j.getCategory());
+	   }
+	   //model.addAttribute("title", j.getJobTitle());
+
+	   return "viewJob";
+   }
 	
 	@Autowired
 	private RequestRepository requestRepository;
