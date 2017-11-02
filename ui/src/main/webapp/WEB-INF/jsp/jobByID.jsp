@@ -1,11 +1,9 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
- 
+<%@taglib uri = "http://www.springframework.org/tags/form" prefix = "form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>ViewJob</title>
+    <title>JobByID</title>
     </head>
     <body>
     <header>
@@ -15,22 +13,32 @@
             <br>
     </header>
 
-    <section id="JobPosting" >
-    <h2 style="text-align:center;">Job ID: ${jobID}</h2>
+    <section>
+    <h2 style="text-align:center;">Enter an ID:</h2>
   
-        <p>Job Title: ${title} </p>
-        <p>Tags: ${tags} </p>
-        <p>Description: ${desc} </p>
+        <form:form method = "GET" action = "/finalPage">
+         <table>
+            <tr>
+               <td>
+				  <input type = "text" name = "id"/>
+                  <input type = "submit" value = "Lookup"/>
+               </td>
+            </tr>
+         </table>  
+      </form:form>
         
       
         <center>
-        <form id="request"   action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
-        <input type="text" name="id" value=${jobID} readonly><br>
-		<input type="submit" value="request">
-        </form>
         <a href="../../../searchJobs.html">Back</a> 
         </center>
    
     </section>
     </body>
 </html>
+
+
+
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+ 
+

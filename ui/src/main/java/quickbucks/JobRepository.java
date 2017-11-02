@@ -14,8 +14,16 @@ public interface JobRepository extends CrudRepository<Job, Long> {
 	@Query(value = "select * from Job j where j.id = :id", nativeQuery = true)
 	Job findJobByID(@Param("id") String id);
 	
-	@Query(value = "select * from Job j where j.title = :key", nativeQuery = true)
+	@Query(value = "select * from Job j where j.jobtitle like CONCAT('%',:key, '%')", nativeQuery = true)
 	Iterable<Job> findJobByTitle(@Param("key") String key);
+	
+	@Query(value = "select * from Job j where j.category like CONCAT('%',:cat, '%')", nativeQuery = true)
+	Iterable<Job> findJobByCat(@Param("cat") String cat);
+	
+	@Query(value = "select * from Job j where j.jobtitle like CONCAT('%',:key, '%') AND j.category like CONCAT('%',:cat, '%')", nativeQuery = true)
+	Iterable<Job> findJobByBoth(@Param("key") String key, @Param("cat") String cat);
+	
+	
 
 	
 	

@@ -16,18 +16,12 @@
     </header>
 
     <section id="JobPosting" >
-    <h2 style="text-align:center;">Job ID: ${jobID}</h2>
-  
-        <p>Job Title: ${title} </p>
-        <p>Tags: ${tags} </p>
-        <p>Description: ${desc} </p>
+    <h2 style="text-align:center;">Job ID: ${jobID} Not Found</h2>
+
         
       
         <center>
-        <form id="request"   action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
-        <input type="text" name="id" value=${jobID} readonly><br>
-		<input type="submit" value="request">
-        </form>
+       
         <a href="../../../searchJobs.html">Back</a> 
         </center>
    
