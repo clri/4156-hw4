@@ -16,13 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 //@Order(1)
 @EnableWebMvcSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	@Autowired	
+	@Autowired
 	UserDetailsService userDetailsService;
 
         @Autowired
         public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordencoder());
-        } 
+        }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -30,21 +30,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          .antMatchers("/hello").access("hasRole('ROLE_ADMIN')")
          .antMatchers("/demo/adduser").permitAll()
          .antMatchers("/demo/**").access("hasRole('ROLE_USER')")
-         .antMatchers("/homePageLoggedIn*").access("hasRole('ROLE_USER')")   
-         .antMatchers("/*Job*").access("hasRole('ROLE_USER')")  
-         .antMatchers("/search*").access("hasRole('ROLE_USER')")  
+         .antMatchers("/homePageLoggedIn**").access("hasRole('ROLE_USER')")   
+         .antMatchers("/*Job*").access("hasRole('ROLE_USER')")
+         .antMatchers("/search*").access("hasRole('ROLE_USER')")
          .anyRequest().permitAll()
          .and()
            .formLogin().loginPage("/login")
            .usernameParameter("username").passwordParameter("password")
          .and()
-           .logout().logoutSuccessUrl("/login?logout") 
+           .logout().logoutSuccessUrl("/login?logout")
           .and()
           .exceptionHandling().accessDeniedPage("/403")
          .and()
            .csrf();
         }
-	
+
 	@Bean(name="passwordEncoder")
     public PasswordEncoder passwordencoder(){
     	return new BCryptPasswordEncoder();

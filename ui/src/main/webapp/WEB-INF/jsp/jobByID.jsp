@@ -7,15 +7,18 @@
     </head>
     <body>
     <header>
-        
+
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
-            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p> 
+            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p>
+            <form action="/logout" method="get">
+                    <input type="submit" class="button red big" value="Sign Out" />
+            </form>
             <br>
     </header>
 
     <section>
     <h2 style="text-align:center;">Enter an ID:</h2>
-  
+
         <form:form method = "GET" action = "/finalPage">
          <table>
             <tr>
@@ -24,14 +27,14 @@
                   <input type = "submit" value = "Lookup"/>
                </td>
             </tr>
-         </table>  
+         </table>
       </form:form>
-        
-      
+
+
         <center>
-        <a href="../../../searchJobs.html">Back</a> 
+        <a href="../../../searchJobs.html">Back</a>
         </center>
-   
+
     </section>
     </body>
 </html>
@@ -40,5 +43,3 @@
 
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
- 
-

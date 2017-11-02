@@ -22,7 +22,7 @@ HOW TO RUN:
 WORKS CITED
 
 1. https://stackoverflow.com/questions/42115370/how-to-pass-html-input-values-into-database-from-form-springboot
-2.https://stackoverflow.com/questions/9311940/redirect-to-dynamic-url-in-spring-mvc
+2. https://stackoverflow.com/questions/9311940/redirect-to-dynamic-url-in-spring-mvc
 3. https://spring.io/guides/gs/accessing-data-mysql/
 4. https://spring.io/guides/gs/serving-web-content/
 5. https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
@@ -30,12 +30,11 @@ WORKS CITED
 7. https://www.mkyong.com/spring-security/spring-security-password-hashing-example/
 8. http://scrumbucket.org/sanitize-your-spring-mvc-controller/
 9. http://www.mkyong.com/spring-security/spring-security-form-login-using-database/
-10.  https://dzone.com/articles/spring-security-4-authenticate-and-authorize-users
+10. https://dzone.com/articles/spring-security-4-authenticate-and-authorize-users
 11. http://www.programming-free.com/2015/09/spring-security-password-encryption.html
 12. https://stackoverflow.com/questions/30819337/multiple-antmatchers-in-spring-security
 13. https://stackoverflow.com/questions/45733193/how-to-get-id-of-currently-logged-in-user-using-spring-security-and-thymeleaf
 14. https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-introduction-to-query-methods/
 15. https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-creating-database-queries-with-the-query-annotation/
 16. https://www.tutorialspoint.com/spring/spring_page_redirection_example.htm
-
-
+17. http://websystique.com/spring-security/spring-security-4-logout-example/

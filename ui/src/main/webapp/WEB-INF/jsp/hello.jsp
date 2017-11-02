@@ -14,7 +14,7 @@
 	<div class="details">
 
 		<h2>Spring Security - JDBC Authentication</h2>
-		<a href="http://www.programming-free.com/2015/09/spring-security-jdbc-authentication.html" class="button green small">Tutorial</a> 
+		<a href="http://www.programming-free.com/2015/09/spring-security-jdbc-authentication.html" class="button green small">Tutorial</a>
 		<a href="https://github.com/priyadb/SpringSecurityJdbcApp/archive/master.zip"
 			class="button red small">Download</a>
 	</div>
@@ -23,7 +23,7 @@
 		<h1>
 			Hello <b><c:out value="${pageContext.request.remoteUser}"></c:out></b>
 		</h1>
-		<form action="/logout" method="post">
+		<form action="/logout" method="get">
 			<input type="submit" class="button red big" value="Sign Out" /> <input
 				type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 		</form>

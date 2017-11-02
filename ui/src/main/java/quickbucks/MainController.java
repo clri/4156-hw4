@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class MainController {
 		if (s.length() > 255)
 			return false;
 		boolean ans = true;
-		//in = 1: email; in = 2: password, 3: name
+		//in = 1: email; in = 2: password, 3: name, 4: location
 		switch(in) {
 			case 1: ans = (s != "" && (
 				s.matches(".+@columbia.edu") ||
@@ -41,6 +42,8 @@ public class MainController {
 			case 2: ans = (s != "" && s.length() >= 4);
 				break;
 			case 3: ans = (s.matches("[a-zA-z\\s\\-]+"));
+				break;
+			case 4: ans = (s.equals("ON") || s.equals("OFF"));
 				break;
 			default: ans = true;
 		}
@@ -66,7 +69,7 @@ public class MainController {
 			validateInputStrings(1,email) &&
 			validateInputStrings(2,password) &&
 			validateInputStrings(0,degree) &&
-			validateInputStrings(0,location) &&
+			validateInputStrings(4,location) &&
 			validateInputStrings(0,school)))
 			return "redirect:/index3.html";
 
@@ -136,7 +139,7 @@ public class MainController {
 		return "redirect:/homepageloggedin.html";
 	}
 
-	
+
 	@GetMapping(path="/demo/search") // Map ONLY GET Requests
 	public @ResponseBody Iterable<Job> searchJobs (@RequestParam String keywords
 			,@RequestParam String category) {
@@ -147,7 +150,7 @@ public class MainController {
 			return jobRepository.findJobByTitle(keywords);
 		return jobRepository.findJobByBoth(keywords, category);
 	}
-	
+
 
 	@GetMapping(path="/demo/alljob")
 	public @ResponseBody Iterable<Job> getAllJobs() {
@@ -155,19 +158,19 @@ public class MainController {
 		return jobRepository.findAll();
 	}
 
-	
+
 	/*@GetMapping(path="/demo/viewjob")
 	public @ResponseBody ModelAndView viewJob(@RequestParam String id) {
 		ModelAndView blep=new ModelAndView();
 		blep.setViewName("redirect:viewJob");
 		Job j = findOne(1);
 		redir.addFlashAttribute("title", j.getJobTitle());
-		
-		
+
+
 		return jobRepository.findAll();
 	}
 	*/
-	
+
 	@RequestMapping(value = "/jobByID", method = RequestMethod.GET)
 	public String index() {
       return "jobByID";
@@ -176,7 +179,7 @@ public class MainController {
    public String redirect() {
       return "redirect:finalPage";
    }
-   
+
    @RequestMapping(value = "/finalPage", method = RequestMethod.GET)
    public String finalPage(ModelMap model, @RequestParam String id) {
 	   Job j = jobRepository.findJobByID(id);
@@ -194,11 +197,11 @@ public class MainController {
 
 	   return "viewJob";
    }
-	
+
 
 	@Autowired
 	private RequestRepository requestRepository;
-	
+
 	//TODO make sure user does not request their own job
 	@GetMapping(path="/demo/request") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String id) {
@@ -217,12 +220,22 @@ public class MainController {
 		requestRepository.save(r);
 		return "redirect:/requestSuccess.html";
 	}
-	
+
 	@GetMapping(path="/demo/allrequest")
 	public @ResponseBody Iterable<Request> getAllReqs() {
 		// This returns a JSON or XML with the jobs
 		return requestRepository.findAll();
 	}
+
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null){
+			new SecurityContextLogoutHandler().logout(request, response, auth);
+		}
+		return "redirect:/login?logout";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+	}
+
 
 
 }

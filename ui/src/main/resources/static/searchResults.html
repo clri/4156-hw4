@@ -14,27 +14,30 @@
     </head>
     <body>
     <header>
-        
+
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
-            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p> 
+            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p>
+            <form action="/logout" method="get">
+                    <input type="submit" class="button red big" value="Sign Out" />
+            </form>
             <br>
     </header>
-    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;"> 
-        <a href="" >Home</a> 
-        <a href="">Search Jobs</a> 
-        <a href="">Post Job</a> 
-        <a href="">Legal</a> 
-        <a href="" >FAQ</a> 
-        <a href="">Inbox</a> 
+    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;">
+        <a href="" >Home</a>
+        <a href="">Search Jobs</a>
+        <a href="">Post Job</a>
+        <a href="">Legal</a>
+        <a href="" >FAQ</a>
+        <a href="">Inbox</a>
         <br>
     </nav>
-    
+
     <section id="resultTable">    <h2 style="text-align:center;">Search Results</h2>
 
         <table border ="1" style="width:100%;border: 1px solid black;">
           <tr>
             <th>ID</th>
-            <th>Tags</th> 
+            <th>Tags</th>
             <th>Status</th>
         <th>Title</th>
           </tr>
@@ -46,13 +49,13 @@
           </tr>
           <tr>
             <td>(two)</td>
-            <td>(two)</td> 
+            <td>(two)</td>
             <td>(two)</td>
             <td>(two)</td>
           </tr>
         </table>
     </section>
-    
+
     <center><div class="tablepage">
       <a href="#" class="w3-button">&laquo;</a>
       <a href="#" class="w3-button">1</a>
