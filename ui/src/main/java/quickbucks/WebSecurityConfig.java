@@ -3,7 +3,6 @@ package quickbucks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -29,7 +28,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         protected void configure(HttpSecurity http) throws Exception {
           http.authorizeRequests()
          .antMatchers("/hello").access("hasRole('ROLE_ADMIN')")
-         .antMatchers("/demo/*").access("hasRole('ROLE_USER')")
+         .antMatchers("/demo/adduser").permitAll()
+         .antMatchers("/demo/**").access("hasRole('ROLE_USER')")
          .antMatchers("/homePageLoggedIn*").access("hasRole('ROLE_USER')")   
          .antMatchers("/*Job*").access("hasRole('ROLE_USER')")  
          .antMatchers("/search*").access("hasRole('ROLE_USER')")  
