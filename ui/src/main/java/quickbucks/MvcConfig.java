@@ -5,8 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.context.annotation.ComponentScan;
 
 @Configuration
+@ComponentScan(basePackages = {"quickbucks"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
@@ -14,10 +16,10 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/home").setViewName("home");
         //registry.addViewController("/").setViewName("home");
         registry.addViewController("/hello").setViewName("hello");
-        registry.addViewController("/login").setViewName("login");        
+        registry.addViewController("/login").setViewName("login");
 	registry.addViewController("/403").setViewName("403");
     }
-    
+
     @Bean
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
@@ -25,6 +27,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		resolver.setSuffix(".jsp");
 		return resolver;
 	}
-    
+
 
 }

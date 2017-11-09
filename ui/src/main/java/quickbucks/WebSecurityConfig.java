@@ -11,9 +11,10 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.annotation.ComponentScan;
 
 @Configuration
-//@Order(1)
+@ComponentScan(basePackages = {"quickbucks"})
 @EnableWebMvcSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
@@ -30,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          .antMatchers("/hello").access("hasRole('ROLE_ADMIN')")
          .antMatchers("/demo/adduser").permitAll()
          .antMatchers("/demo/**").access("hasRole('ROLE_USER')")
-         .antMatchers("/homePageLoggedIn**").access("hasRole('ROLE_USER')")   
+         .antMatchers("/homePageLoggedIn**").access("hasRole('ROLE_USER')")
          .antMatchers("/*Job*").access("hasRole('ROLE_USER')")
          .antMatchers("/search*").access("hasRole('ROLE_USER')")
          .anyRequest().permitAll()

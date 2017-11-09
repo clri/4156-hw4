@@ -213,8 +213,9 @@ public class MainController {
 	@GetMapping(path="/demo/request") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String id)
 	{
+		Job j = new Job();
 		try {
-			Job j = jobRepository.findJobByID(id);
+			j = jobRepository.findJobByID(id);
 		} catch (Exception e) {
 			//reidrect to something else here since it is fail case
 		}

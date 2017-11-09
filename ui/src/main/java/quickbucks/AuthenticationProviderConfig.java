@@ -5,8 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+import org.springframework.context.annotation.ComponentScan;
 
 @Configuration
+@ComponentScan(basePackages = {"quickbucks"})
 public class AuthenticationProviderConfig {
         @Bean(name = "dataSource")
         public DriverManagerDataSource dataSource() {
@@ -17,7 +19,7 @@ public class AuthenticationProviderConfig {
     	    driverManagerDataSource.setPassword("ThePassword");
     	    return driverManagerDataSource;
      }
-    
+
     @Bean(name="userDetailsService")
     public UserDetailsService userDetailsService(){
     	JdbcDaoImpl jdbcImpl = new JdbcDaoImpl();
