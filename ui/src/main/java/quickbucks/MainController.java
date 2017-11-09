@@ -33,6 +33,7 @@ public class MainController {
 			return false;
 		boolean ans = true;
 		//in = 1: email; in = 2: password, 3: name, 4: location
+		//5: non-empty
 		switch(in) {
 			case 1: ans = (s != "" && (
 				s.matches(".+@.*columbia.edu") ||
@@ -43,6 +44,8 @@ public class MainController {
 			case 3: ans = (s.matches("[a-zA-z\\s\\-]+"));
 				break;
 			case 4: ans = (s.equals("ON") || s.equals("OFF"));
+				break;
+			case 5: ans = (s != "");
 				break;
 			default: ans = true;
 		}
@@ -116,6 +119,11 @@ public class MainController {
 	{
 		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add tags (how are they input in form) and date
+		if (!validateInputStrings(5, jobtitle) ||
+			!validateInputStrings(5, jobdesc) ||
+			!validateInputStrings(5, category))
+			return "redirect:/index3.html"; //change to better error page
+
 
 		Job j = new Job();
 		org.springframework.security.core.userdetails.User user
