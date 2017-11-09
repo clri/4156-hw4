@@ -24,8 +24,7 @@ import quickbucks.UserRepository;
 import quickbucks.MvcConfig;
 import java.lang.Integer;
 
-@Controller    // This means that this class is a Controller
-//@RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
+@Controller
 public class MainController {
 
 	private boolean validateInputStrings(int in, String s)
@@ -36,8 +35,8 @@ public class MainController {
 		//in = 1: email; in = 2: password, 3: name, 4: location
 		switch(in) {
 			case 1: ans = (s != "" && (
-				s.matches(".+@columbia.edu") ||
-				s.matches(".+@barnard.edu")));
+				s.matches(".+@.*columbia.edu") ||
+				s.matches(".+@.*barnard.edu")));
 				break;
 			case 2: ans = (s != "" && s.length() >= 4);
 				break;
@@ -61,8 +60,9 @@ public class MainController {
 			, @RequestParam String password
 			, @RequestParam String degree
 			, @RequestParam String location
-			, @RequestParam String school) {
-		//@TODO: sanitize input?
+			, @RequestParam String school)
+	{
+		//@TODO: which are required to be not blank?
 
 		if (!(validateInputStrings(3,firstName) &&
 			validateInputStrings(3,lastName) &&
@@ -100,7 +100,8 @@ public class MainController {
 	}
 
 	@GetMapping(path="/demo/alluser")
-	public @ResponseBody Iterable<User> getAllUsers() {
+	public @ResponseBody Iterable<User> getAllUsers()
+	{
 		// This returns a JSON or XML with the users
 		return userRepository.findAll();
 	}
@@ -111,14 +112,14 @@ public class MainController {
 
 	@GetMapping(path="/demo/postJob") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String jobtitle
-			, @RequestParam String jobdesc, String category) {
+			, @RequestParam String jobdesc, String category)
+	{
 		// @RequestParam means it is a parameter from the GET or POST request
 		//@TODO: add tags (how are they input in form) and date
-		//@TODO: add authentication and get current user so they
-		//can be attached to the form.
 
 		Job j = new Job();
-		org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
 		j.setUser(uid);
@@ -142,7 +143,8 @@ public class MainController {
 
 	@GetMapping(path="/demo/search") // Map ONLY GET Requests
 	public @ResponseBody Iterable<Job> searchJobs (@RequestParam String keywords
-			,@RequestParam String category) {
+			,@RequestParam String category)
+	{
 		//TODO add findAll
 		if(keywords.equals(""))
 			return jobRepository.findJobByCat(category);
@@ -153,7 +155,8 @@ public class MainController {
 
 
 	@GetMapping(path="/demo/alljob")
-	public @ResponseBody Iterable<Job> getAllJobs() {
+	public @ResponseBody Iterable<Job> getAllJobs()
+	{
 		// This returns a JSON or XML with the jobs
 		return jobRepository.findAll();
 	}
@@ -172,31 +175,35 @@ public class MainController {
 	*/
 
 	@RequestMapping(value = "/jobByID", method = RequestMethod.GET)
-	public String index() {
-      return "jobByID";
-   }
-   @RequestMapping(value = "/redirect", method = RequestMethod.GET)
-   public String redirect() {
-      return "redirect:finalPage";
-   }
+	public String index()
+	{
+		return "jobByID";
+   	}
 
-   @RequestMapping(value = "/finalPage", method = RequestMethod.GET)
-   public String finalPage(ModelMap model, @RequestParam String id) {
-	   Job j = jobRepository.findJobByID(id);
-	   if(j ==null){
-		  model.addAttribute("jobID", id);
-		  return "viewJobError";
-	   }
-	   else{
-		   model.addAttribute("jobID", j.getId());
-		   model.addAttribute("title", j.getJobTitle());
-		   model.addAttribute("desc", j. getJobDescription());
-		   model.addAttribute("tags", j.getCategory());
-	   }
-	   //model.addAttribute("title", j.getJobTitle());
+   	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
+   	public String redirect()
+	{
+		return "redirect:finalPage";
+	}
 
-	   return "viewJob";
-   }
+   	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
+   	public String finalPage(ModelMap model, @RequestParam String id)
+	{
+	 	Job j = jobRepository.findJobByID(id);
+	 	if(j ==null){
+			model.addAttribute("jobID", id);
+			return "viewJobError";
+	 	}
+	 	else{
+			model.addAttribute("jobID", j.getId());
+			model.addAttribute("title", j.getJobTitle());
+			model.addAttribute("desc", j. getJobDescription());
+			model.addAttribute("tags", j.getCategory());
+	   	}
+		//model.addAttribute("title", j.getJobTitle());
+
+		return "viewJob";
+	}
 
 
 	@Autowired
@@ -204,12 +211,23 @@ public class MainController {
 
 	//TODO make sure user does not request their own job
 	@GetMapping(path="/demo/request") // Map ONLY GET Requests
-	public String addNewJob (@RequestParam String id) {
-
-		Job j = jobRepository.findJobByID(id);
+	public String addNewJob (@RequestParam String id)
+	{
+		try {
+			Job j = jobRepository.findJobByID(id);
+		} catch (Exception e) {
+			//reidrect to something else here since it is fail case
+		}
 		Request r = new Request();
-		org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
+
+		/*FAIL CASES:
+		requesting your own job.
+		if (j.getUser() == uid)
+			return "redirect:/requestFail.html";
+		*/
 
 		r.setEmployee(uid);
 		r.setTitle(j.getJobTitle());
@@ -222,16 +240,21 @@ public class MainController {
 	}
 
 	@GetMapping(path="/demo/allrequest")
-	public @ResponseBody Iterable<Request> getAllReqs() {
+	public @ResponseBody Iterable<Request> getAllReqs()
+	{
 		// This returns a JSON or XML with the jobs
 		return requestRepository.findAll();
 	}
 
 	@RequestMapping(value="/logout", method = RequestMethod.GET)
-	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null){
-			new SecurityContextLogoutHandler().logout(request, response, auth);
+	public String logoutPage (HttpServletRequest request,
+		HttpServletResponse response)
+	{
+		Authentication auth =
+			SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			new SecurityContextLogoutHandler().logout(request,
+				response, auth);
 		}
 		return "redirect:/login?logout";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
