@@ -183,19 +183,19 @@ public class MainController {
 	*/
 
 	@RequestMapping(value = "/jobByID", method = RequestMethod.GET)
-	public String index()
+	public String lookupJobByID()
 	{
 		return "jobByID";
    	}
 
-   	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
+   	/*@RequestMapping(value = "/redirect", method = RequestMethod.GET)
    	public String redirect()
 	{
 		return "redirect:finalPage";
 	}
-
+*/
    	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
-   	public String finalPage(ModelMap model, @RequestParam String id)
+   	public String viewJob(ModelMap model, @RequestParam String id)
 	{
 	 	Job j = jobRepository.findJobByID(id);
 	 	if(j ==null){

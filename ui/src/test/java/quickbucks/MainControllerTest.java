@@ -127,7 +127,7 @@ public class MainControllerTest {
         @Test
         public void testIndex() throws Exception {
 
-                String view = this.mainController.index();
+                String view = this.mainController.lookupJobByID();
                 assertEquals(view,"jobByID"); //success
         }
 
