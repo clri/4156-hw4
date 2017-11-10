@@ -17,11 +17,12 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 //import quickbucks.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
+@ContextConfiguration 
 public class MainControllerTest {
         @Autowired
         private MainController mainController;
@@ -97,7 +98,7 @@ public class MainControllerTest {
         }
 
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "ROLE_USER" })
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
         public void testCreateJob() throws Exception {
 
                 String view = this.mainController.addNewJob(
@@ -125,13 +126,6 @@ public class MainControllerTest {
 
         @Test
         public void testIndex() throws Exception {
-
-                String view = this.mainController.index();
-                assertEquals(view,"jobByID"); //success
-        }
-
-        @Test
-        public void testIndext() throws Exception {
 
                 String view = this.mainController.index();
                 assertEquals(view,"jobByID"); //success
