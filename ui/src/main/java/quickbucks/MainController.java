@@ -52,6 +52,13 @@ public class MainController {
 		return ans;
 	}
 
+	public void setReposotories(UserRepository u, JobRepository j,
+		RequestRepository r) {
+			userRepository = u;
+			jobRepository = j;
+			requestRepository = r;
+	}
+
 
 	@Autowired
 	private UserRepository userRepository;
@@ -94,7 +101,8 @@ public class MainController {
 			try {
 				userRepository.save(n);
 			} catch (Exception ee) {
-				return "redirect:/index3.html";
+				return "could_not_save";
+				//return "redirect:/index3.html";
 			}
 			return "redirect:/index2.html";
 		}
@@ -124,11 +132,15 @@ public class MainController {
 			!validateInputStrings(5, category))
 			return "redirect:/index3.html"; //change to better error page
 
-
+		int uid = -1;
 		Job j = new Job();
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		int uid = userRepository.findIDByEmail(user.getUsername());
+		try {
+			uid = userRepository.findIDByEmail(user.getUsername());
+		} catch(Exception ee) {
+			return "wrong_user";
+		}
 
 		j.setUser(uid);
 		j.setJobTitle(jobtitle);

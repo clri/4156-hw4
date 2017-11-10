@@ -18,14 +18,46 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.web.WebAppConfiguration;;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-//import quickbucks.User;
+import quickbucks.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration 
+@ContextConfiguration //(classes = {WebSecurityConfig.class, MvcConfig.class})
+@SpringBootTest(classes = Application.class)
+@DataJpaTest
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+//@WebAppConfiguration
 public class MainControllerTest {
-        @Autowired
+        //@Autowired
         private MainController mainController;
+
+        @Autowired
+        private UserRepository u;
+
+        @Autowired
+        private JobRepository j;
+
+        @Autowired
+        private RequestRepository r;
+
+        @Before
+        public void setup() {
+                mainController = new MainController();
+                mainController.setReposotories(u,j,r);
+        }
+
+        @After
+        public void verify() {
+                //Mockito.reset();
+        }
 
         @Test
         public void testRegister() throws Exception {
@@ -37,7 +69,7 @@ public class MainControllerTest {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "john@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index2.html"); //success
+                assertEquals(view,"redirect:/index2.html"); //why will this fail
 
                 view = this.mainController.addNewUser(
                         "john", "secret", "john@columbia.edu",
@@ -45,7 +77,7 @@ public class MainControllerTest {
                 assertEquals(view,"redirect:/index3.html"); //should fail, dup
 
                 view = this.mainController.addNewUser(
-                        "john", "secret", "john1@columbia.edu",
+                        "john", "secret", "john1@email.edu",
                         "abcde", "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index3.html"); //should fail, email
 
@@ -83,17 +115,17 @@ public class MainControllerTest {
 
                 view = this.mainController.addNewUser(
                         "john",
-                        "sec etlksdjflsdkfjsldkssdlkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
+                        "sece tlksdjflsdkfjsldkssdlkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
                         "john3@columbia.edu",
-                        "abcde", "MS", "fff", "SEAS");
+                        "abcde", "MS", "OFF", "SEAS");
                 assertEquals(view,"redirect:/index2.html"); //should pass, length
 
                 view = this.mainController.addNewUser(
                         "john",
-                        "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
+                        "sece tlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
                         "john4@columbia.edu",
-                        "abcde", "MS", "fff", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, length
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html"); //should fail, length*/
 
         }
 
@@ -133,7 +165,7 @@ public class MainControllerTest {
 
         @Configuration
         static class MainControllerTestConfiguration {
-                @Bean
+                //@Bean
                 public MainController mainController() {
                     return new MainController();
                 }
