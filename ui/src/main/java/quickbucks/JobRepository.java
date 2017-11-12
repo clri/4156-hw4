@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
+import java.util.List;
 import quickbucks.Job;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
@@ -15,14 +16,16 @@ public interface JobRepository extends CrudRepository<Job, Long> {
 	Job findJobByID(@Param("id") String id);
 	
 	@Query(value = "select * from Job j where j.jobtitle like CONCAT('%',:key, '%')", nativeQuery = true)
-	Iterable<Job> findJobByTitle(@Param("key") String key);
+	List<Job> findJobByTitle(@Param("key") String key);
 	
 	@Query(value = "select * from Job j where j.category like CONCAT('%',:cat, '%')", nativeQuery = true)
-	Iterable<Job> findJobByCat(@Param("cat") String cat);
+	List<Job> findJobByCat(@Param("cat") String cat);
 	
 	@Query(value = "select * from Job j where j.jobtitle like CONCAT('%',:key, '%') AND j.category like CONCAT('%',:cat, '%')", nativeQuery = true)
-	Iterable<Job> findJobByBoth(@Param("key") String key, @Param("cat") String cat);
+	List<Job> findJobByBoth(@Param("key") String key, @Param("cat") String cat);
 	
+	@Query(value = "select * from Job", nativeQuery = true)
+	List<Job> findAllJobs();
 	
 
 	

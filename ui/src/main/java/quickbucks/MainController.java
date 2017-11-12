@@ -23,6 +23,8 @@ import quickbucks.User;
 import quickbucks.UserRepository;
 import quickbucks.MvcConfig;
 import java.lang.Integer;
+import java.util.List;
+import java.util.ArrayList;
 
 @Controller
 public class MainController {
@@ -162,16 +164,44 @@ public class MainController {
 	}
 
 
-	@GetMapping(path="/demo/search") // Map ONLY GET Requests
+/*	@GetMapping(path="/demo/search") // Map ONLY GET Requests
 	public @ResponseBody Iterable<Job> searchJobs (@RequestParam String keywords
 			,@RequestParam String category)
 	{
 		//TODO add findAll
 		if(keywords.equals(""))
-			return jobRepository.findJobByCat(category);
+			jobRepository.findJobByCat(category);
 		if(category.equals(""))
 			return jobRepository.findJobByTitle(keywords);
 		return jobRepository.findJobByBoth(keywords, category);
+	}
+*/
+
+	@GetMapping(path="/demo/search") // Map ONLY GET Requests
+	public String searchJobs(ModelMap model, @RequestParam String keywords
+			,@RequestParam String category)
+	{
+		List results = new ArrayList();
+		
+		if(keywords.equals("") && category.equals("")){
+			results = jobRepository.findAllJobs();
+		}
+		else if(keywords.equals("")){
+			results = jobRepository.findJobByCat(category);
+			
+		}
+		else if(category.equals("")){
+			results = jobRepository.findJobByTitle(keywords);
+		}
+		else
+			results = jobRepository.findJobByBoth(keywords, category);
+		
+		model.addAttribute("test", "hello");
+		model.addAttribute("results", results);
+		
+		return "searchResults";
+		
+		
 	}
 
 
@@ -217,8 +247,8 @@ public class MainController {
 	 	}
 	 	else{
 			model.addAttribute("jobID", j.getId());
-			model.addAttribute("title", j.getJobTitle());
-			model.addAttribute("desc", j. getJobDescription());
+			model.addAttribute("title", j.getJobtitle());
+			model.addAttribute("desc", j. getJobdesc());
 			model.addAttribute("tags", j.getCategory());
 	   	}
 		//model.addAttribute("title", j.getJobTitle());
@@ -252,7 +282,7 @@ public class MainController {
 		*/
 
 		r.setEmployee(uid);
-		r.setTitle(j.getJobTitle());
+		r.setTitle(j.getJobtitle());
 		r.setEmployer(j.getUser());
 		r.setJob(j.getId());
 		r.setMsg("");

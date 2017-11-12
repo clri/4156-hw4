@@ -41,13 +41,13 @@ public class Job {
 	public void setUser(Integer id) {
 		this.userID = id;
 	}
-	public String getJobTitle() {
+	public String getJobtitle() {
 		return jobtitle;
 	}
 	public void setJobTitle(String title) {
 		this.jobtitle = title;
 	}
-	public String getJobDescription() {
+	public String getJobdesc() {
 		return jobdesc;
 	}
 	public void setJobDescription(String description) {
