@@ -36,8 +36,9 @@ public class MainController {
 		//5: non-empty
 		switch(in) {
 			case 1: ans = (s != "" && (
-				s.matches(".+@.*columbia.edu") ||
-				s.matches(".+@.*barnard.edu")));
+				s.matches("[a-zA-z0-9\\.\\-]+@.*columbia.edu")
+				||
+				s.matches("[a-zA-z0-9\\.\\-]+@.*barnard.edu")));
 				break;
 			case 2: ans = (s != "" && s.length() >= 4);
 				break;

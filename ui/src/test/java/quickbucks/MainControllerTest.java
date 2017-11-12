@@ -51,7 +51,7 @@ public class MainControllerTest {
         @Before
         public void setup() {
                 mainController = new MainController();
-                mainController.setReposotories(u,j,r);
+                mainController.setReposotories(u,j,r); //apparently necessary
         }
 
         @After
@@ -59,106 +59,365 @@ public class MainControllerTest {
                 //Mockito.reset();
         }
 
+        //REGISTRATION
+
+        //test to pass
+        //first name capitalized
         @Test
-        public void testRegister() throws Exception {
-
-                /*MockHttpSession mockHttpSession = new MockHttpSession();
-                mockHttpSession.setAttribute(MainController.REQUESTED_URL, "someUrl");*/
-
-                /*first, last, email, pass, degree, on/off, school*/
+        public void testRegister1() throws Exception {
                 String view = this.mainController.addNewUser(
-                        "john", "secret", "john@columbia.edu",
+                        "John", "Secret", "john@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index2.html"); //why will this fail
-
-                view = this.mainController.addNewUser(
-                        "john", "secret", "john@columbia.edu",
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //first name all lowercase
+        @Test
+        public void testRegisterLowerF() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "Secret", "johns@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, dup
-
-                view = this.mainController.addNewUser(
-                        "john", "secret", "john1@email.edu",
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //boundary: first name 255 characters
+        @Test
+        public void testRegisterMaxLenF() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "sec etlksdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
+                        "Secret", "johns1@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, email
-
-                view = this.mainController.addNewUser(
-                        "john123", "secret", "john1@columbia.edu",
-                        "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, name
-
-                view = this.mainController.addNewUser(
-                        "john", "secret", "john1@columbia.edu",
-                        "abc", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //password too short
-
-                view = this.mainController.addNewUser(
-                        "john", "sec et", "john1@columbia.edu",
-                        "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index2.html"); //should pass, space
-
-                view = this.mainController.addNewUser(
-                        "jo-hn", "sec et", "john2@columbia.edu",
-                        "abcde", "MS", "OFF", "SEAS");
-                assertEquals(view,"redirect:/index2.html"); //should pass, space
-
-                view = this.mainController.addNewUser(
-                        "john", "sec et", "john3@columbia.edu",
-                        "abcde", "MS", "fff", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, onoff
-
-                view = this.mainController.addNewUser(
-                        "john",
-                        "sec etlksdjflsdkfjsldksdlkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosldijfalsdkfjalskdfjalskdjfalks",
-                        "john3@columbia.edu",
-                        "abced", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, length
-
-                view = this.mainController.addNewUser(
-                        "john",
-                        "sece tlksdjflsdkfjsldkssdlkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
-                        "john3@columbia.edu",
-                        "abcde", "MS", "OFF", "SEAS");
-                assertEquals(view,"redirect:/index2.html"); //should pass, length
-
-                view = this.mainController.addNewUser(
-                        "john",
-                        "sece tlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
-                        "john4@columbia.edu",
-                        "abcde", "MS", "ON", "SEAS");
-                assertEquals(view,"redirect:/index3.html"); //should fail, length*/
-
+                assertEquals(view,"redirect:/index2.html");
         }
 
+        //last name capitalized
+        @Test
+        public void testRegister1L() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "John", "Secret", "johnsecret@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //last name all lowercase
+        @Test
+        public void testRegisterLowerL() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johnsec@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //boundary: last name 255 characters
+        @Test
+        public void testRegisterMaxLenL() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "Secret",
+                        "sec etlksdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
+                        "johns0@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+
+        //@columbia.edu email
+        @Test
+        public void testRegisterEmail1() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johnsec4444@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //@barnard.edu email
+        @Test
+        public void testRegisterEmail2() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johnsec4444@barnard.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //@cs.columbia.edu email
+        @Test
+        public void testRegisterEmail3() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johnsec4444@cs.columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //255-char email
+        @Test
+        public void testRegisterEmailLong1() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "senetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //email with dash
+        @Test
+        public void testRegisterEmail4() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johnsec-4444@cs.columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+
+        //ON campus
+        @Test
+        public void testLocation1() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "jo-hn", "sec et", "john343432@columbia.edu",
+                        "abcde", "MS", "OFF", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //OFF campus
+        @Test
+        public void testLocation2() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "jo-hn", "sec et", "johnsec43et2@columbia.edu",
+                        "abcde", "MS", "OFF", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+
+        //=4 password
+        @Test
+        public void testRegisterPasswordShort1() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "john15@columbia.edu",
+                        "1234", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+        //255 password
+        @Test
+        public void testRegisterPasswordLong1() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "john15@cs.columbia.edu",
+                        "secnetlkfsdjfsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
+                        "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index2.html");
+        }
+
+
+
+        //test to FAIL
+        //blank first name
+        @Test
+        public void testRegisterEmptyF() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "", "Secret", "johsaasdfasdfsns@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //first name 256 characters
+        @Test
+        public void testRegisterTooLongF() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "sec etlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
+                        "Secret", "johns11@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+
+        //blank last name
+        @Test
+        public void testRegisterEmpty() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "F", "", "johns11@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //last name 256 characters
+        @Test
+        public void testRegisterTooLongL() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "Secret",
+                        "sec etlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
+                        "johns11@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+
+        //duplicate @columbia.edu email
+        @Test
+        public void testRegisterEmail1Duplicate() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johnsec4444@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //blank @columbia.edu email
+        @Test
+        public void testRegisterEmail1Blank() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //blank email
+        @Test
+        public void testRegisterEmail2Blank() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //wrong domain email
+        @Test
+        public void testRegisterEmail2Wrong() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "john@gmail.com",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //256-char email
+        @Test
+        public void testRegisterEmailLong() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "secnetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //invalid character in email
+        @Test
+        public void testRegisterEmailSpec() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "johns$ec4444@cs.columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+
+        //not ON/OFF in on/off campus
+        @Test
+        public void testRegisterOnOffFail() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "sec et", "johns11@columbia.edu",
+                        "abcde", "MS", "fff", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+
+        //blank password
+        @Test
+        public void testRegisterPasswordBlank() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "john11@columbia.edu",
+                        "", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //<4 password
+        @Test
+        public void testRegisterPasswordShort() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "john11@columbia.edu",
+                        "abc", "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //256 password
+        @Test
+        public void testRegisterPasswordLong() throws Exception {
+                String view = this.mainController.addNewUser(
+                        "john", "secret", "john11@columbia.edu",
+                        "secnetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
+                        "MS", "ON", "SEAS");
+                assertEquals(view,"redirect:/index3.html");
+        }
+
+
+        //JOB CREATION
+        //TEST TO PASS
+
+        //average job
         @Test
         @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
-        public void testCreateJob() throws Exception {
-
+        public void testCreateJob1() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job", "jobs");
-                assertEquals(view,"redirect:/homepageloggedin.html"); //success
-
-                view = this.mainController.addNewJob(
+                assertEquals(view,"redirect:/homepageloggedin.html");
+        }
+        //name = 255
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJob2() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
+                        "a job", "jobs");
+                assertEquals(view,"redirect:/homepageloggedin.html");
+        }
+        //category = 255
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJob3() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "job",
+                        "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
+                        "jobs");
+                assertEquals(view,"redirect:/homepageloggedin.html");
+        }
+        //description = 255
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJob4() throws Exception {
+                String view = this.mainController.addNewJob(
                         "job", "a job",
-                        "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl"
-                        );
-                assertEquals(view,"redirect:/index3.html"); //job too long
-
-                view = this.mainController.addNewJob(
-                        "job", "a job",
-                        "sec etlksdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl"
-                        );
-                assertEquals(view,"redirect:/homepageloggedin.html"); //just right
-
-                view = this.mainController.addNewJob(
-                        "job", "a job",
-                        ""
-                        );
-                assertEquals(view,"redirect:/index3.html"); //just right
+                        "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos");
+                assertEquals(view,"redirect:/homepageloggedin.html");
         }
 
-        @Test
-        public void testIndex() throws Exception {
 
+        //TEST TO FAIL
+        //name = 256
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJobF1() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "sec etlksdjflsddkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
+                        "a job", "jobs");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //category = 256
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJobF2() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "job",
+                        "sec ertlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
+                        "jobs");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //description = 256
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJobF3() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "job", "a job",
+                        "sec etlkfsdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //name = blank
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJobF4() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "",
+                        "a job", "jobs");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //category = blank
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJobF5() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "job",
+                        "",
+                        "jobs");
+                assertEquals(view,"redirect:/index3.html");
+        }
+        //description = blank
+        @Test
+        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        public void testCreateJobF6() throws Exception {
+                String view = this.mainController.addNewJob(
+                        "job", "a job",
+                        "");
+                assertEquals(view,"redirect:/index3.html");
+        }
+
+        //job by ID: should return this view. only test to pass
+        @Test
+        public void testLookupJob() throws Exception {
                 String view = this.mainController.lookupJobByID();
                 assertEquals(view,"jobByID"); //success
         }
