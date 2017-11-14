@@ -1,0 +1,17 @@
+version: 0.1
+
+environmental_variables:
+  palintext:
+    phase: "alpha"
+
+phases:
+  pre_build:
+    commands:
+      - mvn clean
+  build:
+    commands:
+      - mvn package
+artifacts:
+  files:
+    - target/quickbucks.war
+  discard-paths: yes
