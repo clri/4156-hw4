@@ -24,9 +24,13 @@
          <table>
 	
         <c:forEach items="${results}" var="job">
+		<%request.setAttribute("jobLink", "<a href='finalPage?id=");
+		  request.setAttribute("jobLinkMid", "<a href='finalPage?id=");
+		  request.setAttribute("jobLinkEndd", "<a href='finalPage?id=");%>
+		
             <tr>
                 <td><c:out value="${job.id}" /></td>
-                <td><c:out value="${job.jobtitle}" /></td>
+                <td><a href = "../finalPage?id=${job.id}"><c:out value="${job.jobtitle}" /></a></td>
                 <td><c:out value="${job.jobdesc}" /></td>
                 <td><c:out value="${job.category}" /></td>
             </tr>
