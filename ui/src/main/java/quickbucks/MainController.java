@@ -22,6 +22,8 @@ import org.springframework.ui.ModelMap;
 import quickbucks.User;
 import quickbucks.UserRepository;
 import quickbucks.MvcConfig;
+import quickbucks.ReviewRepository;
+import quickbucks.Review;
 import java.lang.Integer;
 import java.util.List;
 import java.util.ArrayList;
@@ -182,26 +184,26 @@ public class MainController {
 			,@RequestParam String category)
 	{
 		List results = new ArrayList();
-		
+
 		if(keywords.equals("") && category.equals("")){
 			results = jobRepository.findAllJobs();
 		}
 		else if(keywords.equals("")){
 			results = jobRepository.findJobByCat(category);
-			
+
 		}
 		else if(category.equals("")){
 			results = jobRepository.findJobByTitle(keywords);
 		}
 		else
 			results = jobRepository.findJobByBoth(keywords, category);
-		
+
 		model.addAttribute("test", "hello");
 		model.addAttribute("results", results);
-		
+
 		return "searchResults";
-		
-		
+
+
 	}
 
 
@@ -309,6 +311,72 @@ public class MainController {
 				response, auth);
 		}
 		return "redirect:/login?logout";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+	}
+
+
+	@Autowired
+	private ReviewRepository reviewRepository;
+
+	@RequestMapping(value = "/createAReview", method = RequestMethod.GET)
+   	public String createReview(ModelMap model, @RequestParam String id)
+	{
+	 	Job j = jobRepository.findJobByID(id);
+	 	if(j ==null){
+			model.addAttribute("jobID", id);
+			return "viewJobError"; //@TODO: separate error
+	 	}
+	 	else{
+			model.addAttribute("jobID", j.getId());
+			model.addAttribute("title", j.getJobtitle());
+			model.addAttribute("desc", j. getJobdesc());
+			model.addAttribute("tags", j.getCategory());
+	   	}
+		//model.addAttribute("title", j.getJobTitle());
+
+		return "createReview";
+	}
+
+
+	@GetMapping(path="/demo/review") // Map ONLY GET Requests
+	public String addNewReview (@RequestParam String id,
+		@RequestParam String rating, @RequestParam String reviewBody)
+	{
+		//@TODO: make sure given user is authorized to write a review
+		//AKA they were the accepted user for a job
+		Job j = new Job();
+		try {
+			j = jobRepository.findJobByID(id);
+		} catch (Exception e) {
+			//reidrect to something else here since it is fail case
+		}
+		Review r = new Review();
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+
+		/*FAIL CASES:
+		Review for this job has already been posted
+		Cannot parse double for rating.
+		reviewBody is too long
+		*/
+
+		r.setEmployee(uid);
+		r.setEmployer(j.getUser());
+		r.setJob(j.getId());
+		r.setReviewBody(reviewBody);
+		r.setRating(0.0);
+
+		try {
+			reviewRepository.save(r);
+		} catch(Exception ee) {
+			//redirect to could_not_save
+		}
+		return "redirect:/requestSuccess.html"; //@TODO: new success page
+	}
+
+	@GetMapping(path="/error")
+	public String genericError() {
+		return "redirect:/generic-error.html";
 	}
 
 

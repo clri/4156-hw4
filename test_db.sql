@@ -70,6 +70,21 @@ LOCK TABLES `request` WRITE;
 /*!40000 ALTER TABLE `request` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+DROP TABLE IF EXISTS `review`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `review` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `employee` int(11) DEFAULT NULL,
+  `employer` int(11) DEFAULT NULL,
+  `job` int(11) DEFAULT NULL,
+  `rating` float DEFAULT NULL,
+  `review_body` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 --
 -- Table structure for table `user`
 --
@@ -111,7 +126,7 @@ DROP TABLE IF EXISTS `user_roles`;
 /*!50001 DROP VIEW IF EXISTS `user_roles`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `user_roles` AS SELECT 
+/*!50001 CREATE VIEW `user_roles` AS SELECT
  1 AS `user_role_id`,
  1 AS `username`,
  1 AS `role`*/;

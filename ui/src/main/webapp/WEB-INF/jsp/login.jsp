@@ -8,22 +8,16 @@
 <head>
 <link href="<c:url value="css/app.css" />" rel="stylesheet"
 	type="text/css">
-<title>Spring Security Example</title>
+<title>Quickbucks: Login</title>
 </head>
 <body class="security-app">
-	<div class="details">
-		<h2>Spring Security - JDBC Authentication</h2>
-		<a href="http://www.programming-free.com/2015/09/spring-security-jdbc-authentication.html" class="button green small">Tutorial</a> 
-		<a href="https://github.com/priyadb/SpringSecurityJdbcApp/archive/master.zip"
-			class="button red small">Download</a>
-	</div>
 
 	<form action="/login" method="post">
 
 		<div class="lc-block">
 			<div>
 				<input type="text" class="style-4" name="username"
-					placeholder="User Name" />
+					placeholder="Email Address" />
 			</div>
 			<div>
 				<input type="password" class="style-4" name="password"
