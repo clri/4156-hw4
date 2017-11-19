@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.ui.ModelMap;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import quickbucks.User;
 import quickbucks.UserRepository;
@@ -336,6 +339,8 @@ public class MainController {
 		return "createReview";
 	}
 
+	@Autowired
+        public JavaMailSender emailSender;
 
 	@GetMapping(path="/demo/review") // Map ONLY GET Requests
 	public String addNewReview (@RequestParam String id,
@@ -371,6 +376,19 @@ public class MainController {
 		} catch(Exception ee) {
 			//redirect to could_not_save
 		}
+		//send email here
+		try {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(userRepository.findEmailById(j.getUser()));
+			//add rating somewhere here, maybe a link to view the review
+			message.setSubject("Review posted for job " + j.getId().toString());
+			message.setText(reviewBody);
+
+			emailSender.send(message);
+		} catch (MailException exception) {
+			exception.printStackTrace();
+		}
+
 		return "redirect:/requestSuccess.html"; //@TODO: new success page
 	}
 

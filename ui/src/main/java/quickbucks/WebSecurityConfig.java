@@ -33,6 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          .antMatchers("/demo/**").access("hasRole('ROLE_USER')")
          .antMatchers("/homePageLoggedIn**").access("hasRole('ROLE_USER')")
          .antMatchers("/post**").access("hasRole('ROLE_USER')")
+         .antMatchers("/create**").access("hasRole('ROLE_USER')")
          .antMatchers("/Post**").access("hasRole('ROLE_USER')")
          .antMatchers("/*Job*").access("hasRole('ROLE_USER')")
          .antMatchers("/*job*").access("hasRole('ROLE_USER')")

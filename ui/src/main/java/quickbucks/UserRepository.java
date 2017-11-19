@@ -12,10 +12,11 @@ import quickbucks.User;
 // CRUD refers Create, Read, Update, Delete
 
 public interface UserRepository extends CrudRepository<User, Long> {
-	
+
 	@Query(value = "select u.id from User u where u.user_email = :email", nativeQuery = true)
 	Integer findIDByEmail(@Param("email") String email);
-	
-	
+
+	@Query(value = "select u.user_email from User u where u.id = :id", nativeQuery = true)
+	String findEmailById(@Param("id") Integer id);
 
 }
