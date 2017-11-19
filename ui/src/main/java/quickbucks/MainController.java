@@ -109,8 +109,7 @@ public class MainController {
 			try {
 				userRepository.save(n);
 			} catch (Exception ee) {
-				return "could_not_save";
-				//return "redirect:/index3.html";
+				return genericError();
 			}
 			return "redirect:/index2.html";
 		}
@@ -147,7 +146,7 @@ public class MainController {
 		try {
 			uid = userRepository.findIDByEmail(user.getUsername());
 		} catch(Exception ee) {
-			return "wrong_user";
+			return genericError();
 		}
 
 		j.setUser(uid);
@@ -164,7 +163,11 @@ public class MainController {
 		//j.setStatus(0); //jobs are created as 'open'
 
 		//set tags, date
-		jobRepository.save(j);
+		try {
+			jobRepository.save(j);
+		} catch(Exception ee) {
+			return genericError();
+		}
 		return "redirect:/homepageloggedin.html";
 	}
 
@@ -273,7 +276,7 @@ public class MainController {
 		try {
 			j = jobRepository.findJobByID(id);
 		} catch (Exception e) {
-			//reidrect to something else here since it is fail case
+			return genericError();
 		}
 		Request r = new Request();
 		org.springframework.security.core.userdetails.User user
@@ -292,7 +295,11 @@ public class MainController {
 		r.setJob(j.getId());
 		r.setMsg("");
 
-		requestRepository.save(r);
+		try {
+			requestRepository.save(r);
+		} catch (Exception ee) {
+			return genericError();
+		}
 		return "redirect:/requestSuccess.html";
 	}
 
@@ -352,7 +359,7 @@ public class MainController {
 		try {
 			j = jobRepository.findJobByID(id);
 		} catch (Exception e) {
-			//reidrect to something else here since it is fail case
+			return genericError();
 		}
 		Review r = new Review();
 		org.springframework.security.core.userdetails.User user
@@ -374,16 +381,16 @@ public class MainController {
 		try {
 			reviewRepository.save(r);
 		} catch(Exception ee) {
-			//redirect to could_not_save
+			return genericError();
 		}
 		//send email here
 		try {
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setTo(userRepository.findEmailById(j.getUser()));
-			//add rating somewhere here, maybe a link to view the review
-			message.setSubject("Review posted for job " + j.getId().toString());
-			message.setText(reviewBody);
-
+			message.setSubject("Review posted for job " +
+				j.getId().toString() + " on Quickbucks");
+			message.setText("Rating: " + rating + "\n\n\n" +
+				+ reviewBody);
 			emailSender.send(message);
 		} catch (MailException exception) {
 			exception.printStackTrace();
