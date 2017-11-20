@@ -492,6 +492,57 @@ public class MainController {
 		return "redirect:/savedreset.html";
 	}
 
+	@GetMapping(path="/demo/contact")
+	public String contactStepOne (ModelMap model, @RequestParam String id)
+	{
+		//needs model map where you can embed the job ID
+		//and send a message
+		model.addAttribute("id",id);
+		return "composeMessage";
+	}
+
+	@GetMapping(path="/demo/sendcontact")
+	public String contactPoster (@RequestParam String id,
+		@RequestParam String msg)
+	{
+		Job j = new Job();
+		try {
+			j = jobRepository.findJobByID(id);
+		} catch(Exception e) {
+			return genericError();
+		}
+	 	if(j ==null)
+			return genericError();
+
+		String empl = "";
+		try {
+			empl = userRepository.findEmailById(j.getUser());
+		} catch(Exception ee) {
+			return genericError(); //null job user
+		}
+
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = user.getUsername();
+
+		String msgbody = "Hi from Quickbucks!\n\nYou've received a new inquiry about your job " +
+			id.toString() + " from a potential employee (" + username +
+			"). Their message:\n" + msg + "\n\nLove,\nQuickbucks";
+
+		try {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(empl);
+			message.setSubject("Contact from potential employee on Quickbucks");
+			message.setText(msgbody);
+			emailSender.send(message);
+		} catch (MailException exception) {
+			exception.printStackTrace();
+			return genericError();
+		}
+
+		return "redirect:/sent.html";
+	}
+
 	@GetMapping(path="/error")
 	public String genericError() {
 		return "redirect:/generic-error.html";
