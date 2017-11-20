@@ -14,5 +14,5 @@ import quickbucks.Review;
 public interface ReviewRepository extends CrudRepository<Review, Long> {
 
         @Query(value = "select * from Review r where r.employee = :id", nativeQuery = true)
-        List<Review> lookupReviewByUserID(@Param("id") String id);
+        List<Review> lookupReviewByUserID(@Param("id") Integer id);
 }

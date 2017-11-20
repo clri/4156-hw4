@@ -21,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import java.util.UUID;
 
 import quickbucks.User;
 import quickbucks.UserRepository;
@@ -389,7 +390,7 @@ public class MainController {
 			message.setTo(userRepository.findEmailById(j.getUser()));
 			message.setSubject("Review posted for job " +
 				j.getId().toString() + " on Quickbucks");
-			message.setText("Rating: " + rating + "\n\n\n" +
+			message.setText("Rating: " + rating + "\n\n\n"
 				+ reviewBody);
 			emailSender.send(message);
 		} catch (MailException exception) {
@@ -397,6 +398,51 @@ public class MainController {
 		}
 
 		return "redirect:/requestSuccess.html"; //@TODO: new success page
+	}
+
+	@Autowired
+	private ResetTokenRepository resetTokenRepository;
+
+	@GetMapping(path="/sendForgotEmail")
+	public String sendForgotEmail (@RequestParam String email)
+	{
+		try {
+			int uid = userRepository.findIDByEmail(email);
+		} catch (Exception e) {
+			//fail case: not in the respository
+			//@TODO: send them to page that asks them if they want
+			//to register
+			return genericError();
+		}
+		//generate token\
+		String token = UUID.randomUUID().toString();
+		ResetToken rt = new ResetToken();
+		rt.setToken(token);
+		rt.setUserEmail(email);
+		try {
+			resetTokenRepository.save(rt);
+		} catch (Exception ee) {
+			return genericError();
+		}
+
+		try {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(email);
+			message.setSubject("Reset password code from Quickbucks");
+			message.setText(token);
+			emailSender.send(message);
+		} catch (MailException exception) {
+			exception.printStackTrace();
+		}
+
+		return "redirect:/inputToken.html";
+
+	}
+
+	@GetMapping(path="/checkReset")
+	public String checkReset (ModelMap model, @RequestParam String email)
+	{
+		return genericError(); //not implemented yet
 	}
 
 	@GetMapping(path="/error")
