@@ -11,6 +11,10 @@
 <title>Quickbucks: Login</title>
 </head>
 <body class="security-app">
+	<div class="details">
+		<a href="forgot.html"
+			class="button red small">Forgot Password?</a>
+	</div>
 
 	<form action="/login" method="post">
 

@@ -440,9 +440,56 @@ public class MainController {
 	}
 
 	@GetMapping(path="/checkReset")
-	public String checkReset (ModelMap model, @RequestParam String email)
+	public String checkReset (ModelMap model, @RequestParam String email,
+		@RequestParam String token)
 	{
-		return genericError(); //not implemented yet
+		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);
+		if (rt == null) {
+			return genericError();
+		}
+
+		model.addAttribute("email", email);
+		model.addAttribute("token", token);
+
+		return "doReset";
+	}
+
+	@GetMapping(path="/demo/reset")
+	public String doReset (@RequestParam String email, @RequestParam String
+		token, @RequestParam String password)
+	{
+		if (!(validateInputStrings(2,password))) {
+			return genericError(); //need a better error...
+			//probably something like doReset but with a
+			//"your password must be xyz"
+		}
+		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);
+		if (rt == null) {
+			return genericError();
+		}
+
+		resetTokenRepository.delete(rt);
+
+		User u = new User();
+		try {
+			u = userRepository.findUserByEmail(email);
+		} catch (Exception ee) {
+			return genericError();
+		}
+		if (u == null) {
+			return genericError();
+		}
+		BCryptPasswordEncoder passwordEncoder = new
+			BCryptPasswordEncoder();
+		String hashedPassword = passwordEncoder.encode(password);
+		u.setUserPassword(hashedPassword);
+
+		try {
+			userRepository.save(u);
+		} catch(Exception eee) {
+			return genericError();
+		}
+		return "redirect:/savedreset.html";
 	}
 
 	@GetMapping(path="/error")
