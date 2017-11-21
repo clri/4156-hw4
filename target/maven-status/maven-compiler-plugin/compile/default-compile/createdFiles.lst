@@ -1,0 +1,17 @@
+quickbucks/JobRepository.class
+quickbucks/MvcConfig.class
+quickbucks/ReviewRepository.class
+quickbucks/Job.class
+quickbucks/Application.class
+quickbucks/AuthenticationProviderConfig.class
+quickbucks/User.class
+quickbucks/Review.class
+quickbucks/CleanStringAdvice.class
+quickbucks/UserRepository.class
+quickbucks/CleanStringAdvice$StringCleaner.class
+quickbucks/Request.class
+quickbucks/MainController.class
+quickbucks/RequestRepository.class
+quickbucks/ResetTokenRepository.class
+quickbucks/WebSecurityConfig.class
+quickbucks/ResetToken.class
