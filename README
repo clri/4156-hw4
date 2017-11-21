@@ -1,14 +1,13 @@
 README
-CodeHolic: Caroline Roig-Irwin/Jeongmin Oh
+CodeHolic
 
 
-Project taken from base source [3], slightly edited to add a couple of front-end
-html pages. 
 
 REQUIREMENTS:
 maven--10.11.6 or later
 mysql--5.7 or later
-spring--will be automatically downloaded thru maven
+jdk--6.0 or later
+spring--will be automatically downloaded through maven
 
 HOW TO RUN:
 1. Change the line "spring.jpa.hibernate.ddl-auto=none" to "spring.jpa.hibernate.ddl-auto=create" in ui/src/main/resources/application.properties
@@ -17,14 +16,39 @@ HOW TO RUN:
 4. Once the server has started successfully, kill it (you may also run test.sh to test initial functionality; this will insert 2 rows into the DB--it should hand back two instances of the index2.html).
 5. Your table should be inside the database db_example. Use MySQL to execute post-create.sql
 6. Revert the line in application.properties to none instead of create (this is important so that the data does not get dropped and recreated).
+<<<<<<< HEAD
 7. run "./mvnw spring-boot:run" and go to localhost:8080 in the browser; now you can input a name and email into the form and add items to your database as well as viewing it as JSON.
 7.5 PLEASE NOTE: YOU MAY BE ASKED FOR A USERNAME AND PASSWORD IN THE BROWSER. USERNAME IS user AND PASSWORD IS password.
+=======
+7. run "./mvnw spring-boot:run" and go to localhost:8090 in the browser; now you can input a name and email into the form and add items to your database as well as viewing it as JSON.
+>>>>>>> demo
 8. The second test file, test2.sh, will first show what is in the database (demonstrating persistent storage of the first test case which has been added before the server was killed), returning a JSON representation of what's in the database, then add two more (both of which should return index2.html) and show the updated database once more.
 
 WORKS CITED
 
 1. https://stackoverflow.com/questions/42115370/how-to-pass-html-input-values-into-database-from-form-springboot
-2.https://stackoverflow.com/questions/9311940/redirect-to-dynamic-url-in-spring-mvc
+2. https://stackoverflow.com/questions/9311940/redirect-to-dynamic-url-in-spring-mvc
 3. https://spring.io/guides/gs/accessing-data-mysql/
 4. https://spring.io/guides/gs/serving-web-content/
 5. https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
+<<<<<<< HEAD
+=======
+6. https://www.mkyong.com/spring-security/spring-security-hello-world-example/
+7. https://www.mkyong.com/spring-security/spring-security-password-hashing-example/
+8. http://scrumbucket.org/sanitize-your-spring-mvc-controller/
+9. http://www.mkyong.com/spring-security/spring-security-form-login-using-database/
+10. https://dzone.com/articles/spring-security-4-authenticate-and-authorize-users
+11. http://www.programming-free.com/2015/09/spring-security-password-encryption.html
+12. https://stackoverflow.com/questions/30819337/multiple-antmatchers-in-spring-security
+13. https://stackoverflow.com/questions/45733193/how-to-get-id-of-currently-logged-in-user-using-spring-security-and-thymeleaf
+14. https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-introduction-to-query-methods/
+15. https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-creating-database-queries-with-the-query-annotation/
+16. https://www.tutorialspoint.com/spring/spring_page_redirection_example.htm
+17. http://websystique.com/spring-security/spring-security-4-logout-example/
+18. https://stackoverflow.com/questions/360520/unit-testing-with-spring-security
+19. https://dzone.com/articles/junit-testing-spring-mvc-1
+20. https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html
+21. https://github.com/eugenp/tutorials/blob/master/spring-mvc-email/src/main/java/com/baeldung/spring/mail/EmailServiceImpl.java
+22. https://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string
+23. http://www.baeldung.com/spring-security-registration-i-forgot-my-password
+>>>>>>> demo
