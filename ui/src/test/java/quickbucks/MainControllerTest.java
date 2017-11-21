@@ -37,6 +37,7 @@ import quickbucks.User;
 //@WebAppConfiguration
 public class MainControllerTest {
         //@Autowired
+
         private MainController mainController;
 
         @Autowired
@@ -60,7 +61,7 @@ public class MainControllerTest {
         }
 
         //REGISTRATION
-
+        /*
         //test to pass
         //first name capitalized
         @Test
@@ -413,7 +414,7 @@ public class MainControllerTest {
                         "job", "a job",
                         "");
                 assertEquals(view,"redirect:/index3.html");
-        }
+        }*/
 
         //job by ID: should return this view. only test to pass
         @Test

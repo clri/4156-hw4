@@ -495,8 +495,6 @@ public class MainController {
 	@GetMapping(path="/demo/contact")
 	public String contactStepOne (ModelMap model, @RequestParam String id)
 	{
-		//needs model map where you can embed the job ID
-		//and send a message
 		model.addAttribute("id",id);
 		return "composeMessage";
 	}
