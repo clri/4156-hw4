@@ -614,7 +614,7 @@ public class MainController {
 			String empl = userRepository.findEmailById(r.getEmployee());
 			String msgbody = "Hello!\nUser " + uid + " has accepted"
 				+ "your request for job " + jid + ": "
-				+ j.getTitle() + "\n\nCongrats!\n\nLove,\n"
+				+ j.getJobtitle() + "\n\nCongrats!\n\nLove,\n"
 				+ "Quickbucks";
 			//send an email to the user who has been accepted.
 			try {
