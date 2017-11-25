@@ -19,6 +19,13 @@ create table Reset_Token (
         constraint unique(user_email)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+alter table request
+add column employer_read boolean,
+add column employee_read boolean,
+add column request_time datetime,
+add column decision_time datetime,
+add column decision int(1);
+
 use db_test;
 DROP TABLE IF EXISTS `review`;
 CREATE TABLE `review` (
@@ -39,3 +46,10 @@ create table Reset_Token (
         PRIMARY KEY (`id`),
         constraint unique(user_email)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+alter table request
+add column employer_read boolean,
+add column employee_read boolean,
+add column request_time datetime,
+add column decision_time datetime,
+add column decision int(1);
