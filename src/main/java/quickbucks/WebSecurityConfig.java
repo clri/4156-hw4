@@ -39,6 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          .antMatchers("/Post**").access("hasRole('ROLE_USER')")
          .antMatchers("/*Job*").access("hasRole('ROLE_USER')")
          .antMatchers("/*job*").access("hasRole('ROLE_USER')")
+         .antMatchers("/notif*").access("hasRole('ROLE_USER')")
          .antMatchers("/search*").access("hasRole('ROLE_USER')")
          .anyRequest().permitAll()
          .and()

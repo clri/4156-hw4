@@ -541,6 +541,22 @@ public class MainController {
 		return "redirect:/sent.html";
 	}
 
+	@GetMapping(path="/notifications")
+	public String displayNotifications(ModelMap model) {
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = user.getUsername();
+		int uid = userRepository.findIDByEmail(username);
+
+		List<Request> notifs = requestRepository.getNotifsByUserID(uid);
+
+		model.addAttribute("notifs", notifs);
+		model.addAttribute("user", uid);
+
+		return "notifs";
+		//return genericError(); //not implemented
+	}
+
 	@GetMapping(path="/error")
 	public String genericError() {
 		return "redirect:/generic-error.html";
