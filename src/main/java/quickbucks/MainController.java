@@ -492,6 +492,16 @@ public class MainController {
 		return "redirect:/savedreset.html";
 	}
 
+	public void sendEmailToUser(String e, String subj, String body)
+		throws MailException
+	{
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(e);
+		message.setSubject(subj);
+		message.setText(body);
+		emailSender.send(message);
+	}
+
 	@GetMapping(path="/demo/contact")
 	public String contactStepOne (ModelMap model, @RequestParam String id)
 	{
@@ -528,11 +538,9 @@ public class MainController {
 			"). Their message:\n" + msg + "\n\nLove,\nQuickbucks";
 
 		try {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(empl);
-			message.setSubject("Contact from potential employee on Quickbucks");
-			message.setText(msgbody);
-			emailSender.send(message);
+			sendEmailToUser(empl,
+				"Contact from potential employee on Quickbucks",
+				msgbody);
 		} catch (MailException exception) {
 			exception.printStackTrace();
 			return genericError();
@@ -551,10 +559,80 @@ public class MainController {
 		List<Request> notifs = requestRepository.getNotifsByUserID(uid);
 
 		model.addAttribute("notifs", notifs);
-		model.addAttribute("user", uid);
+		model.addAttribute("userr", uid);
 
 		return "notifs";
 		//return genericError(); //not implemented
+	}
+
+	@GetMapping(path="/decide")
+	public String makeDecision(ModelMap model, @RequestParam Integer id,
+		@RequestParam Integer decision) {
+		//error cases: decision not 1 or 2, job already decided, job
+		//not yours to decide (you are not employer), request does not
+		//exist
+		if (decision != 1 && decision != 2)
+			return genericError();
+
+		Request r = new Request();
+		try {
+			r = requestRepository.findRequestByID(id);
+		} catch(Exception e) {
+			return genericError();
+		}
+		if (r == null)
+			return genericError();
+		int jid = r.getJob();
+
+		Job j = new Job();
+		try {
+			j = jobRepository.findJobByID(jid + "");
+		} catch(Exception ee) {
+			return genericError();
+		}
+		if (j == null)
+			return genericError();
+
+		org.springframework.security.core.userdetails.User meUser
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = meUser.getUsername();
+		int uid = userRepository.findIDByEmail(username);
+
+		if (r.getEmployer() != uid)
+			return "redirect:/403.html"; //unauthorized
+		if (r.getDecision() != 0)
+			return genericError(); //job has been decided!
+		//ok, here we are authorized; job has not been decided;
+		//we have a valid decision to make.
+		r.decide(decision);
+		try {
+			requestRepository.save(r);
+		} catch (Exception eee) {
+			return genericError();
+		}
+		if (decision == 1) {
+			String empl = userRepository.findEmailById(r.getEmployee());
+			String msgbody = "Hello!\nUser " + uid + " has accepted"
+				+ "your request for job " + jid + ": "
+				+ j.getTitle() + "\n\nCongrats!\n\nLove,\n"
+				+ "Quickbucks";
+			//send an email to the user who has been accepted.
+			try {
+				sendEmailToUser(empl,
+					"Quickbucks: Your Job Request",
+					msgbody);
+			} catch (MailException exception) {
+				exception.printStackTrace();
+				return genericError();
+			}
+			//then formally reject everyone else
+			requestRepository.blanketReject(jid, id);
+		}
+
+		List<Request> notifs = requestRepository.getNotifsByUserID(uid);
+		model.addAttribute("notifs", notifs);
+		model.addAttribute("userr", uid);
+		return "notifs";
 	}
 
 	@GetMapping(path="/error")

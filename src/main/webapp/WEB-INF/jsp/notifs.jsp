@@ -7,7 +7,7 @@
 <html>
     <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Search Job</title>
+    <title>Notifications</title>
     </head>
     <body>
     <header>
@@ -23,26 +23,26 @@
 
          <table>
 
-        <c:forEach items="${results}" var="req">
+        <c:forEach items="${notifs}" var="req">
 
             <tr>
                 <td><c:out value="${req.id}" /></td>
                 <td>
-                        <c:when test="${req.employee == user}">
+                        <c:if test="${req.employee == userr}">
                                 <c:out value="${req.employer}" />
-                        </c:when>
-                        <c:otherwise>
+                        </c:if>
+                        <c:if test="${req.employee != userr}">
                                 <c:out value="${req.employee}" />
-                        </c:otherwise>
+                        </c:if>
                 </td>
-                <td>
-                        <c:when test="${req.employee == user}">
+                <td><c:choose>
+                        <c:when test="${req.employee == userr}">
                                 Has decided
                         </c:when>
                         <c:otherwise>
                                 Has requested
                         </c:otherwise>
-                </td>
+                </c:choose></td>
                 <td>
                         <c:out value="${req.job}" />
                 </td>
@@ -57,9 +57,28 @@
                                 <c:otherwise>
                                         Requested
                                 </c:otherwise>
-                        <c:out value="${req.status}" />
                         </c:choose>
                 </td>
+                <td> <c:choose>
+                        <c:when test="${req.employee == userr}">
+                                <p style="display:none;">x</p>
+                        </c:when>
+                        <c:otherwise>
+                                <a href = "decide?id=${req.id}&decision=1">
+                                        Accept
+                                </a>
+                        </c:otherwise>
+                </c:choose> </td>
+                <td> <c:choose>
+                        <c:when test="${req.employee == userr}">
+                                <p style="display:none;">x</p>
+                        </c:when>
+                        <c:otherwise>
+                                <a href = "decide?id=${req.id}&decision=2">
+                                        Reject
+                                </a>
+                        </c:otherwise>
+                </c:choose></td>
 
             </tr>
         </c:forEach>
@@ -68,7 +87,7 @@
 
 
         <center>
-        <a href="../../../searchJobs.html">Back</a>
+        <a href="homePageLoggedIn.html">Home</a>
         </center>
 
     </section>

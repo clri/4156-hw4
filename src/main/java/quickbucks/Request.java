@@ -42,6 +42,7 @@ public class Request {
                 this.decision = decision;
                 this.decisionTime = new Date();
                 this.employeeRead = false;
+                this.employerRead = true;
                 return true;
         }
 
@@ -84,6 +85,12 @@ public class Request {
 		this.msg = msg;
 	}
 
+        public void setEmployerRead(Boolean employerRead) {
+                this.employerRead = employerRead;
+        }
+        public void setEmployeeRead(Boolean employeeRead) {
+                this.employeeRead = employeeRead;
+        }
         public Boolean getEmployerRead() {
                 return employerRead;
         }
