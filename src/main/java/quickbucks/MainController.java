@@ -61,11 +61,22 @@ public class MainController {
 		return ans;
 	}
 
+	public String sanitizeString(String input)
+	{
+		String ans = input.replaceAll(";","");
+		ans = ans.replaceAll("--","");
+		return ans;
+	}
+
 	public void setReposotories(UserRepository u, JobRepository j,
-		RequestRepository r) {
+		RequestRepository r, ReviewRepository re,
+		ResetTokenRepository rt)
+	{
 			userRepository = u;
 			jobRepository = j;
 			requestRepository = r;
+			reviewRepository = re;
+			resetTokenRepository = rt;
 	}
 
 
@@ -91,6 +102,14 @@ public class MainController {
 			validateInputStrings(4,location) &&
 			validateInputStrings(0,school)))
 			return "redirect:/index3.html";
+
+		firstName = sanitizeString(firstName);
+		lastName = sanitizeString(lastName);
+		email = sanitizeString(email);
+		password = sanitizeString(password);
+		degree = sanitizeString(degree);
+		location = sanitizeString(location);
+		school = sanitizeString(school);
 
 		try {
 			int uid = userRepository.findIDByEmail(email);
@@ -139,6 +158,10 @@ public class MainController {
 			!validateInputStrings(5, jobdesc) ||
 			!validateInputStrings(5, category))
 			return "redirect:/index3.html"; //change to better error page
+
+		jobtitle = sanitizeString(jobtitle);
+		jobdesc = sanitizeString(jobdesc);
+		category = sanitizeString(category);
 
 		int uid = -1;
 		Job j = new Job();
@@ -190,6 +213,9 @@ public class MainController {
 	public String searchJobs(ModelMap model, @RequestParam String keywords
 			,@RequestParam String category)
 	{
+		keywords = sanitizeString(keywords);
+		category = sanitizeString(category);
+
 		List results = new ArrayList();
 
 		if(keywords.equals("") && category.equals("")){
@@ -249,6 +275,8 @@ public class MainController {
    	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
    	public String viewJob(ModelMap model, @RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 	 	Job j = jobRepository.findJobByID(id);
 	 	if(j ==null){
 			model.addAttribute("jobID", id);
@@ -273,6 +301,8 @@ public class MainController {
 	@GetMapping(path="/demo/request") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 		Job j = new Job();
 		try {
 			j = jobRepository.findJobByID(id);
@@ -331,6 +361,8 @@ public class MainController {
 	@RequestMapping(value = "/createAReview", method = RequestMethod.GET)
    	public String createReview(ModelMap model, @RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 	 	Job j = jobRepository.findJobByID(id);
 	 	if(j ==null){
 			model.addAttribute("jobID", id);
@@ -351,11 +383,20 @@ public class MainController {
         public JavaMailSender emailSender;
 
 	@GetMapping(path="/demo/review") // Map ONLY GET Requests
-	public String addNewReview (@RequestParam String id,
+	public String addNewReview (ModelMap model, @RequestParam String id,
 		@RequestParam String rating, @RequestParam String reviewBody)
 	{
-		//@TODO: make sure given user is authorized to write a review
-		//AKA they were the accepted user for a job
+		id = sanitizeString(id);
+	 	rating = sanitizeString(rating);
+		reviewBody = sanitizeString(reviewBody);
+		double rat = 0.0;
+
+		try {
+			rat = Double.parseDouble(rating);
+		} catch (Exception eee) {
+			return createReview(model, id); //invalid input
+		}
+
 		Job j = new Job();
 		try {
 			j = jobRepository.findJobByID(id);
@@ -371,13 +412,14 @@ public class MainController {
 		Review for this job has already been posted
 		Cannot parse double for rating.
 		reviewBody is too long
+		you were not the person who was accepted for the job
 		*/
 
 		r.setEmployee(uid);
 		r.setEmployer(j.getUser());
 		r.setJob(j.getId());
 		r.setReviewBody(reviewBody);
-		r.setRating(0.0);
+		r.setRating(rat);
 
 		try {
 			reviewRepository.save(r);
@@ -406,6 +448,8 @@ public class MainController {
 	@GetMapping(path="/sendForgotEmail")
 	public String sendForgotEmail (@RequestParam String email)
 	{
+		email = sanitizeString(email);
+
 		try {
 			int uid = userRepository.findIDByEmail(email);
 		} catch (Exception e) {
@@ -443,6 +487,9 @@ public class MainController {
 	public String checkReset (ModelMap model, @RequestParam String email,
 		@RequestParam String token)
 	{
+		email = sanitizeString(email);
+	 	token = sanitizeString(token);
+
 		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);
 		if (rt == null) {
 			return genericError();
@@ -458,6 +505,10 @@ public class MainController {
 	public String doReset (@RequestParam String email, @RequestParam String
 		token, @RequestParam String password)
 	{
+		email = sanitizeString(email);
+	 	token = sanitizeString(token);
+		password = sanitizeString(password);
+
 		if (!(validateInputStrings(2,password))) {
 			return genericError(); //need a better error...
 			//probably something like doReset but with a
@@ -505,6 +556,8 @@ public class MainController {
 	@GetMapping(path="/demo/contact")
 	public String contactStepOne (ModelMap model, @RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 		model.addAttribute("id",id);
 		return "composeMessage";
 	}
@@ -513,6 +566,9 @@ public class MainController {
 	public String contactPoster (@RequestParam String id,
 		@RequestParam String msg)
 	{
+	 	id = sanitizeString(id);
+		msg = sanitizeString(msg);
+
 		Job j = new Job();
 		try {
 			j = jobRepository.findJobByID(id);
@@ -568,6 +624,7 @@ public class MainController {
 	@GetMapping(path="/decide")
 	public String makeDecision(ModelMap model, @RequestParam Integer id,
 		@RequestParam Integer decision) {
+
 		//error cases: decision not 1 or 2, job already decided, job
 		//not yours to decide (you are not employer), request does not
 		//exist
