@@ -692,7 +692,6 @@ public class MainController {
 		return "notifs";
 	}
 
-	@GetMapping(path="/error")
 	public String genericError() {
 		return "redirect:/generic-error.html";
 	}
