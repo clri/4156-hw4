@@ -552,7 +552,7 @@ public class MainController {
 		return "redirect:/savedreset.html";
 	}
 
-	public void sendEmailToUser(String e, String subj, String body)
+	private void sendEmailToUser(String e, String subj, String body)
 		throws MailException
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
