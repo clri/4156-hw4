@@ -15,25 +15,14 @@
             <br>
     </header>
 
-    <section id="ReviewPosting" >
-    <h2 style="text-align:center;">Job ID: ${jobID}</h2>
+    <section id="JobPosting" >
+    <h2 style="text-align:center;">Job ID: ${jobID} Not Found</h2>
 
-        <p>Job Title: ${title} </p>
-        <p>Tags: ${tags} </p>
-        <p>Description: ${desc} </p>
-        <p> ${errmsg} </p>
+
 
         <center>
-        <form id="review"   action="/demo/review" style = "margin: 20px 15px 0 0;float:none;">
-        <input type="text" name="id" value=${jobID} readonly><br>
-        <p>
-                <label for="rating">Rating</label><input type="text" id="rating" name="rating" value=""><br>
-        </p><p>
-                <label for="reviewBody">Review</label><input type="text" id="reviewBody" name="reviewBody" value=""><br>
-        </p>
-                <input type="submit" value="review">
-        </form>
-        <a href="../../../homepage.html">Home</a>
+
+        <a href="../../../searchJobs.html">Search Jobs</a>
         </center>
 
     </section>

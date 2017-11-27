@@ -26,26 +26,25 @@
         <c:forEach items="${notifs}" var="req">
 
             <tr>
-                <td><c:out value="${req.id}" /></td>
+                <td>
+                        <c:out value="Job ${req.job}:" />
+                </td>
                 <td>
                         <c:if test="${req.employee == userr}">
-                                <c:out value="${req.employer}" />
+                                <c:out value="User ${req.employer}" />
                         </c:if>
                         <c:if test="${req.employee != userr}">
-                                <c:out value="${req.employee}" />
+                                <c:out value="User ${req.employee}" />
                         </c:if>
                 </td>
                 <td><c:choose>
                         <c:when test="${req.employee == userr}">
-                                Has decided
+                                has decided!
                         </c:when>
                         <c:otherwise>
-                                Has requested
+                                has requested!
                         </c:otherwise>
                 </c:choose></td>
-                <td>
-                        <c:out value="${req.job}" />
-                </td>
                 <td>
                         <c:choose>
                                 <c:when test="${req.decision == 1}">
@@ -61,24 +60,17 @@
                 </td>
                 <td> <c:choose>
                         <c:when test="${req.employee == userr}">
-                                <p style="display:none;">x</p>
+                                <a href = "read?id=${req.id}">Dismiss</a>
                         </c:when>
                         <c:otherwise>
                                 <a href = "decide?id=${req.id}&decision=1">
                                         Accept
                                 </a>
-                        </c:otherwise>
-                </c:choose> </td>
-                <td> <c:choose>
-                        <c:when test="${req.employee == userr}">
-                                <p style="display:none;">x</p>
-                        </c:when>
-                        <c:otherwise>
                                 <a href = "decide?id=${req.id}&decision=2">
                                         Reject
                                 </a>
                         </c:otherwise>
-                </c:choose></td>
+                </c:choose> </td>
 
             </tr>
         </c:forEach>

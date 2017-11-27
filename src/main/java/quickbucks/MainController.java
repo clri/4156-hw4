@@ -307,7 +307,7 @@ public class MainController {
 		try {
 			j = jobRepository.findJobByID(id);
 		} catch (Exception e) {
-			return genericError();
+			return "redirect:/searchJobsRF.html";
 		}
 		Request r = new Request();
 		org.springframework.security.core.userdetails.User user
@@ -315,10 +315,10 @@ public class MainController {
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
 		/*FAIL CASES:
-		requesting your own job.
+		requesting your own job. Should bounce you back to the search
+		page with a message*/
 		if (j.getUser() == uid)
-			return "redirect:/requestFail.html";
-		*/
+			return "redirect:/searchJobsRF.html";
 
 		r.setEmployee(uid);
 		r.setTitle(j.getJobtitle());
@@ -357,26 +357,29 @@ public class MainController {
 
 	@Autowired
 	private ReviewRepository reviewRepository;
-
-	@RequestMapping(value = "/createAReview", method = RequestMethod.GET)
-   	public String createReview(ModelMap model, @RequestParam String id)
+	public String createReview(ModelMap model, @RequestParam String id)
 	{
 		id = sanitizeString(id);
 
 	 	Job j = jobRepository.findJobByID(id);
 	 	if(j ==null){
 			model.addAttribute("jobID", id);
-			return "viewJobError"; //@TODO: separate error
+			return "reviewJobError";
 	 	}
-	 	else{
-			model.addAttribute("jobID", j.getId());
-			model.addAttribute("title", j.getJobtitle());
-			model.addAttribute("desc", j. getJobdesc());
-			model.addAttribute("tags", j.getCategory());
-	   	}
-		//model.addAttribute("title", j.getJobTitle());
+
+		model.addAttribute("jobID", j.getId());
+		model.addAttribute("title", j.getJobtitle());
+		model.addAttribute("desc", j. getJobdesc());
+		model.addAttribute("tags", j.getCategory());
 
 		return "createReview";
+	}
+
+	@RequestMapping(value = "/createAReview", method = RequestMethod.GET)
+	public String doReview(ModelMap model, @RequestParam String id)
+	{
+		model.addAttribute("errmsg",""); //clean page, no error message
+		return createReview(model, id);
 	}
 
 	@Autowired
@@ -391,11 +394,18 @@ public class MainController {
 		reviewBody = sanitizeString(reviewBody);
 		double rat = 0.0;
 
+		if (reviewBody.length() > 1500 || reviewBody.length() < 10) {
+			model.addAttribute("errmsg", "review must be between 10 and 100 characters");
+			return createReview(model, id); //invalid input
+		}
+
 		try {
 			rat = Double.parseDouble(rating);
 		} catch (Exception eee) {
+			model.addAttribute("errmsg", "rating must be numerical out of five");
 			return createReview(model, id); //invalid input
 		}
+		model.addAttribute("errmsg","");
 
 		Job j = new Job();
 		try {
@@ -426,7 +436,7 @@ public class MainController {
 		} catch(Exception ee) {
 			return genericError();
 		}
-		//send email here
+
 		try {
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setTo(userRepository.findEmailById(j.getUser()));
@@ -454,12 +464,11 @@ public class MainController {
 			int uid = userRepository.findIDByEmail(email);
 		} catch (Exception e) {
 			//fail case: not in the respository
-			//@TODO: send them to page that asks them if they want
-			//to register
-			return genericError();
+			return "redirect:/notregistered.html";
 		}
 		//generate token\
 		String token = UUID.randomUUID().toString();
+		token = sanitizeString(token); //just in case
 		ResetToken rt = new ResetToken();
 		rt.setToken(token);
 		rt.setUserEmail(email);
@@ -618,12 +627,48 @@ public class MainController {
 		model.addAttribute("userr", uid);
 
 		return "notifs";
-		//return genericError(); //not implemented
+	}
+
+	@GetMapping(path="/read")
+	public String readDecision(ModelMap model, @RequestParam Integer id)
+	{
+		Request r = new Request();
+		try {
+			r = requestRepository.findRequestByID(id);
+		} catch(Exception e) {
+			return genericError();
+		}
+		if (r == null)
+			return genericError();
+		int jid = r.getJob();
+
+		Job j = new Job();
+		try {
+			j = jobRepository.findJobByID(jid + "");
+		} catch(Exception ee) {
+			return genericError();
+		}
+		if (j == null)
+			return genericError();
+
+		org.springframework.security.core.userdetails.User meUser
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = meUser.getUsername();
+		int uid = userRepository.findIDByEmail(username);
+
+		if (r.getEmployee() != uid)
+			return "redirect:/403.html"; //unauthorized
+		r.setEmployeeRead(true);
+		try {
+			requestRepository.save(r);
+		} catch(Exception eee) {} //just won't work; return old notifs page
+		return displayNotifications(model);
 	}
 
 	@GetMapping(path="/decide")
 	public String makeDecision(ModelMap model, @RequestParam Integer id,
-		@RequestParam Integer decision) {
+		@RequestParam Integer decision)
+	{
 
 		//error cases: decision not 1 or 2, job already decided, job
 		//not yours to decide (you are not employer), request does not
