@@ -1,12 +1,7 @@
 version: 0.1
 
-<<<<<<< HEAD
-environmental_variables:
-  palintext:
-=======
 environment_variables:
   plaintext:
->>>>>>> demo
     phase: "alpha"
 
 phases:
