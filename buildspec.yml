@@ -16,9 +16,9 @@ phases:
     commands:
       - echo Build completed on 'date'
       - mvn package
-#artifacts:
-#  type: zip
-#  files:
-#    - target/quickbucks.zip
-#    - appsepc.yml
-#  discard-paths: yes
+artifacts:
+  type: zip
+  files:
+    - target/quickbucks.zip
+    - appsepc.yml
+  discard-paths: yes
