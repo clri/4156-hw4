@@ -13,5 +13,5 @@ phases:
       - mvn package
 artifacts:
   files:
-    - quickbucks.war
+    - target/quickbucks.war
   discard-paths: yes
