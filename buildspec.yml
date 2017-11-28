@@ -19,5 +19,5 @@ phases:
 artifacts:
   files:
     #- target/quickbucks.zip
-    - appsepc.yml
+    #- appsepc.yml
   discard-paths: yes
