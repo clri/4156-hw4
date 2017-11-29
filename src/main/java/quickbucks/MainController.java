@@ -303,7 +303,7 @@ public class MainController {
 			return "redirect:/searchJobsRF.html";
 		Request rr = new Request();
 		try {
-			rr = requestRepository.findRequestByJobAndEmployee(job.getId() + "", uid);
+			rr = requestRepository.findRequestByJobAndEmployee(j.getId() + "", uid);
 		} catch (Exception rex) {
 			return genericError();
 		}
