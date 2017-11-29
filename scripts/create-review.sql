@@ -27,11 +27,12 @@ add column decision_time datetime,
 add column decision int(1);
 
 delimiter $$
+drop trigger if exists req_update $$
 create trigger req_update before update on request
 for each ROW
 BEGIN
         declare noe int;
-        if new.decision = 1 then
+        if new.decision = 1 and old.decision != 1 then
                 select count(*) into noe from request r where r.job = new.job and new.decision = 1;
                 if (noe is not null and noe > 0) then
                         signal sqlstate '12345';
@@ -69,11 +70,12 @@ add column decision_time datetime,
 add column decision int(1);
 
 delimiter $$
+drop trigger if exists req_update $$
 create trigger req_update before update on request
 for each ROW
 BEGIN
         declare noe int;
-        if new.decision = 1 then
+        if new.decision = 1 and old.decision != 1 then
                 select count(*) into noe from request r where r.job = new.job and new.decision = 1;
                 if (noe is not null and noe > 0) then
                         signal sqlstate '12345';

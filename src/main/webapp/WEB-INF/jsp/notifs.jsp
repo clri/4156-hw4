@@ -59,6 +59,10 @@
                         </c:choose>
                 </td>
                 <td> <c:choose>
+                        <c:when test="${req.decision == 1}">
+                                <a href = "createAReview?id=${req.job}">Review</a>
+                                <a href = "read?id=${req.id}">Dismiss</a>
+                        </c:when>
                         <c:when test="${req.employee == userr}">
                                 <a href = "read?id=${req.id}">Dismiss</a>
                         </c:when>
