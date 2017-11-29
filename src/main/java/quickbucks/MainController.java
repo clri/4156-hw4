@@ -290,17 +290,27 @@ public class MainController {
 		} catch (Exception e) {
 			return "redirect:/searchJobsRF.html";
 		}
-		Request r = new Request();
+
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
 		/*FAIL CASES:
 		requesting your own job. Should bounce you back to the search
-		page with a message*/
+		page with a message. also you cannot request something you
+		have already requested.*/
 		if (j.getUser() == uid)
 			return "redirect:/searchJobsRF.html";
+		Request rr = new Request();
+		try {
+			rr = requestRepository.findRequestByJobAndEmployee(job.getId() + "", uid);
+		} catch (Exception rex) {
+			return genericError();
+		}
+		if (rr == null)
+			return "redirect:/searchJobsRF.html";
 
+		Request r = new Request();
 		r.setEmployee(uid);
 		r.setTitle(j.getJobtitle());
 		r.setEmployer(j.getUser());
@@ -427,6 +437,9 @@ public class MainController {
 		} catch (Exception rex) {
 			return genericError();
 		}
+		if (req == null)
+			return genericError(); /*something happened in the db to delete our record*/
+
 		req.setEmployeeRead(true);
 		try {
 			requestRepository.save(req);
