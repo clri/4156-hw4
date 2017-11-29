@@ -26,6 +26,21 @@ add column request_time datetime,
 add column decision_time datetime,
 add column decision int(1);
 
+delimiter $$
+drop trigger if exists req_update $$
+create trigger req_update before update on request
+for each ROW
+BEGIN
+        declare noe int;
+        if new.decision = 1 and old.decision != 1 then
+                select count(*) into noe from request r where r.job = new.job and new.decision = 1;
+                if (noe is not null and noe > 0) then
+                        signal sqlstate '12345';
+                end if;
+        end if;
+end $$
+delimiter ;
+
 use db_test;
 DROP TABLE IF EXISTS `review`;
 CREATE TABLE `review` (
@@ -54,14 +69,17 @@ add column request_time datetime,
 add column decision_time datetime,
 add column decision int(1);
 
-select id, employee, employer, job, msg, title, employer_read, employee_read, request_time, decision_time, decision from
-(select r.*, r.decision_time as ti from Request r
-where r.employee = 1
-and not r.employee_read
-and r.decision > 0
-Union
-select rr.*, rr.request_time as ti from Request rr
-where rr.employer = 1
-and not rr.employer_read
-and rr.decision = 0) R3
-order by ti
+delimiter $$
+drop trigger if exists req_update $$
+create trigger req_update before update on request
+for each ROW
+BEGIN
+        declare noe int;
+        if new.decision = 1 and old.decision != 1 then
+                select count(*) into noe from request r where r.job = new.job and new.decision = 1;
+                if (noe is not null and noe > 0) then
+                        signal sqlstate '12345';
+                end if;
+        end if;
+end $$
+delimiter ;

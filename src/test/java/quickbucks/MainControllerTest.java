@@ -49,15 +49,48 @@ public class MainControllerTest {
         @Autowired
         private RequestRepository r;
 
+        @Autowired
+        private ReviewRepository re;
+
+        @Autowired
+        private ResetTokenRepository rt;
+
         @Before
         public void setup() {
                 mainController = new MainController();
-                mainController.setReposotories(u,j,r); //apparently necessary
+                mainController.setReposotories(u, j, r, re, rt);
         }
 
         @After
         public void verify() {
                 //Mockito.reset();
+        }
+
+        //sanitizing strings: test to pass
+        @Test
+        public void testSanitize1() throws Exception {
+                String ans = mainController.sanitizeString("abcd");
+                assertEquals(ans,"abcd");
+        }
+        @Test
+        public void testSanitize2() throws Exception {
+                String ans = mainController.sanitizeString("abc d");
+                assertEquals(ans,"abc d");
+        }
+        @Test
+        public void testSanitize3() throws Exception {
+                String ans = mainController.sanitizeString("abc-d");
+                assertEquals(ans,"abc-d");
+        }
+        @Test
+        public void testSanitize4() throws Exception {
+                String ans = mainController.sanitizeString("abc--d");
+                assertEquals(ans,"abcd");
+        }
+        @Test
+        public void testSanitize5() throws Exception {
+                String ans = mainController.sanitizeString("abc;d;;;");
+                assertEquals(ans,"abcd");
         }
 
         //REGISTRATION

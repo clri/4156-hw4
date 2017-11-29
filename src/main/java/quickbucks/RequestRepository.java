@@ -29,11 +29,17 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 
         @Transactional
         @Modifying(clearAutomatically = true)
-        @Query(value="update request r set r.decision = 2, r.employer_read = 1, r.decision_time = now() where r.job = :jid and r.id != :rid", nativeQuery=true)
+        @Query(value = "update request r set r.decision = 2, r.employer_read = 1, r.decision_time = now() where r.job = :jid and r.id != :rid", nativeQuery=true)
         Integer blanketReject(@Param("jid") Integer jid, @Param("rid") Integer rid);
 
 
         @Query(value = "select * from Request r where r.id = :id", nativeQuery = true)
 	Request findRequestByID(@Param("id") Integer id);
+
+        @Query(value = "select * from Request r where r.job = :jid and r.employee = :eid", nativeQuery = true)
+	Request findRequestByJobAndEmployee(@Param("jid") String jid, @Param("eid") Integer eid);
+
+        @Query(value = "select employee from Request r where r.job = :jid and r.decision = 1", nativeQuery = true)
+        Integer findAcceptedEmployee(@Param("jid") String jid);
 
 }

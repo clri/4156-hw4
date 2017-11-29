@@ -39,9 +39,11 @@ public class MainController {
 	{
 		if (s.length() > 255)
 			return false;
+		if (!(sanitizeString(s).equals(s)))
+			return false;
 		boolean ans = true;
-		//in = 1: email; in = 2: password, 3: name, 4: location
-		//5: non-empty
+		/*in = 1: email; in = 2: password, 3: name, 4: location
+		 *5: non-empty*/
 		switch(in) {
 			case 1: ans = (s != "" && (
 				s.matches("[a-zA-z0-9\\.\\-]+@.*columbia.edu")
@@ -61,11 +63,26 @@ public class MainController {
 		return ans;
 	}
 
+	/* sanitizeString(): remove semicolons and dashes from the given
+	 * string */
+	public String sanitizeString(String input)
+	{
+		String ans = input.replaceAll(";","");
+		ans = ans.replaceAll("--","");
+		return ans;
+	}
+
+	/* setRepositories(): for testing
+	 */
 	public void setReposotories(UserRepository u, JobRepository j,
-		RequestRepository r) {
+		RequestRepository r, ReviewRepository re,
+		ResetTokenRepository rt)
+	{
 			userRepository = u;
 			jobRepository = j;
 			requestRepository = r;
+			reviewRepository = re;
+			resetTokenRepository = rt;
 	}
 
 
@@ -81,8 +98,6 @@ public class MainController {
 			, @RequestParam String location
 			, @RequestParam String school)
 	{
-		//@TODO: which are required to be not blank?
-
 		if (!(validateInputStrings(3,firstName) &&
 			validateInputStrings(3,lastName) &&
 			validateInputStrings(1,email) &&
@@ -91,6 +106,14 @@ public class MainController {
 			validateInputStrings(4,location) &&
 			validateInputStrings(0,school)))
 			return "redirect:/index3.html";
+
+		firstName = sanitizeString(firstName);
+		lastName = sanitizeString(lastName);
+		email = sanitizeString(email);
+		password = sanitizeString(password);
+		degree = sanitizeString(degree);
+		location = sanitizeString(location);
+		school = sanitizeString(school);
 
 		try {
 			int uid = userRepository.findIDByEmail(email);
@@ -118,27 +141,21 @@ public class MainController {
 		return "redirect:/index3.html";
 	}
 
-	@GetMapping(path="/demo/alluser")
-	public @ResponseBody Iterable<User> getAllUsers()
-	{
-		// This returns a JSON or XML with the users
-		return userRepository.findAll();
-	}
-
-
 	@Autowired
 	private JobRepository jobRepository;
 
-	@GetMapping(path="/demo/postJob") // Map ONLY GET Requests
+	@GetMapping(path="/demo/postJob")
 	public String addNewJob (@RequestParam String jobtitle
 			, @RequestParam String jobdesc, String category)
 	{
-		// @RequestParam means it is a parameter from the GET or POST request
-		//@TODO: add tags (how are they input in form) and date
 		if (!validateInputStrings(5, jobtitle) ||
 			!validateInputStrings(5, jobdesc) ||
 			!validateInputStrings(5, category))
 			return "redirect:/index3.html"; //change to better error page
+
+		jobtitle = sanitizeString(jobtitle);
+		jobdesc = sanitizeString(jobdesc);
+		category = sanitizeString(category);
 
 		int uid = -1;
 		Job j = new Job();
@@ -186,22 +203,21 @@ public class MainController {
 	}
 */
 
-	@GetMapping(path="/demo/search") // Map ONLY GET Requests
+	@GetMapping(path="/demo/search")
 	public String searchJobs(ModelMap model, @RequestParam String keywords
 			,@RequestParam String category)
 	{
+		keywords = sanitizeString(keywords);
+		category = sanitizeString(category);
+
 		List results = new ArrayList();
 
-		if(keywords.equals("") && category.equals("")){
+		if (keywords.equals("") && category.equals(""))
 			results = jobRepository.findAllJobs();
-		}
-		else if(keywords.equals("")){
+		else if (keywords.equals(""))
 			results = jobRepository.findJobByCat(category);
-
-		}
-		else if(category.equals("")){
+		else if (category.equals(""))
 			results = jobRepository.findJobByTitle(keywords);
-		}
 		else
 			results = jobRepository.findJobByBoth(keywords, category);
 
@@ -212,15 +228,6 @@ public class MainController {
 
 
 	}
-
-
-	@GetMapping(path="/demo/alljob")
-	public @ResponseBody Iterable<Job> getAllJobs()
-	{
-		// This returns a JSON or XML with the jobs
-		return jobRepository.findAll();
-	}
-
 
 	/*@GetMapping(path="/demo/viewjob")
 	public @ResponseBody ModelAndView viewJob(@RequestParam String id) {
@@ -249,8 +256,10 @@ public class MainController {
    	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
    	public String viewJob(ModelMap model, @RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 	 	Job j = jobRepository.findJobByID(id);
-	 	if(j ==null){
+	 	if (j ==null) {
 			model.addAttribute("jobID", id);
 			return "viewJobError";
 	 	}
@@ -273,23 +282,35 @@ public class MainController {
 	@GetMapping(path="/demo/request") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 		Job j = new Job();
 		try {
 			j = jobRepository.findJobByID(id);
 		} catch (Exception e) {
-			return genericError();
+			return "redirect:/searchJobsRF.html";
 		}
-		Request r = new Request();
+
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
 		/*FAIL CASES:
-		requesting your own job.
+		requesting your own job. Should bounce you back to the search
+		page with a message. also you cannot request something you
+		have already requested.*/
 		if (j.getUser() == uid)
-			return "redirect:/requestFail.html";
-		*/
+			return "redirect:/searchJobsRF.html";
+		Request rr = new Request();
+		try {
+			rr = requestRepository.findRequestByJobAndEmployee(job.getId() + "", uid);
+		} catch (Exception rex) {
+			return genericError();
+		}
+		if (rr == null)
+			return "redirect:/searchJobsRF.html";
 
+		Request r = new Request();
 		r.setEmployee(uid);
 		r.setTitle(j.getJobtitle());
 		r.setEmployer(j.getUser());
@@ -302,13 +323,6 @@ public class MainController {
 			return genericError();
 		}
 		return "redirect:/requestSuccess.html";
-	}
-
-	@GetMapping(path="/demo/allrequest")
-	public @ResponseBody Iterable<Request> getAllReqs()
-	{
-		// This returns a JSON or XML with the jobs
-		return requestRepository.findAll();
 	}
 
 	@RequestMapping(value="/logout", method = RequestMethod.GET)
@@ -324,38 +338,58 @@ public class MainController {
 		return "redirect:/login?logout";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
-
 	@Autowired
 	private ReviewRepository reviewRepository;
 
-	@RequestMapping(value = "/createAReview", method = RequestMethod.GET)
-   	public String createReview(ModelMap model, @RequestParam String id)
+	public String createReview(ModelMap model, @RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 	 	Job j = jobRepository.findJobByID(id);
-	 	if(j ==null){
+	 	if (j ==null) {
 			model.addAttribute("jobID", id);
-			return "viewJobError"; //@TODO: separate error
+			return "reviewJobError";
 	 	}
-	 	else{
-			model.addAttribute("jobID", j.getId());
-			model.addAttribute("title", j.getJobtitle());
-			model.addAttribute("desc", j. getJobdesc());
-			model.addAttribute("tags", j.getCategory());
-	   	}
-		//model.addAttribute("title", j.getJobTitle());
+		model.addAttribute("jobID", j.getId());
+		model.addAttribute("title", j.getJobtitle());
+		model.addAttribute("desc", j. getJobdesc());
+		model.addAttribute("tags", j.getCategory());
 
 		return "createReview";
+	}
+
+	@RequestMapping(value = "/createAReview", method = RequestMethod.GET)
+	public String doReview(ModelMap model, @RequestParam String id)
+	{
+		model.addAttribute("errmsg",""); //clean page, no error message
+		return createReview(model, id);
 	}
 
 	@Autowired
         public JavaMailSender emailSender;
 
 	@GetMapping(path="/demo/review") // Map ONLY GET Requests
-	public String addNewReview (@RequestParam String id,
+	public String addNewReview (ModelMap model, @RequestParam String id,
 		@RequestParam String rating, @RequestParam String reviewBody)
 	{
-		//@TODO: make sure given user is authorized to write a review
-		//AKA they were the accepted user for a job
+		id = sanitizeString(id);
+	 	rating = sanitizeString(rating);
+		reviewBody = sanitizeString(reviewBody);
+		double rat = 0.0;
+
+		if (reviewBody.length() > 1500 || reviewBody.length() < 10) {
+			model.addAttribute("errmsg", "review must be between 10 and 100 characters");
+			return createReview(model, id); //invalid input
+		}
+
+		try {
+			rat = Double.parseDouble(rating);
+		} catch (Exception eee) {
+			model.addAttribute("errmsg", "rating must be numerical out of five");
+			return createReview(model, id); //invalid input
+		}
+		model.addAttribute("errmsg","");
+
 		Job j = new Job();
 		try {
 			j = jobRepository.findJobByID(id);
@@ -367,24 +401,52 @@ public class MainController {
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
+		int accid;
+		try {
+			accid = requestRepository.findAcceptedEmployee(id);
+		} catch (Exception ne) {
+			/*no one has accepted this job; access denied*/
+			return "redirect:/403.html";
+		}
+		if (accid != uid)
+			return "redirect:/403.html"; /* someone else accepted */
+
 		/*FAIL CASES:
 		Review for this job has already been posted
 		Cannot parse double for rating.
 		reviewBody is too long
+		you were not the person who was accepted for the job
 		*/
 
 		r.setEmployee(uid);
 		r.setEmployer(j.getUser());
 		r.setJob(j.getId());
 		r.setReviewBody(reviewBody);
-		r.setRating(0.0);
+		r.setRating(rat);
 
 		try {
 			reviewRepository.save(r);
 		} catch(Exception ee) {
 			return genericError();
 		}
-		//send email here
+
+		/*mark request as read*/
+		Request req;
+		try{
+			req = requestRepository.findRequestByJobAndEmployee(id, uid);
+		} catch (Exception rex) {
+			return genericError();
+		}
+		if (req == null)
+			return genericError(); /*something happened in the db to delete our record*/
+
+		req.setEmployeeRead(true);
+		try {
+			requestRepository.save(req);
+		} catch(Exception ree) {
+			return genericError();
+		}
+
 		try {
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setTo(userRepository.findEmailById(j.getUser()));
@@ -397,7 +459,7 @@ public class MainController {
 			exception.printStackTrace();
 		}
 
-		return "redirect:/requestSuccess.html"; //@TODO: new success page
+		return "redirect:/reviewCreated.html";
 	}
 
 	@Autowired
@@ -406,16 +468,17 @@ public class MainController {
 	@GetMapping(path="/sendForgotEmail")
 	public String sendForgotEmail (@RequestParam String email)
 	{
+		email = sanitizeString(email);
+
 		try {
 			int uid = userRepository.findIDByEmail(email);
 		} catch (Exception e) {
 			//fail case: not in the respository
-			//@TODO: send them to page that asks them if they want
-			//to register
-			return genericError();
+			return "redirect:/notregistered.html";
 		}
-		//generate token\
+
 		String token = UUID.randomUUID().toString();
+		token = sanitizeString(token);
 		ResetToken rt = new ResetToken();
 		rt.setToken(token);
 		rt.setUserEmail(email);
@@ -443,10 +506,12 @@ public class MainController {
 	public String checkReset (ModelMap model, @RequestParam String email,
 		@RequestParam String token)
 	{
+		email = sanitizeString(email);
+	 	token = sanitizeString(token);
+
 		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);
-		if (rt == null) {
+		if (rt == null)
 			return genericError();
-		}
 
 		model.addAttribute("email", email);
 		model.addAttribute("token", token);
@@ -458,15 +523,18 @@ public class MainController {
 	public String doReset (@RequestParam String email, @RequestParam String
 		token, @RequestParam String password)
 	{
+		email = sanitizeString(email);
+	 	token = sanitizeString(token);
+		password = sanitizeString(password);
+
 		if (!(validateInputStrings(2,password))) {
 			return genericError(); //need a better error...
 			//probably something like doReset but with a
 			//"your password must be xyz"
 		}
 		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);
-		if (rt == null) {
+		if (rt == null)
 			return genericError();
-		}
 
 		resetTokenRepository.delete(rt);
 
@@ -476,9 +544,9 @@ public class MainController {
 		} catch (Exception ee) {
 			return genericError();
 		}
-		if (u == null) {
+		if (u == null)
 			return genericError();
-		}
+
 		BCryptPasswordEncoder passwordEncoder = new
 			BCryptPasswordEncoder();
 		String hashedPassword = passwordEncoder.encode(password);
@@ -492,7 +560,7 @@ public class MainController {
 		return "redirect:/savedreset.html";
 	}
 
-	public void sendEmailToUser(String e, String subj, String body)
+	private void sendEmailToUser(String e, String subj, String body)
 		throws MailException
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
@@ -505,6 +573,8 @@ public class MainController {
 	@GetMapping(path="/demo/contact")
 	public String contactStepOne (ModelMap model, @RequestParam String id)
 	{
+		id = sanitizeString(id);
+
 		model.addAttribute("id",id);
 		return "composeMessage";
 	}
@@ -513,13 +583,16 @@ public class MainController {
 	public String contactPoster (@RequestParam String id,
 		@RequestParam String msg)
 	{
+	 	id = sanitizeString(id);
+		msg = sanitizeString(msg);
+
 		Job j = new Job();
 		try {
 			j = jobRepository.findJobByID(id);
 		} catch(Exception e) {
 			return genericError();
 		}
-	 	if(j ==null)
+	 	if (j ==null)
 			return genericError();
 
 		String empl = "";
@@ -562,15 +635,51 @@ public class MainController {
 		model.addAttribute("userr", uid);
 
 		return "notifs";
-		//return genericError(); //not implemented
+	}
+
+	@GetMapping(path="/read")
+	public String readDecision(ModelMap model, @RequestParam Integer id)
+	{
+		Request r = new Request();
+		try {
+			r = requestRepository.findRequestByID(id);
+		} catch(Exception e) {
+			return genericError();
+		}
+		if (r == null)
+			return genericError();
+		int jid = r.getJob();
+
+		Job j = new Job();
+		try {
+			j = jobRepository.findJobByID(jid + "");
+		} catch(Exception ee) {
+			return genericError();
+		}
+		if (j == null)
+			return genericError();
+
+		org.springframework.security.core.userdetails.User meUser
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = meUser.getUsername();
+		int uid = userRepository.findIDByEmail(username);
+
+		if (r.getEmployee() != uid)
+			return "redirect:/403.html"; //unauthorized
+		r.setEmployeeRead(true);
+		try {
+			requestRepository.save(r);
+		} catch(Exception eee) {}
+		return "displayNotifications(model)";
 	}
 
 	@GetMapping(path="/decide")
 	public String makeDecision(ModelMap model, @RequestParam Integer id,
-		@RequestParam Integer decision) {
-		//error cases: decision not 1 or 2, job already decided, job
-		//not yours to decide (you are not employer), request does not
-		//exist
+		@RequestParam Integer decision)
+	{
+		/*error cases: decision not 1 or 2, job already decided, job
+		 *not yours to decide (you are not employer), request does not
+		 *exist */
 		if (decision != 1 && decision != 2)
 			return genericError();
 
@@ -599,11 +708,10 @@ public class MainController {
 		int uid = userRepository.findIDByEmail(username);
 
 		if (r.getEmployer() != uid)
-			return "redirect:/403.html"; //unauthorized
+			return "redirect:/403.html"; /*unauthorized*/
 		if (r.getDecision() != 0)
-			return genericError(); //job has been decided!
-		//ok, here we are authorized; job has not been decided;
-		//we have a valid decision to make.
+			return genericError();
+
 		r.decide(decision);
 		try {
 			requestRepository.save(r);
@@ -613,10 +721,10 @@ public class MainController {
 		if (decision == 1) {
 			String empl = userRepository.findEmailById(r.getEmployee());
 			String msgbody = "Hello!\nUser " + uid + " has accepted"
-				+ "your request for job " + jid + ": "
+				+ " your request for job " + jid + ": "
 				+ j.getJobtitle() + "\n\nCongrats!\n\nLove,\n"
 				+ "Quickbucks";
-			//send an email to the user who has been accepted.
+			/*send an email to the user who has been accepted.*/
 			try {
 				sendEmailToUser(empl,
 					"Quickbucks: Your Job Request",
@@ -625,7 +733,7 @@ public class MainController {
 				exception.printStackTrace();
 				return genericError();
 			}
-			//then formally reject everyone else
+			/*then formally reject everyone else*/
 			requestRepository.blanketReject(jid, id);
 		}
 
@@ -635,7 +743,6 @@ public class MainController {
 		return "notifs";
 	}
 
-	@GetMapping(path="/error")
 	public String genericError() {
 		return "redirect:/generic-error.html";
 	}
