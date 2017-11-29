@@ -1,0 +1,51 @@
+body {
+    background-color: lightblue;
+}
+h1 {
+    color: black;
+    margin-left: 20px;
+}
+ul {
+    list-style-type: none;
+    font: arial
+    margin: 0;
+    padding: 0;
+    width: 120px;
+    background-color: #f1f1f1;
+    float: left;
+}
+li a {
+    display: block;
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-bottom: 1px solid black;
+}
+/* Change the link color on hover */
+li a:hover {
+    background-color: lightblue;
+    color: black;
+}
+header{
+    background-color: lightblue;
+    padding: 20px;
+}
+p6{
+    background-color: lightblue;
+    padding: 30px;
+}
+p1{
+  margin-left: 2em;
+}
+p2{
+  margin-left: 2em;
+}
+p3{
+  margin-left: 2em;
+}
+p4{
+  margin-left: 2em;
+}
+p5{
+  margin-left: 2em;
+}
