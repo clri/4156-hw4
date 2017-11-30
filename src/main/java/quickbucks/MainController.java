@@ -238,8 +238,12 @@ public class MainController {
 
 
 		return "jobByID";
+
    	}
 	
+	
+	
+
 
 
 
@@ -275,8 +279,10 @@ public class MainController {
 		id = sanitizeString(id);
 
 		Job j = jobRepository.findJobByID(id);
-		if (j == null)
+		if (j == null){
+			System.out.println("job null");
 			return "redirect:/searchJobsRF.html";
+		}
 
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -286,16 +292,20 @@ public class MainController {
 		requesting your own job. Should bounce you back to the search
 		page with a message. also you cannot request something you
 		have already requested.*/
-		if (j.getUser() == uid)
+		if (j.getUser() == uid){
+			System.out.println("request own");
 			return "redirect:/searchJobsRF.html";
+		}
 		Request rr;
 		try {
 			rr = requestRepository.findRequestByJobAndEmployee(j.getId() + "", uid);
 		} catch (Exception rex) {
 			return genericError();
 		}
-		if (rr == null)
+		if (rr != null){
+			System.out.println("request already exists");
 			return "redirect:/searchJobsRF.html";
+		}
 
 		Request r = new Request();
 		r.setEmployee(uid);

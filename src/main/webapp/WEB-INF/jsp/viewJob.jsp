@@ -26,8 +26,8 @@
 
 
         <center>
-        <form id="request"   action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
-        <input type="text" name="id" value=${jobID} readonly /><br />
+        <form id="request" action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
+        <input style="visibility:hidden;"type="text" name="id" value=${jobID} readonly /><br />
 		<input type="submit" value="request">
         </form>
         <form id="contact"   action="/demo/contact" style = "margin: 20px 15px 0 0;float:none;">
