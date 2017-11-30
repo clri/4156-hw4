@@ -709,8 +709,7 @@ public class MainController {
 		try {
 			requestRepository.save(r);
 		} catch (Exception eee) {
-			//return genericError();
-			return "could_not_save";
+			return genericError();
 		}
 		if (decision == 1) {
 			String empl = userRepository.findEmailById(r.getEmployee());

@@ -669,6 +669,17 @@ public class MainControllerTest {
                 String view = this.mainController.addNewJob(toreq + "");
                 assertEquals(view, "redirect:/requestSuccess.html");
         }
+        //FAIL: accept a job that you didn't create
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91c() throws Exception {
+                int toreq = getAJob();
+                int empl = u.findIDByEmail("johnsecretzz@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 2);
+                assertEquals(view, "redirect:/403.html");
+        }
         //PASS: accept a job where no one has been rejected from
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
@@ -692,9 +703,33 @@ public class MainControllerTest {
                 assertEquals(view, "redirect:/generic-error.html");
         }
         //FAI:: request a job someone has been accepted by
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest93a() throws Exception {
+                int toreq = getAJob();
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/searchJobsRF.html");
+        }
         //FAIL: accept/reject a request that doesn't exist
-        //FAIL: accept a job that you didn't create
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest93b() throws Exception {
+                int req = getARequest() - 12;
+                String view = this.mainController.makeDecision(model,
+                        req, 2);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
         //FAIL: accept a job that's already been decided
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest93c() throws Exception {
+                int toreq = getAJob();
+                int empl = u.findIDByEmail("johnsecretzz@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 1);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
 
 
         @Configuration
