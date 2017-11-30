@@ -1,4 +1,4 @@
-john@columbia.edupackage quickbucks;
+package quickbucks;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
