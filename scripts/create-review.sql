@@ -33,7 +33,7 @@ for each ROW
 BEGIN
         declare noe int;
         if new.decision = 1 and old.decision != 1 then
-                select count(*) into noe from request r where r.job = new.job and new.decision = 1;
+                select count(*) into noe from request r where r.job = new.job and r.decision = 1;
                 if (noe is not null and noe > 0) then
                         signal sqlstate '12345';
                 end if;
@@ -76,7 +76,7 @@ for each ROW
 BEGIN
         declare noe int;
         if new.decision = 1 and old.decision != 1 then
-                select count(*) into noe from request r where r.job = new.job and new.decision = 1;
+                select count(*) into noe from request r where r.job = new.job and r.decision = 1;
                 if (noe is not null and noe > 0) then
                         signal sqlstate '12345';
                 end if;

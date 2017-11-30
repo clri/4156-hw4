@@ -22,6 +22,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import java.util.UUID;
+import java.lang.NullPointerException;
 
 import quickbucks.User;
 import quickbucks.UserRepository;
@@ -298,10 +299,8 @@ public class MainController {
 		requesting your own job. Should bounce you back to the search
 		page with a message. also you cannot request something you
 		have already requested.*/
-		if (j.getUser() == uid){
-			System.out.println("request own");
+		if (j.getUser() == uid)
 			return "redirect:/searchJobsRF.html";
-		}
 		Request rr;
 		try {
 			rr = requestRepository.findRequestByJobAndEmployee(j.getId() + "", uid);
@@ -457,7 +456,9 @@ public class MainController {
 				j.getId().toString() + " on Quickbucks");
 			message.setText("Rating: " + rating + "\n\n\n"
 				+ reviewBody);
-			emailSender.send(message);
+			try {
+				emailSender.send(message);
+			} catch (NullPointerException ne) {}
 		} catch (MailException exception) {
 			exception.printStackTrace();
 		}
@@ -496,7 +497,9 @@ public class MainController {
 			message.setTo(email);
 			message.setSubject("Reset password code from Quickbucks");
 			message.setText(token);
-			emailSender.send(message);
+			try {
+				emailSender.send(message);
+			} catch (NullPointerException ne) {}
 		} catch (MailException exception) {
 			exception.printStackTrace();
 		}
@@ -570,7 +573,9 @@ public class MainController {
 		message.setTo(e);
 		message.setSubject(subj);
 		message.setText(body);
-		emailSender.send(message);
+		try {
+			emailSender.send(message);
+		} catch (NullPointerException ne) {}
 	}
 
 	@GetMapping(path="/demo/contact")
@@ -704,7 +709,8 @@ public class MainController {
 		try {
 			requestRepository.save(r);
 		} catch (Exception eee) {
-			return genericError();
+			//return genericError();
+			return "could_not_save";
 		}
 		if (decision == 1) {
 			String empl = userRepository.findEmailById(r.getEmployee());
@@ -719,7 +725,6 @@ public class MainController {
 					msgbody);
 			} catch (MailException exception) {
 				exception.printStackTrace();
-				return genericError();
 			}
 			/*then formally reject everyone else*/
 			requestRepository.blanketReject(jid, id);

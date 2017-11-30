@@ -37,4 +37,11 @@ public interface TestRepository extends CrudRepository<ResetToken, Long> {
         @Query(value = "delete from job", nativeQuery = true)
         void deleteJobs();
 
+        @Transactional
+        @Modifying(clearAutomatically = true)
+        @Query(value = "insert into job(category,jobdesc,jobtitle,payrate,userid) "
+                + "values('cat','desc','title',0.0,:id1),"
+                + "values('cat','desc','title',0.0,:id2),", nativeQuery = true)
+        void addJobs(@Param("id1") Integer id1, @Param("id2") Integer id2);
+
 }

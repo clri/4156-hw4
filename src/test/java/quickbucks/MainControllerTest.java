@@ -27,6 +27,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+import org.junit.runners.MethodSorters;
+import org.junit.FixMethodOrder;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import quickbucks.User;
 import quickbucks.TestRepository;
@@ -37,6 +40,7 @@ import quickbucks.TestRepository;
 @DataJpaTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 //@WebAppConfiguration
 public class MainControllerTest {
         //@Autowired
@@ -93,7 +97,7 @@ public class MainControllerTest {
 
         /*run this first; clean up the DB*/
         @Test
-        public void cleanDB() throws Exception {
+        public void aaaacleanDB() throws Exception {
                 tst.deleteRequests();
                 tst.deleteTokens();
                 tst.deleteReviews();
@@ -139,7 +143,7 @@ public class MainControllerTest {
         //first name capitalized
 
         @Test
-        public void testRegister1() throws Exception {
+        public void aaaatestRegister1() throws Exception {
                 String view = this.mainController.addNewUser(
                         "John", "Secret", "john@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -147,7 +151,7 @@ public class MainControllerTest {
         }
         //first name all lowercase
         @Test
-        public void testRegisterLowerF() throws Exception {
+        public void aaaatestRegisterLowerF() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "Secret", "johns@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -155,7 +159,7 @@ public class MainControllerTest {
         }
         //boundary: first name 255 characters
         @Test
-        public void testRegisterMaxLenF() throws Exception {
+        public void aaaatestRegisterMaxLenF() throws Exception {
                 String view = this.mainController.addNewUser(
                         "sec etlksdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
                         "Secret", "johns1@columbia.edu",
@@ -165,7 +169,7 @@ public class MainControllerTest {
 
         //last name capitalized
         @Test
-        public void testRegister1L() throws Exception {
+        public void aaaatestRegister1L() throws Exception {
                 String view = this.mainController.addNewUser(
                         "John", "Secret", "johnsecret@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -173,7 +177,7 @@ public class MainControllerTest {
         }
         //last name all lowercase
         @Test
-        public void testRegisterLowerL() throws Exception {
+        public void aaaatestRegisterLowerL() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "johnsec@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -181,7 +185,7 @@ public class MainControllerTest {
         }
         //boundary: last name 255 characters
         @Test
-        public void testRegisterMaxLenL() throws Exception {
+        public void aaaatestRegisterMaxLenL() throws Exception {
                 String view = this.mainController.addNewUser(
                         "Secret",
                         "sec etlksdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaosl",
@@ -192,7 +196,7 @@ public class MainControllerTest {
 
         //@columbia.edu email
         @Test
-        public void testRegisterEmail1() throws Exception {
+        public void aaaatestRegisterEmail1() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "johnsec4444@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -200,7 +204,7 @@ public class MainControllerTest {
         }
         //@barnard.edu email
         @Test
-        public void testRegisterEmail2() throws Exception {
+        public void aaaatestRegisterEmail2() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "johnsec4444@barnard.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -208,7 +212,7 @@ public class MainControllerTest {
         }
         //@cs.columbia.edu email
         @Test
-        public void testRegisterEmail3() throws Exception {
+        public void aaaatestRegisterEmail3() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "johnsec4444@cs.columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -216,7 +220,7 @@ public class MainControllerTest {
         }
         //255-char email
         @Test
-        public void testRegisterEmailLong1() throws Exception {
+        public void aaaatestRegisterEmailLong1() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "senetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -224,7 +228,7 @@ public class MainControllerTest {
         }
         //email with dash
         @Test
-        public void testRegisterEmail4() throws Exception {
+        public void aaaatestRegisterEmail4() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "johnsec-4444@cs.columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -250,7 +254,7 @@ public class MainControllerTest {
 
         //=4 password
         @Test
-        public void testRegisterPasswordShort1() throws Exception {
+        public void aaaatestRegisterPasswordShort1() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "john15@columbia.edu",
                         "1234", "MS", "ON", "SEAS");
@@ -258,7 +262,7 @@ public class MainControllerTest {
         }
         //255 password
         @Test
-        public void testRegisterPasswordLong1() throws Exception {
+        public void aaaatestRegisterPasswordLong1() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "john15@cs.columbia.edu",
                         "secnetlkfsdjfsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
@@ -271,7 +275,7 @@ public class MainControllerTest {
         //test to FAIL
         //blank first name
         @Test
-        public void testRegisterEmptyF() throws Exception {
+        public void aaaatestRegisterEmptyF() throws Exception {
                 String view = this.mainController.addNewUser(
                         "", "Secret", "johsaasdfasdfsns@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -308,7 +312,7 @@ public class MainControllerTest {
 
         //duplicate @columbia.edu email
         @Test
-        public void testRegisterEmail1Duplicate() throws Exception {
+        public void aaatestRegisterEmail1Duplicate() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "secret", "johnsec4444@columbia.edu",
                         "abcde", "MS", "ON", "SEAS");
@@ -397,7 +401,7 @@ public class MainControllerTest {
         //average job
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void testCreateJob1() throws Exception {
+        public void aaatestCreateJob1() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job", "jobs");
                 assertEquals(view,"redirect:/homepageloggedin.html");
@@ -405,16 +409,16 @@ public class MainControllerTest {
         //name = 255
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void testCreateJob2() throws Exception {
+        public void aaatestCreateJob2() throws Exception {
                 String view = this.mainController.addNewJob(
                         "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
                         "a job", "jobs");
                 assertEquals(view,"redirect:/homepageloggedin.html");
         }
-        //descrition = 255
+        //descrition = 1500
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void testCreateJob3() throws Exception {
+        public void aaatestCreateJob3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
                         "REO9s0Q9SsIU62Y75OnkztWjsOP0kyukpwIYPoFLSlpuvvrtgghQ8GO5NB6pXKv2pNAES7xLLkEjvmHWXcxlmwkIMaXoB2Ui17vLfm7z72u6beRmthEz609UFJ8mP9uhcyFo5NnKo0ml7bSqjSc8YQK34lryOOfSRKnULY3eoTOlylv9twV4PnJRRazD1EBgDDyJJD75pYtmWPjfJPyKJRQ9nBbIRFBuyqpsg2L9eCX0pNjVNNI4S4PRPkYYU9lWrJGDbgUKV23f3exeFhubU2eiVlIGI7gwPn14m96HwkIcnwnq1TmZwWlYOsCq8nkN3I3iEP2RxYc0xqHiAqXjUtzgEsbFT4pUrPFL9nSTQiM64Jk78voJpjbuFSapIhGbiGsSU78Fz12nP1G20mYvXFr7Yy4uz7VEEvnlL27VKq0IWs8siA1oiePHUP19qRyIKzkGTEbHD9MOypaloZNGzP3zYOaxJNykfW1JHt9c1rv5pcNLqL7Ah9bHUwa3MrPDBSH6F33zKt4AOQRKEqXxiCWn7wk0Ib9QenVVWZ8g3uQLx3pSzyQoTo402QIUk2Pt2LxMq6iqaW9pIIn0zANJWqKxe1Nh8gOkC5gr1fzl8GI2DibQhZ8jwAanCAIgDG7UegF1IEThSVnP9rr0iHEcApuPoprVcqcRAD5nnkFNlAY9MWVtglA9HHSZbnK5qwYZaYt1x9b6oVx64SENJ85gZ8T819cqQOqcsSiYuiqQ0sB4sbJOTniLB7CxqLe6BNGa19BpwEEqn8VPBXkw6a2ROxa9mUoWByBaxDcYbw9MYaYIg3A1pG3Pnf21cSQor6RgFGlmw1zLAGhlYN8YIiEtG7cMbcm6XLDDTyMpfIXmcU89NQg0PNVvHkF7fYRo5RKIei3V8iWGpJhSk5F0geZ7oBykvVjhroV9jFzXSkV7bhCNUO6qUMICAB3uyuWY4jwXxl4ZpLh8hO2PI8ZrQpf7Yq3EmEHEiHJ1aezj2FQjkCnx1a6pFWEoRiGGxeY9slUIP1uEXK2XWY9kicAfX6iFq2ilke9xPDBnuVCWrQ2Yv1J3mPPtLrehMLPB1t3oslhFG6LZXkON5gvEalqztQ9S9TOZpiBcX7O4O2c0cgH3ffueADtxJeUkM42jI34aY3bxLcnJIm1cxbeSu5XxZbLagZmVggzVeAopG6DwQsl1r7GhSzGyhfbe8ER05XUaKgrqvgbDuZgzw3Dr1OUUUgY2UJyKqCOxc4Se5hkF3BkwLBVOq5pS4ZEwiRyQNwWpBUBmX1gIWlfD6t3fDR9qKV6DtP7fJiiULQjLUQFrVQwEDo3ZovXaAtDPjqyqxU7Qhl5a74GW4ruoCgUalmgQkjDeC5cvCB65ZFyTUl6SbcfRktBsyD0LwDM5gGWpVtpjnghYm3j31GqawTjXvQ4MkJLWDlNj08ytp9x1VB3t5Qt80asqSmZ2RuPe8HxCFUckepP42stqQo7t5aUsiixJ4QhRLvUbBKPg",
@@ -424,7 +428,7 @@ public class MainControllerTest {
         //category = 255
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void testCreateJob4() throws Exception {
+        public void aaatestCreateJob4() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
                         "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos");
@@ -527,7 +531,7 @@ public class MainControllerTest {
         //viewjob: test to pass
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void testViewJob1() throws Exception {
+        public void aaatestViewJob1() throws Exception {
                 String vieww = this.mainController.addNewJob(
                         "job", "a job", "jobs");
                 assertEquals(vieww, "redirect:/homepageloggedin.html");
@@ -543,7 +547,7 @@ public class MainControllerTest {
         //test to fail: job id not in the db
         @Test
         @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
-        public void testViewJob2() throws Exception {
+        public void aaatestViewJob2() throws Exception {
                 String vieww = this.mainController.addNewJob(
                         "job", "a job", "jobs");
                 assertEquals(vieww, "redirect:/homepageloggedin.html");
@@ -558,17 +562,135 @@ public class MainControllerTest {
         //adding requests: test to pass
         //PASS: request job that has not been accepted and not by me
         @Test
-        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void testAddReqest1() throws Exception {
-                //getARequest() + 1 =
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest1() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/requestSuccess.html");
         }
         //PASS: request a job that someone else has requested, but not chosen
-
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest2() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/requestSuccess.html");
+        }
         //FAIL: request job I posted
-        //FAIL: request job I requested
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest3() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/searchJobsRF.html");
+        }
+        //FAIL: request job I requested already
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest4() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/searchJobsRF.html");
+        }
         //FAIL: request a job that doesn't exist
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest5() throws Exception {
+                int toreq = getAJob() - 1;
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/searchJobsRF.html");
+        }
         //PASS: reject a request
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest6() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecretzz@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 2);
+                assertEquals(view, "notifs");
+        }
+        //FAIL: decision = -1; decision = 3; decision = 0
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest7() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 0);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest8() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), -1);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest9() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 3);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
         //PASS: accept a job where someone has been rejected from
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 1);
+                assertEquals(view, "notifs");
+        }
+
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91a() throws Exception {
+                int toreq = getAJob();
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/requestSuccess.html");
+        }
+        //PASS: request a job that someone else has requested, but not chosen
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91b() throws Exception {
+                int toreq = getAJob();
+                String view = this.mainController.addNewJob(toreq + "");
+                assertEquals(view, "redirect:/requestSuccess.html");
+        }
+        //PASS: accept a job where no one has been rejected from
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest92() throws Exception {
+                int toreq = getAJob();
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 1);
+                assertEquals(view, "notifs");
+        }
+        //FAIL: reject job implicitly rjecetd
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest93() throws Exception {
+                int toreq = getAJob();
+                int empl = u.findIDByEmail("johnsecretzz@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.makeDecision(model,
+                        req.getId(), 2);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
         //FAI:: request a job someone has been accepted by
         //FAIL: accept/reject a request that doesn't exist
         //FAIL: accept a job that you didn't create
