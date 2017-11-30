@@ -37,7 +37,7 @@ public class MainController {
 
 	private boolean validateInputStrings(int in, String s)
 	{
-		if (s.length() > 255)
+		if (s.length() > 255 && in != 6)
 			return false;
 		if (!(sanitizeString(s).equals(s)))
 			return false;
@@ -149,12 +149,14 @@ public class MainController {
 			, @RequestParam String jobdesc, String category)
 	{
 		if (!validateInputStrings(5, jobtitle) ||
-			!validateInputStrings(5, jobdesc) ||
+			!validateInputStrings(6, jobdesc) ||
 			!validateInputStrings(5, category))
-			return "redirect:/index3.html"; //change to better error page
+			return genericError();
 
 		jobtitle = sanitizeString(jobtitle);
 		jobdesc = sanitizeString(jobdesc);
+		if (jobdesc.length() > 1500)
+			return genericError();
 		category = sanitizeString(category);
 
 		int uid = -1;
@@ -189,20 +191,6 @@ public class MainController {
 		return "redirect:/homepageloggedin.html";
 	}
 
-
-/*	@GetMapping(path="/demo/search") // Map ONLY GET Requests
-	public @ResponseBody Iterable<Job> searchJobs (@RequestParam String keywords
-			,@RequestParam String category)
-	{
-		//TODO add findAll
-		if(keywords.equals(""))
-			jobRepository.findJobByCat(category);
-		if(category.equals(""))
-			return jobRepository.findJobByTitle(keywords);
-		return jobRepository.findJobByBoth(keywords, category);
-	}
-*/
-
 	@GetMapping(path="/demo/search")
 	public String searchJobs(ModelMap model, @RequestParam String keywords
 			,@RequestParam String category)
@@ -211,7 +199,6 @@ public class MainController {
 		category = sanitizeString(category);
 
 		List results = new ArrayList();
-
 		if (keywords.equals("") && category.equals(""))
 			results = jobRepository.findAllJobs();
 		else if (keywords.equals(""))
@@ -223,10 +210,7 @@ public class MainController {
 
 		model.addAttribute("test", "hello");
 		model.addAttribute("results", results);
-
 		return "searchResults";
-
-
 	}
 
 	/*@GetMapping(path="/demo/viewjob")
@@ -247,12 +231,6 @@ public class MainController {
 		return "jobByID";
    	}
 
-   	/*@RequestMapping(value = "/redirect", method = RequestMethod.GET)
-   	public String redirect()
-	{
-		return "redirect:finalPage";
-	}
-*/
    	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
    	public String viewJob(ModelMap model, @RequestParam String id)
 	{
@@ -269,7 +247,6 @@ public class MainController {
 			model.addAttribute("desc", j. getJobdesc());
 			model.addAttribute("tags", j.getCategory());
 	   	}
-		//model.addAttribute("title", j.getJobTitle());
 
 		return "viewJob";
 	}
@@ -746,7 +723,5 @@ public class MainController {
 	public String genericError() {
 		return "redirect:/generic-error.html";
 	}
-
-
 
 }

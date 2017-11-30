@@ -1,4 +1,4 @@
-package quickbucks;
+john@columbia.edupackage quickbucks;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -94,9 +94,9 @@ public class MainControllerTest {
         }
 
         //REGISTRATION
-        /*
         //test to pass
         //first name capitalized
+        /*
         @Test
         public void testRegister1() throws Exception {
                 String view = this.mainController.addNewUser(
@@ -355,7 +355,7 @@ public class MainControllerTest {
 
         //average job
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJob1() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job", "jobs");
@@ -363,7 +363,7 @@ public class MainControllerTest {
         }
         //name = 255
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJob2() throws Exception {
                 String view = this.mainController.addNewJob(
                         "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
@@ -372,7 +372,7 @@ public class MainControllerTest {
         }
         //category = 255
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJob3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
@@ -382,7 +382,7 @@ public class MainControllerTest {
         }
         //description = 255
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJob4() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
@@ -394,7 +394,7 @@ public class MainControllerTest {
         //TEST TO FAIL
         //name = 256
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF1() throws Exception {
                 String view = this.mainController.addNewJob(
                         "sec etlksdjflsddkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
@@ -403,7 +403,7 @@ public class MainControllerTest {
         }
         //category = 256
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF2() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
@@ -413,7 +413,7 @@ public class MainControllerTest {
         }
         //description = 256
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
@@ -422,7 +422,7 @@ public class MainControllerTest {
         }
         //name = blank
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF4() throws Exception {
                 String view = this.mainController.addNewJob(
                         "",
@@ -431,7 +431,7 @@ public class MainControllerTest {
         }
         //category = blank
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF5() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
@@ -441,7 +441,7 @@ public class MainControllerTest {
         }
         //description = blank
         @Test
-        @WithMockUser(username = "mjs@barnard.edu", roles = { "USER" })
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF6() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
