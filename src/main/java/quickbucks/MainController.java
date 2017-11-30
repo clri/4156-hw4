@@ -240,9 +240,9 @@ public class MainController {
 		return "jobByID";
 
    	}
-	
-	
-	
+
+
+
 
 
 
@@ -282,16 +282,13 @@ public class MainController {
 		if (j == null){
 			System.out.println("job null");
 			return "redirect:/searchJobsRF.html";
-<<<<<<< HEAD
+		}
 		int emp = -1;
 		try {
 			emp = requestRepository.findAcceptedEmployee(id);
 		} catch (Exception fae) {}
 		if (emp != -1)
 			return "redirect:/searchJobsRF.html"; //already requested
-=======
-		}
->>>>>>> cf1d797275ad6bee9a74efe9bfa7dd55d41c579e
 
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
