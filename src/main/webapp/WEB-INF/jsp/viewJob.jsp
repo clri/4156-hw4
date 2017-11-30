@@ -13,6 +13,8 @@
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
             <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p>
             <br>
+			
+			<link href="../../../css/genericstyle.css" rel="stylesheet" type="text/css">
     </header>
 
     <section id="JobPosting" >
@@ -24,8 +26,8 @@
 
 
         <center>
-        <form id="request"   action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
-        <input type="text" name="id" value=${jobID} readonly /><br />
+        <form id="request" action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
+        <input style="visibility:hidden;"type="text" name="id" value=${jobID} readonly /><br />
 		<input type="submit" value="request">
         </form>
         <form id="contact"   action="/demo/contact" style = "margin: 20px 15px 0 0;float:none;">

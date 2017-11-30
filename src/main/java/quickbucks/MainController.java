@@ -225,11 +225,11 @@ public class MainController {
 	}
 	*/
 
-	/*@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
-	public String employeesToReview()
+	@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
+	public String lookupJobByID()
 	{
-		org.springframework.security.core.userdetails.User user
-			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//org.springframework.security.core.userdetails.User user
+			//= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 
 
@@ -238,7 +238,12 @@ public class MainController {
 
 
 		return "jobByID";
-   	}*/
+
+   	}
+	
+	
+	
+
 
 
 
@@ -274,14 +279,19 @@ public class MainController {
 		id = sanitizeString(id);
 
 		Job j = jobRepository.findJobByID(id);
-		if (j == null)
+		if (j == null){
+			System.out.println("job null");
 			return "redirect:/searchJobsRF.html";
+<<<<<<< HEAD
 		int emp = -1;
 		try {
 			emp = requestRepository.findAcceptedEmployee(id);
 		} catch (Exception fae) {}
 		if (emp != -1)
 			return "redirect:/searchJobsRF.html"; //already requested
+=======
+		}
+>>>>>>> cf1d797275ad6bee9a74efe9bfa7dd55d41c579e
 
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -291,16 +301,20 @@ public class MainController {
 		requesting your own job. Should bounce you back to the search
 		page with a message. also you cannot request something you
 		have already requested.*/
-		if (j.getUser() == uid)
+		if (j.getUser() == uid){
+			System.out.println("request own");
 			return "redirect:/searchJobsRF.html";
+		}
 		Request rr;
 		try {
 			rr = requestRepository.findRequestByJobAndEmployee(j.getId() + "", uid);
 		} catch (Exception rex) {
 			return genericError();
 		}
-		if (rr == null)
+		if (rr != null){
+			System.out.println("request already exists");
 			return "redirect:/searchJobsRF.html";
+		}
 
 		Request r = new Request();
 		r.setEmployee(uid);
