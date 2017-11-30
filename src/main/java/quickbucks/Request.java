@@ -101,10 +101,14 @@ public class Request {
                 return decision;
         }
         public Date getDecisionTime() {
-                return decisionTime;
+                Date d = new Date();
+                d = decisionTime;
+                return d;
         }
         public Date getRequestTime() {
-                return requestTime;
+                Date d = new Date();
+                d = requestTime;
+                return d;
         }
 
 

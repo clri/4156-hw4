@@ -45,18 +45,18 @@ public class MainController {
 		/*in = 1: email; in = 2: password, 3: name, 4: location
 		 *5: non-empty*/
 		switch(in) {
-			case 1: ans = (s != "" && (
+			case 1: ans = (s.equals("") && (
 				s.matches("[a-zA-z0-9\\.\\-]+@.*columbia.edu")
 				||
 				s.matches("[a-zA-z0-9\\.\\-]+@.*barnard.edu")));
 				break;
-			case 2: ans = (s != "" && s.length() >= 4);
+			case 2: ans = (s.equals("") && s.length() >= 4);
 				break;
 			case 3: ans = (s.matches("[a-zA-z\\s\\-]+"));
 				break;
 			case 4: ans = (s.equals("ON") || s.equals("OFF"));
 				break;
-			case 5: ans = (s != "");
+			case 5: ans = (s.equals(""));
 				break;
 			default: ans = true;
 		}
@@ -249,7 +249,7 @@ public class MainController {
 		id = sanitizeString(id);
 
 	 	Job j = jobRepository.findJobByID(id);
-	 	if (j ==null) {
+	 	if (j == null) {
 			model.addAttribute("jobID", id);
 			return "viewJobError";
 	 	}
@@ -273,12 +273,9 @@ public class MainController {
 	{
 		id = sanitizeString(id);
 
-		Job j = new Job();
-		try {
-			j = jobRepository.findJobByID(id);
-		} catch (Exception e) {
+		Job j = jobRepository.findJobByID(id);
+		if (j == null)
 			return "redirect:/searchJobsRF.html";
-		}
 
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -290,7 +287,7 @@ public class MainController {
 		have already requested.*/
 		if (j.getUser() == uid)
 			return "redirect:/searchJobsRF.html";
-		Request rr = new Request();
+		Request rr;
 		try {
 			rr = requestRepository.findRequestByJobAndEmployee(j.getId() + "", uid);
 		} catch (Exception rex) {
@@ -596,7 +593,7 @@ public class MainController {
 		String username = user.getUsername();
 
 		String msgbody = "Hi from Quickbucks!\n\nYou've received a new inquiry about your job " +
-			id.toString() + " from a potential employee (" + username +
+			id + " from a potential employee (" + username +
 			"). Their message:\n" + msg + "\n\nLove,\nQuickbucks";
 
 		try {
@@ -629,22 +626,12 @@ public class MainController {
 	@GetMapping(path="/read")
 	public String readDecision(ModelMap model, @RequestParam Integer id)
 	{
-		Request r = new Request();
-		try {
-			r = requestRepository.findRequestByID(id);
-		} catch(Exception e) {
-			return genericError();
-		}
+		Request r = requestRepository.findRequestByID(id);
 		if (r == null)
 			return genericError();
 		int jid = r.getJob();
 
-		Job j = new Job();
-		try {
-			j = jobRepository.findJobByID(jid + "");
-		} catch(Exception ee) {
-			return genericError();
-		}
+		Job j = jobRepository.findJobByID(jid + "");
 		if (j == null)
 			return genericError();
 
@@ -672,12 +659,7 @@ public class MainController {
 		if (decision != 1 && decision != 2)
 			return genericError();
 
-		Request r = new Request();
-		try {
-			r = requestRepository.findRequestByID(id);
-		} catch(Exception e) {
-			return genericError();
-		}
+		Request r = requestRepository.findRequestByID(id);
 		if (r == null)
 			return genericError();
 		int jid = r.getJob();
@@ -740,7 +722,7 @@ public class MainController {
    	public String viewUser(ModelMap model, @RequestParam String id)
 	{
 	 	User u = userRepository.findByID(id);
-	 	if(u ==null){
+	 	if(u == null){
 			//TODO - change to user error
 			model.addAttribute("jobID", id);
 			return "viewJobError";
