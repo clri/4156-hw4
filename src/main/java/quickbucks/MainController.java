@@ -225,11 +225,23 @@ public class MainController {
 	}
 	*/
 
-	@RequestMapping(value = "/jobByID", method = RequestMethod.GET)
-	public String lookupJobByID()
+	/*@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
+	public String employeesToReview()
 	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+
+
+		//and then from there getUsername() should get you the email
+
+
+
 		return "jobByID";
-   	}
+   	}*/
+
+
+
 
    	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
    	public String viewJob(ModelMap model, @RequestParam String id)
@@ -722,6 +734,27 @@ public class MainController {
 
 	public String genericError() {
 		return "redirect:/generic-error.html";
+	}
+
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
+   	public String viewUser(ModelMap model, @RequestParam String id)
+	{
+	 	User u = userRepository.findByID(id);
+	 	if(u ==null){
+			//TODO - change to user error
+			model.addAttribute("jobID", id);
+			return "viewJobError";
+	 	}
+	 	else{
+			model.addAttribute("userID", u.getId());
+			model.addAttribute("name", u.getUserFirstName()+u.getUserLastName());
+			model.addAttribute("school", u.getUserSchool());
+			model.addAttribute("degree", u.getUserDegree());
+			model.addAttribute("location", u.getUserLocation());
+	   	}
+		//model.addAttribute("title", j.getJobTitle());
+
+		return "viewUser";
 	}
 
 }
