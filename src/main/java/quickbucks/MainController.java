@@ -225,11 +225,11 @@ public class MainController {
 	}
 	*/
 
-	/*@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
-	public String employeesToReview()
+	@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
+	public String lookupJobByID()
 	{
-		org.springframework.security.core.userdetails.User user
-			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//org.springframework.security.core.userdetails.User user
+			//= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 
 
@@ -238,7 +238,8 @@ public class MainController {
 
 
 		return "jobByID";
-   	}*/
+   	}
+	
 
 
 

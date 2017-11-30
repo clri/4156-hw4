@@ -1,5 +1,5 @@
 body {
-    background-color: lightblue;
+    background-color: white;
 }
 h1 {
     color: black;
@@ -48,4 +48,27 @@ p4{
 }
 p5{
   margin-left: 2em;
+}
+
+.footer {
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: lightblue;
+   color: black;
+   font-family: arial;
+   text-align: center;
+   padding: 20px;
+   }
+   
+#welcome {
+	text-align:center;
+}
+
+#welcomemsg {
+	margin-left: 8em;
+}
+
+#welcomeSec{
+	min-height: 500px;
 }
