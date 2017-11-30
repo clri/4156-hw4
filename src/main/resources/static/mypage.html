@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>My Page</title>
+    </head>
+    <body>
+    <header>
+
+            <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
+            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p>
+            <form action="/logout" method="get">
+                    <input type="submit" class="button red big" value="Sign Out" />
+            </form>
+            <br>
+    </header>
+    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;">
+        <a href="/homepageloggedin.html" >Home</a>
+        <a href="">Search Jobs</a>
+        <a href="/postjob.html">Post Job</a>
+        <a href="">Legal</a>
+        <a href="" >FAQ</a>
+        <a href="/notifications">Inbox</a>
+        <br>
+    </nav>
+    <section id="employer" >
+    <h2 style="text-align:center;">As Employer</h2>
+	 <a href="/openjobs">View All Open Jobs</a><br>
+	 <a href="/requests">View All Job Requests</a><br>
+	 <a href="/employeeReview">Write an Employee Review</a><br>
+	 <a href="/completeEmployer">View Past Jobs</a><br>
+
+    </section>
+	<section id="employee" >
+    <h2 style="text-align:center;">As Employee</h2>
+	<a href="/upcoming">View Upcoming Hired Jobs</a><br>
+	<a href="/pending">View Pending Requests</a><br>
+	<a href="/employerReview">Write an Employer Review</a><br>
+	<a href="/completeEmployee">View Past Jobs</a><br>
+
+    </section>
+	
+    </body>
+</html>
