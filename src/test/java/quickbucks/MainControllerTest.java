@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import quickbucks.User;
 import quickbucks.TestRepository;
@@ -60,11 +61,30 @@ public class MainControllerTest {
         @Autowired
         private TestRepository tst;
 
+        private ModelMap model;
+
+        public int getAJob() {
+                int i = 1;
+                Job job = null;
+
+                while (job == null)
+                        job = j.findJobByID(i++ + "");
+                return i - 1;
+        }
+        public int getARequest() {
+                int i = 1;
+                Request req = null;
+
+                while (req == null)
+                        req = r.findRequestByID(i++);
+                return i - 1;
+        }
 
         @Before
         public void setup() {
                 mainController = new MainController();
                 mainController.setReposotories(u, j, r, re, rt);
+                model = new ModelMap();
         }
         @After
         public void verify() {
@@ -79,6 +99,12 @@ public class MainControllerTest {
                 tst.deleteReviews();
                 tst.deleteUsers();
                 tst.deleteJobs();
+                this.mainController.addNewUser(
+                        "john", "secret", "johnsecretzz@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
+                this.mainController.addNewUser(
+                        "john", "secret", "johnsecret82@columbia.edu",
+                        "abcde", "MS", "ON", "SEAS");
         }
 
         //sanitizing strings: test to pass
@@ -385,17 +411,17 @@ public class MainControllerTest {
                         "a job", "jobs");
                 assertEquals(view,"redirect:/homepageloggedin.html");
         }
-        //category = 255
+        //descrition = 255
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJob3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
-                        "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
+                        "REO9s0Q9SsIU62Y75OnkztWjsOP0kyukpwIYPoFLSlpuvvrtgghQ8GO5NB6pXKv2pNAES7xLLkEjvmHWXcxlmwkIMaXoB2Ui17vLfm7z72u6beRmthEz609UFJ8mP9uhcyFo5NnKo0ml7bSqjSc8YQK34lryOOfSRKnULY3eoTOlylv9twV4PnJRRazD1EBgDDyJJD75pYtmWPjfJPyKJRQ9nBbIRFBuyqpsg2L9eCX0pNjVNNI4S4PRPkYYU9lWrJGDbgUKV23f3exeFhubU2eiVlIGI7gwPn14m96HwkIcnwnq1TmZwWlYOsCq8nkN3I3iEP2RxYc0xqHiAqXjUtzgEsbFT4pUrPFL9nSTQiM64Jk78voJpjbuFSapIhGbiGsSU78Fz12nP1G20mYvXFr7Yy4uz7VEEvnlL27VKq0IWs8siA1oiePHUP19qRyIKzkGTEbHD9MOypaloZNGzP3zYOaxJNykfW1JHt9c1rv5pcNLqL7Ah9bHUwa3MrPDBSH6F33zKt4AOQRKEqXxiCWn7wk0Ib9QenVVWZ8g3uQLx3pSzyQoTo402QIUk2Pt2LxMq6iqaW9pIIn0zANJWqKxe1Nh8gOkC5gr1fzl8GI2DibQhZ8jwAanCAIgDG7UegF1IEThSVnP9rr0iHEcApuPoprVcqcRAD5nnkFNlAY9MWVtglA9HHSZbnK5qwYZaYt1x9b6oVx64SENJ85gZ8T819cqQOqcsSiYuiqQ0sB4sbJOTniLB7CxqLe6BNGa19BpwEEqn8VPBXkw6a2ROxa9mUoWByBaxDcYbw9MYaYIg3A1pG3Pnf21cSQor6RgFGlmw1zLAGhlYN8YIiEtG7cMbcm6XLDDTyMpfIXmcU89NQg0PNVvHkF7fYRo5RKIei3V8iWGpJhSk5F0geZ7oBykvVjhroV9jFzXSkV7bhCNUO6qUMICAB3uyuWY4jwXxl4ZpLh8hO2PI8ZrQpf7Yq3EmEHEiHJ1aezj2FQjkCnx1a6pFWEoRiGGxeY9slUIP1uEXK2XWY9kicAfX6iFq2ilke9xPDBnuVCWrQ2Yv1J3mPPtLrehMLPB1t3oslhFG6LZXkON5gvEalqztQ9S9TOZpiBcX7O4O2c0cgH3ffueADtxJeUkM42jI34aY3bxLcnJIm1cxbeSu5XxZbLagZmVggzVeAopG6DwQsl1r7GhSzGyhfbe8ER05XUaKgrqvgbDuZgzw3Dr1OUUUgY2UJyKqCOxc4Se5hkF3BkwLBVOq5pS4ZEwiRyQNwWpBUBmX1gIWlfD6t3fDR9qKV6DtP7fJiiULQjLUQFrVQwEDo3ZovXaAtDPjqyqxU7Qhl5a74GW4ruoCgUalmgQkjDeC5cvCB65ZFyTUl6SbcfRktBsyD0LwDM5gGWpVtpjnghYm3j31GqawTjXvQ4MkJLWDlNj08ytp9x1VB3t5Qt80asqSmZ2RuPe8HxCFUckepP42stqQo7t5aUsiixJ4QhRLvUbBKPg",
                         "jobs");
                 assertEquals(view,"redirect:/homepageloggedin.html");
         }
-        //description = 255
+        //category = 255
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJob4() throws Exception {
@@ -409,26 +435,26 @@ public class MainControllerTest {
         //TEST TO FAIL
         //name = 256
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJobF1() throws Exception {
                 String view = this.mainController.addNewJob(
                         "sec etlksdjflsddkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
                         "a job", "jobs");
                 assertEquals(view,"redirect:/generic-error.html");
         }
-        //category = 256
+        //description = 256
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJobF2() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
-                        "sec ertlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
+                        "REO9s0Q9SsIU62Y75OnkztWjsOP0kyukpwIYPoFLSlpuvvrtgghQ8GO5NB6pXKv2pNAES7xLLkEjvmHWXcxlmwkIMaXoB2Ui17vLfm7z72u6beRmthEz609UFJ8mP9uhcyFo5NnKo0ml7bSqjSc8YQK34lryOOfSRKnULY3eoTOlylv9twV4PnJRRazD1EBgDDyJJD75pYtmWPjfJPyKJRQ9nBbIRFBuyqpsg2L9eCX0pNjVNNI4S4PRPkYYU9lWrJGDbgUKV23f3exeFhubU2eiVlIGI7gwPn14m96HwkIcnwnq1TmZwWlYOsCq8nkN3I3iEP2RxYc0xqHiAqXjUtzgEsbFT4pUrPFL9nSTQiM64Jk78voJpjbuFSapIhGbiGsSU78Fz12nP1G20mYvXFr7Yy4uz7VEEvnlL27VKq0IWs8siA1oiePHUP19qRyIKzkGTEbHD9MOypaloZNGzP3zYOaxJNykfW1JHt9c1rv5pcNLqL7Ah9bHUwa3MrPDBSH6F33zKt4AOQRKEqXxiCWn7wk0Ib9QenVVWZ8g3uQLx3pSzyQoTo402QIUk2Pt2LxMq6iqaW9pIIn0zANJWqKxe1Nh8gOkC5gr1fzl8GI2DibQhZ8jwAanCAIgDG7UegF1IEThSVnP9rr0iHEcApuPoprVcqcRAD5nnkFNlAY9MWVtglA9HHSZbnK5qwYZaYt1x9b6oVx64SENJ85gZ8T819cqQOqcsSiYuiqQ0sB4sbJOTniLB7CxqLe6BNGa19BpwEEqn8VPBXkw6a2ROxa9mUoWByBaxDcYbw9MYaYIg3A1pG3Pnf21cSQor6RgFGlmw1zLAGhlYN8YIiEtG7cMbcm6XLDDTyMpfIXmcU89NQg0PNVvHkF7fYRo5RKIei3V8iWGpJhSk5F0geZ7oBykvVjhroV9jFzXSkV7bhCNUO6qUMICAB3uyuWY4jwXxl4ZpLh8hO2PI8ZrQpf7Yq3EmEHEiHJ1aezj2FQjkCnx1a6pFWEoRiGGxeY9slUIP1uEXK2XWY9kicAfX6iFq2ilke9xPDBnuVCWrQ2Yv1J3mPPtLrehMLPB1t3oslhFG6LZXkON5gvEalqztQ9S9TOZpiBcX7O4O2c0cgH3ffueADtxJeUkM42jI34aY3bxLcnJIm1cxbeSu5XxZbLagZmVggzVeAopG6DwQsl1r7GhSzGyhfbe8ER05XUaKgrqvgbDuZgzw3Dr1OUUUgY2UJyKqCOxc4Se5hkF3BkwLBVOq5pS4ZEwiRyQNwWpBUBmX1gIWlfD6t3fDR9qKV6DtP7fJiiULQjLUQFrVQwEDo3ZovXaAtDPjqyqxU7Qhl5a74GW4ruoCgUalmgQkjDeC5cvCB65ZFyTUl6SbcfRktBsyD0LwDM5gGWpVtpjnghYm3j31GqawTjXvQ4MkJLWDlNj08ytp9x1VB3t5Qt80asqSmZ2RuPe8HxCFUckepP42stqQo7t5aUsiixJ4QhRLvUbBKPgk",
                         "jobs");
                 assertEquals(view,"redirect:/generic-error.html");
         }
-        //description = 256 @TODO: 1500
+        //category = 256
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJobF3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
@@ -437,7 +463,7 @@ public class MainControllerTest {
         }
         //name = blank
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJobF4() throws Exception {
                 String view = this.mainController.addNewJob(
                         "",
@@ -446,7 +472,7 @@ public class MainControllerTest {
         }
         //category = blank
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJobF5() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
@@ -456,13 +482,97 @@ public class MainControllerTest {
         }
         //description = blank
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJobF6() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
                         "");
                 assertEquals(view,"redirect:/generic-error.html");
         }
+
+        /*search*/
+        //test to pass: category and keywords
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testSearch1() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "keywords", "category");
+                assertEquals(view,"searchResults");
+        }
+        //keyword blank
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testSearch2() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "category");
+                assertEquals(view,"searchResults");
+        }
+        //category blank
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testSearch3() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "keywords", "");
+                assertEquals(view,"searchResults");
+        }
+        //both blank
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testSearch4() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "");
+                assertEquals(view,"searchResults");
+        }
+
+        //viewjob: test to pass
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testViewJob1() throws Exception {
+                String vieww = this.mainController.addNewJob(
+                        "job", "a job", "jobs");
+                assertEquals(vieww, "redirect:/homepageloggedin.html");
+                int jid = getAJob();
+                Job job = j.findJobByID(jid + "");
+                String view = this.mainController.viewJob(model, jid + "");
+                assertEquals(view, "viewJob");
+                assertEquals(model.get("jobID"),jid);
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+        }
+        //test to fail: job id not in the db
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void testViewJob2() throws Exception {
+                String vieww = this.mainController.addNewJob(
+                        "job", "a job", "jobs");
+                assertEquals(vieww, "redirect:/homepageloggedin.html");
+                int jid = getAJob() - 1;
+                Job job = j.findJobByID(jid + "");
+                String view = this.mainController.viewJob(model, jid + "");
+                assertEquals(view, "viewJobError");
+                assertEquals(model.get("jobID"),jid + "");
+        }
+
+        //requesting and deciding: pass and fail are mixed togeter
+        //adding requests: test to pass
+        //PASS: request job that has not been accepted and not by me
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testAddReqest1() throws Exception {
+                //getARequest() + 1 =
+        }
+        //PASS: request a job that someone else has requested, but not chosen
+
+        //FAIL: request job I posted
+        //FAIL: request job I requested
+        //FAIL: request a job that doesn't exist
+        //PASS: reject a request
+        //PASS: accept a job where someone has been rejected from
+        //FAI:: request a job someone has been accepted by
+        //FAIL: accept/reject a request that doesn't exist
+        //FAIL: accept a job that you didn't create
+        //FAIL: accept a job that's already been decided
 
 
         @Configuration

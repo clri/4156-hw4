@@ -155,7 +155,7 @@ public class MainController {
 
 		jobtitle = sanitizeString(jobtitle);
 		jobdesc = sanitizeString(jobdesc);
-		if (jobdesc.length() > 1500)
+		if (jobdesc.length() > 1500 || jobdesc.equals(""))
 			return genericError();
 		category = sanitizeString(category);
 
@@ -276,6 +276,12 @@ public class MainController {
 		Job j = jobRepository.findJobByID(id);
 		if (j == null)
 			return "redirect:/searchJobsRF.html";
+		int emp = -1;
+		try {
+			emp = requestRepository.findAcceptedEmployee(id);
+		} catch (Exception fae) {}
+		if (emp != -1)
+			return "redirect:/searchJobsRF.html"; //already requested
 
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
