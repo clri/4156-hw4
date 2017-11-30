@@ -45,18 +45,18 @@ public class MainController {
 		/*in = 1: email; in = 2: password, 3: name, 4: location
 		 *5: non-empty*/
 		switch(in) {
-			case 1: ans = (s.equals("") && (
+			case 1: ans = (!s.equals("") && (
 				s.matches("[a-zA-z0-9\\.\\-]+@.*columbia.edu")
 				||
 				s.matches("[a-zA-z0-9\\.\\-]+@.*barnard.edu")));
 				break;
-			case 2: ans = (s.equals("") && s.length() >= 4);
+			case 2: ans = (!s.equals("") && s.length() >= 4);
 				break;
 			case 3: ans = (s.matches("[a-zA-z\\s\\-]+"));
 				break;
 			case 4: ans = (s.equals("ON") || s.equals("OFF"));
 				break;
-			case 5: ans = (s.equals(""));
+			case 5: ans = (!s.equals(""));
 				break;
 			default: ans = true;
 		}

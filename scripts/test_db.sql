@@ -16,6 +16,75 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `db_example`
+--
+/*RUN THIS IN THE SAME DIRECTORY AS THE test_db.sql FILE*/
+create database db_test;
+use db_test;
+source test_db.sql;
+create user test_u@localhost identified by 'ThePassword';
+grant all on db_test.* to 'test_u'@'localhost';
+revoke all on db_test.* from 'test_u'@'localhost';
+grant select, insert, delete, update on db_test.* to 'test_u'@'localhost';
+
+create table Test(
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `user_email` varchar(255) DEFAULT NULL,
+          `token` varchar(255) DEFAULT NULL,
+        primary key(`id`)
+);
+
+--
+-- Table structure for table `ResetToken`
+--
+
+DROP TABLE IF EXISTS `ResetToken`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ResetToken` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_email` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_email` (`user_email`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ResetToken`
+--
+
+LOCK TABLES `ResetToken` WRITE;
+/*!40000 ALTER TABLE `ResetToken` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ResetToken` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Reset_Token`
+--
+
+DROP TABLE IF EXISTS `Reset_Token`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Reset_Token` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_email` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_email` (`user_email`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Reset_Token`
+--
+
+LOCK TABLES `Reset_Token` WRITE;
+/*!40000 ALTER TABLE `Reset_Token` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Reset_Token` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job`
 --
 
@@ -25,23 +94,14 @@ DROP TABLE IF EXISTS `job`;
 CREATE TABLE `job` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category` varchar(255) DEFAULT NULL,
-  `jobdesc` varchar(255) DEFAULT NULL,
+  `jobdesc` varchar(1500) DEFAULT NULL,
   `jobtitle` varchar(255) DEFAULT NULL,
   `payrate` double DEFAULT NULL,
   `userid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `job`
---
-
-LOCK TABLES `job` WRITE;
-/*!40000 ALTER TABLE `job` DISABLE KEYS */;
-INSERT INTO `job` VALUES (1,NULL,'sdfgh','asdfgh',NULL,1),(2,NULL,'dsafsd','dsfkjlfd',NULL,1),(3,NULL,'','blah blah blah',NULL,2);
-/*!40000 ALTER TABLE `job` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `request`
@@ -57,19 +117,44 @@ CREATE TABLE `request` (
   `job` int(11) DEFAULT NULL,
   `msg` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
+  `employer_read` tinyint(1) DEFAULT NULL,
+  `employee_read` tinyint(1) DEFAULT NULL,
+  `request_time` datetime DEFAULT NULL,
+  `decision_time` datetime DEFAULT NULL,
+  `decision` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `request`
---
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 trigger req_update before update on request
+for each ROW
+BEGIN
+        declare noe int;
+        if new.decision = 1 and old.decision != 1 then
+                select count(*) into noe from request r where r.job = new.job and new.decision = 1;
+                if (noe is not null and noe > 0) then
+                        signal sqlstate '12345';
+                end if;
+        end if;
+end */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
-LOCK TABLES `request` WRITE;
-/*!40000 ALTER TABLE `request` DISABLE KEYS */;
-/*!40000 ALTER TABLE `request` ENABLE KEYS */;
-UNLOCK TABLES;
-
+--
+-- Table structure for table `review`
+--
 
 DROP TABLE IF EXISTS `review`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -80,10 +165,15 @@ CREATE TABLE `review` (
   `employer` int(11) DEFAULT NULL,
   `job` int(11) DEFAULT NULL,
   `rating` float DEFAULT NULL,
-  `review_body` varchar(255) DEFAULT NULL,
+  `review_body` varchar(1500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `review`
+--
+
 
 --
 -- Table structure for table `user`
@@ -105,18 +195,9 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_email` (`user_email`),
   UNIQUE KEY `user_email_2` (`user_email`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `user`
---
-
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,NULL,'email@email.com','your first name',NULL,NULL,'$2a$10$ViScD8nxBLC5M8uyRsWmS.qUd6D0jtfdTQoSCqvdVUAs16kixmkRm','2017-10-26 09:12:22',NULL),(2,NULL,'email@email.comm','your first name',NULL,NULL,'$2a$10$3YEGvxklRbQnFQazuDiHZODaQadS11N84iRa3HYxzI4Cr5irx7i0K','2017-10-29 18:15:45',NULL),(6,NULL,'email@email.como','your first name',NULL,NULL,'$2a$10$njq25Eurjp0F64OI0VF72.AmoKEfFDISbXL35KHv4RITx.wLCoFyK','2017-11-01 18:05:46',NULL),(7,NULL,'email@email.comrrr','your first name',NULL,NULL,'$2a$10$UHweDjPeLB4zbAw3sHBFQ.0CZxvM652lSFRp5niqEPI4JW5iCmYBe','2017-11-01 18:13:50',NULL),(8,NULL,'abc@columbia.edu','your first name',NULL,NULL,'$2a$10$t7SEZugwr7yj95sD4B.6iOIBom6WiMib4CrgvETTtUgE.Ca418VfK','2017-11-01 18:24:42',NULL),(9,NULL,'abc@barnard.edu','your first name',NULL,NULL,'$2a$10$FHqcJ2fhWPhgH0H6sHHQuuPNdHUp8bJfILHbcbgv2E8k.WkA4D6Uy','2017-11-01 18:24:51',NULL),(10,'BS, MA, PhD, etc','bbj@barnard.edu','billy bob','johnson','ON or OFF (campus)','$2a$10$4TodZeqBcniVKIIgFTxteunwfcYVjRfXcasHCzNitqo11zNw7HWMm','2017-11-01 19:16:30','SEAS, Barnard, Teachers\' College...'),(11,'BS, MA, PhD, etc','bbj@columbia.edu','9837493284','johnson','ON or OFF (campus)','$2a$10$FkiDKA3AY5yDBpgCipWTb.dqYiL15gqoc1zRs4a1Nz6U2eAfiNFQi','2017-11-01 19:16:52','SEAS, Barnard, Teachers\' College...'),(12,'BS, MA, PhD, etc','mjs@barnard.edu','mary-jo','stevens','ON or OFF (campus)','$2a$10$kxUyigWa8mA8n0e9zJG3c.dUHb2CA87s4pFN0rX5WKrM9IOBZoB/W','2017-11-01 19:35:34','SEAS, Barnard, Teachers\' College...'),(13,'BS, MA, PhD, etc','mdjs@barnard.edu','mary jo','stevens','ON or OFF (campus)','$2a$10$VVVgmqTeEUxymr/uW9tlq.yYhF2xyPWcCzCU1k0mUMLUNbIJLOy4C','2017-11-01 19:35:46','SEAS, Barnard, Teachers\' College...');
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Temporary table structure for view `user_roles`
@@ -131,6 +212,12 @@ SET character_set_client = utf8;
  1 AS `username`,
  1 AS `role`*/;
 SET character_set_client = @saved_cs_client;
+
+--
+-- Current Database: `db_example`
+--
+
+USE `db_example`;
 
 --
 -- Final view structure for view `user_roles`
@@ -159,4 +246,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-10 15:26:55
+-- Dump completed on 2017-11-28 20:57:27

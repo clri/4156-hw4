@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import quickbucks.User;
+import quickbucks.TestRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration //(classes = {WebSecurityConfig.class, MvcConfig.class})
@@ -55,15 +57,28 @@ public class MainControllerTest {
         @Autowired
         private ResetTokenRepository rt;
 
+        @Autowired
+        private TestRepository tst;
+
+
         @Before
         public void setup() {
                 mainController = new MainController();
                 mainController.setReposotories(u, j, r, re, rt);
         }
-
         @After
         public void verify() {
                 //Mockito.reset();
+        }
+
+        /*run this first; clean up the DB*/
+        @Test
+        public void cleanDB() throws Exception {
+                tst.deleteRequests();
+                tst.deleteTokens();
+                tst.deleteReviews();
+                tst.deleteUsers();
+                tst.deleteJobs();
         }
 
         //sanitizing strings: test to pass
@@ -96,7 +111,7 @@ public class MainControllerTest {
         //REGISTRATION
         //test to pass
         //first name capitalized
-        /*
+
         @Test
         public void testRegister1() throws Exception {
                 String view = this.mainController.addNewUser(
@@ -355,7 +370,7 @@ public class MainControllerTest {
 
         //average job
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJob1() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job", "jobs");
@@ -363,7 +378,7 @@ public class MainControllerTest {
         }
         //name = 255
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJob2() throws Exception {
                 String view = this.mainController.addNewJob(
                         "sec etlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
@@ -372,7 +387,7 @@ public class MainControllerTest {
         }
         //category = 255
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJob3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job",
@@ -382,7 +397,7 @@ public class MainControllerTest {
         }
         //description = 255
         @Test
-        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void testCreateJob4() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
@@ -399,7 +414,7 @@ public class MainControllerTest {
                 String view = this.mainController.addNewJob(
                         "sec etlksdjflsddkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
                         "a job", "jobs");
-                assertEquals(view,"redirect:/index3.html");
+                assertEquals(view,"redirect:/generic-error.html");
         }
         //category = 256
         @Test
@@ -409,16 +424,16 @@ public class MainControllerTest {
                         "job",
                         "sec ertlksdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos",
                         "jobs");
-                assertEquals(view,"redirect:/index3.html");
+                assertEquals(view,"redirect:/generic-error.html");
         }
-        //description = 256
+        //description = 256 @TODO: 1500
         @Test
         @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
         public void testCreateJobF3() throws Exception {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
                         "sec etlkfsdjflsdkfjsldksdfflkfjsdklfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdifjalsidjfaos");
-                assertEquals(view,"redirect:/index3.html");
+                assertEquals(view,"redirect:/generic-error.html");
         }
         //name = blank
         @Test
@@ -427,7 +442,7 @@ public class MainControllerTest {
                 String view = this.mainController.addNewJob(
                         "",
                         "a job", "jobs");
-                assertEquals(view,"redirect:/index3.html");
+                assertEquals(view,"redirect:/generic-error.html");
         }
         //category = blank
         @Test
@@ -437,7 +452,7 @@ public class MainControllerTest {
                         "job",
                         "",
                         "jobs");
-                assertEquals(view,"redirect:/index3.html");
+                assertEquals(view,"redirect:/generic-error.html");
         }
         //description = blank
         @Test
@@ -446,15 +461,9 @@ public class MainControllerTest {
                 String view = this.mainController.addNewJob(
                         "job", "a job",
                         "");
-                assertEquals(view,"redirect:/index3.html");
+                assertEquals(view,"redirect:/generic-error.html");
         }
 
-        //job by ID: should return this view. only test to pass
-        @Test
-        public void testLookupJob() throws Exception {
-                String view = this.mainController.lookupJobByID();
-                assertEquals(view,"jobByID"); //success
-        }*/
 
         @Configuration
         static class MainControllerTestConfiguration {
