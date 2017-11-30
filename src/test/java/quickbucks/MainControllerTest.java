@@ -447,14 +447,14 @@ public class MainControllerTest {
                         "job", "a job",
                         "");
                 assertEquals(view,"redirect:/index3.html");
-        }*/
+        }
 
         //job by ID: should return this view. only test to pass
         @Test
         public void testLookupJob() throws Exception {
                 String view = this.mainController.lookupJobByID();
                 assertEquals(view,"jobByID"); //success
-        }
+        }*/
 
         @Configuration
         static class MainControllerTestConfiguration {

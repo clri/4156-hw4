@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.springframework</groupId>
     <artifactId>quickbucks</artifactId>
-    <packaging>was</packaging>
+    <packaging>war</packaging>
     <version>0.1.0</version>
     <name>Quickbucks Maven Webapp</name>
 
@@ -176,13 +176,47 @@
     <artifactId>aws-java-sdk-codedeploy</artifactId>
   </dependency>
 
-
     </dependencies>
+
+
 
     <build>
       <finalName>quickbucks</finalName>
         <plugins>
             <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <version>3.0.1</version>
+            <configuration>
+                <!--
+                    Enables analysis which takes more memory but finds more bugs.
+                    If you run out of memory, changes the value of the effort element
+                    to 'Low'.
+                -->
+                <effort>Max</effort>
+                <!-- Build doesn't fail if problems are found -->
+                <failOnError>false</failOnError>
+                <!-- Reports all bugs (other values are medium and max) -->
+                <threshold>Low</threshold>
+                <!-- Produces XML report -->
+                <xmlOutput>true</xmlOutput>
+                <!-- Configures the directory in which the XML report is created -->
+                <findbugsXmlOutputDirectory>findbugs</findbugsXmlOutputDirectory>
+            </configuration>
+            <executions>
+                <!--
+                    Ensures that FindBugs inspects source code when project is compiled.
+                -->
+                <execution>
+                    <id>analyze-compile</id>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+    </plugin>
+    <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
