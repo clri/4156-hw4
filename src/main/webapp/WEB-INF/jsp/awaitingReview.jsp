@@ -7,7 +7,7 @@
 <html>
     <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Search Job</title>
+    <title>Jobs Awaiting Review</title>
     </head>
     <body>
     <header>
@@ -18,21 +18,17 @@
     </header>
 
     <section id="SearchResults" >
-    <h2 style="text-align:center;">Search Results:</h2>
+    <h2 style="text-align:center;">${type} to Review:</h2>
 
   
          <table>
 	
-        <c:forEach items="${results}" var="job">
-		<%request.setAttribute("jobLink", "<a href='finalPage?id=");
-		  request.setAttribute("jobLinkMid", "<a href='finalPage?id=");
-		  request.setAttribute("jobLinkEndd", "<a href='finalPage?id=");%>
+        <c:forEach items="${results}" var="request">
+
 		
             <tr>
-                <td><c:out value="${job.id}" /></td>
-                <td><a href = "../finalPage?id=${job.id}"><c:out value="${job.jobtitle}" /></a></td>
-                <td><c:out value="${job.jobdesc}" /></td>
-                <td><c:out value="${job.category}" /></td>
+                <td><a href = "../finalPage?id=${request.job}"><c:out value="${request.title}" /></a></td>
+                <td><a href = "../createAReview?id=${request.job}">Review</a></td>
             </tr>
         </c:forEach>
 

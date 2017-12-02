@@ -759,5 +759,36 @@ public class MainController {
 
 		return "viewUser";
 	}
+	
+		@GetMapping(path="/demo/employeeReview")
+	public String employeeReviewList(ModelMap model)
+	{
+		
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+
+		List<Request> requests = new ArrayList();
+		requests = requestRepository.findRequestsByEmployer(""+uid);
+		
+		for(int i = 0; i< requests.size(); i++){
+			//check if review exists
+			Request temp = requests.get(i);
+			Integer jobID = temp.getJob();
+			Review test = reviewRepository.lookupReviewByJobID(jobID);
+			
+			//jobID.toString());
+			//if it does, remove from list
+			if(test != null)
+				requests.remove(i);
+			
+		}
+		
+		
+
+		model.addAttribute("type", "Employees");
+		model.addAttribute("results", requests);
+		return "awaitingReview";
+	}
 
 }
