@@ -146,7 +146,7 @@ public class MainController {
 	private JobRepository jobRepository;
 
 	@GetMapping(path="/demo/postJob")
-	public String addNewJob (@RequestParam String jobtitle
+	public String addNewJob (ModelMap model, @RequestParam String jobtitle
 			, @RequestParam String jobdesc, String category)
 	{
 		if (!validateInputStrings(5, jobtitle) ||
@@ -189,7 +189,13 @@ public class MainController {
 		} catch(Exception ee) {
 			return genericError();
 		}
-		return "redirect:/homepageloggedin.html";
+		
+			model.addAttribute("jobID", j.getId());
+			model.addAttribute("title", j.getJobtitle());
+			model.addAttribute("desc", j. getJobdesc());
+			model.addAttribute("tags", j.getCategory());
+
+		return "viewJob";
 	}
 
 	@GetMapping(path="/demo/search")
