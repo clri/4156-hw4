@@ -199,24 +199,74 @@ public class MainController {
 	}
 
 	@GetMapping(path="/demo/search")
-	public String searchJobs(ModelMap model, @RequestParam String keywords
-			,@RequestParam String category)
+	public String searchJobs(ModelMap model, @RequestParam String keywords,
+	@RequestParam String category, @RequestParam String pageNum)
 	{
 		keywords = sanitizeString(keywords);
 		category = sanitizeString(category);
-
+		pageNum = sanitizeString(pageNum);
+		
+		String keynull = "%"+keywords+"%";
+		String catnull = "%"+category+"%";
+		int limit = 10;
+		
+		Integer count = jobRepository.searchCount(keywords, category);
+		int maxPage = count/limit;
+		if(count%limit > 0)
+			maxPage++;
+		
+		int page = 1;
+		try{
+			page = Integer.parseInt(pageNum);
+		}catch(NumberFormatException e){
+			System.out.println("parse error");
+			return genericError();
+		}
+		
+		if(page > maxPage)
+			page = maxPage;
+		
+		int start = (page-1)*limit;
+		
+	
 		List results = new ArrayList();
-		if (keywords.equals("") && category.equals(""))
-			results = jobRepository.findAllJobs();
-		else if (keywords.equals(""))
-			results = jobRepository.findJobByCat(category);
-		else if (category.equals(""))
-			results = jobRepository.findJobByTitle(keywords);
-		else
-			results = jobRepository.findJobByBoth(keywords, category);
+		boolean isAll = false;
+		if (keywords.equals("") && category.equals("")){
+			results = jobRepository.findAllJobs(start, limit);
+			isAll = true;
+		}
+		else if (keywords.equals("")){
+			keywords = "%";
+			keynull = "''";
+			
+		}
+		else if (category.equals("")){
+			category = "%";
+			keynull = "''";
+		}
+		
+		
+		
+		if(!isAll)
+			results = jobRepository.findJobByBoth(keywords, category, start, limit);
+		
+		int prev = page-1;
+		if(prev <=0)
+			prev = 1;
+		int next = page+1;
+		if(next > maxPage)
+			next = maxPage;
+		
 
 		model.addAttribute("test", "hello");
 		model.addAttribute("results", results);
+		model.addAttribute("currPage",pageNum);
+		model.addAttribute("key",keywords);
+		model.addAttribute("cat",category);
+		
+		model.addAttribute("prev",""+prev);
+		model.addAttribute("next",""+next);
+		model.addAttribute("max",""+maxPage);
 		return "searchResults";
 	}
 
@@ -796,5 +846,6 @@ public class MainController {
 		model.addAttribute("results", requests);
 		return "awaitingReview";
 	}
+	
 
 }
