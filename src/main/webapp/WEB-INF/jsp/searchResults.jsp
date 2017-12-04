@@ -37,7 +37,13 @@
         </c:forEach>
 
     </table>
-        
+    <div class="pagination">
+		  <a href="../demo/search?keywords=${key}&category=${cat}&pageNum=1">&laquo;</a>
+		  <a href="../demo/search?keywords=${key}&category=${cat}&pageNum=${prev}">&lt;</a>
+		  <a class = "curr" href="#">${currPage}</a>
+		  <a href="../demo/search?keywords=${key}&category=${cat}&pageNum=${next}">&gt;</a>
+		  <a href="../demo/search?keywords=${key}&category=${cat}&pageNum=${max}">&raquo;</a>
+	</div>
       
         <center>
         <a href="../../../searchJobs.html">Back</a> 

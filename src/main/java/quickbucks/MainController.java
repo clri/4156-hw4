@@ -146,7 +146,7 @@ public class MainController {
 	private JobRepository jobRepository;
 
 	@GetMapping(path="/demo/postJob")
-	public String addNewJob (@RequestParam String jobtitle
+	public String addNewJob (ModelMap model, @RequestParam String jobtitle
 			, @RequestParam String jobdesc, String category)
 	{
 		if (!validateInputStrings(5, jobtitle) ||
@@ -189,28 +189,84 @@ public class MainController {
 		} catch(Exception ee) {
 			return genericError();
 		}
-		return "redirect:/homepageloggedin.html";
+		
+			model.addAttribute("jobID", j.getId());
+			model.addAttribute("title", j.getJobtitle());
+			model.addAttribute("desc", j. getJobdesc());
+			model.addAttribute("tags", j.getCategory());
+
+		return "viewJob";
 	}
 
 	@GetMapping(path="/demo/search")
-	public String searchJobs(ModelMap model, @RequestParam String keywords
-			,@RequestParam String category)
+	public String searchJobs(ModelMap model, @RequestParam String keywords,
+	@RequestParam String category, @RequestParam String pageNum)
 	{
 		keywords = sanitizeString(keywords);
 		category = sanitizeString(category);
-
+		pageNum = sanitizeString(pageNum);
+		
+		String keynull = "%"+keywords+"%";
+		String catnull = "%"+category+"%";
+		int limit = 10;
+		
+		Integer count = jobRepository.searchCount(keywords, category);
+		int maxPage = count/limit;
+		if(count%limit > 0)
+			maxPage++;
+		
+		int page = 1;
+		try{
+			page = Integer.parseInt(pageNum);
+		}catch(NumberFormatException e){
+			System.out.println("parse error");
+			return genericError();
+		}
+		
+		if(page > maxPage)
+			page = maxPage;
+		
+		int start = (page-1)*limit;
+		
+	
 		List results = new ArrayList();
-		if (keywords.equals("") && category.equals(""))
-			results = jobRepository.findAllJobs();
-		else if (keywords.equals(""))
-			results = jobRepository.findJobByCat(category);
-		else if (category.equals(""))
-			results = jobRepository.findJobByTitle(keywords);
-		else
-			results = jobRepository.findJobByBoth(keywords, category);
+		boolean isAll = false;
+		if (keywords.equals("") && category.equals("")){
+			results = jobRepository.findAllJobs(start, limit);
+			isAll = true;
+		}
+		else if (keywords.equals("")){
+			keywords = "%";
+			keynull = "''";
+			
+		}
+		else if (category.equals("")){
+			category = "%";
+			keynull = "''";
+		}
+		
+		
+		
+		if(!isAll)
+			results = jobRepository.findJobByBoth(keywords, category, start, limit);
+		
+		int prev = page-1;
+		if(prev <=0)
+			prev = 1;
+		int next = page+1;
+		if(next > maxPage)
+			next = maxPage;
+		
 
 		model.addAttribute("test", "hello");
 		model.addAttribute("results", results);
+		model.addAttribute("currPage",pageNum);
+		model.addAttribute("key",keywords);
+		model.addAttribute("cat",category);
+		
+		model.addAttribute("prev",""+prev);
+		model.addAttribute("next",""+next);
+		model.addAttribute("max",""+maxPage);
 		return "searchResults";
 	}
 
@@ -759,5 +815,37 @@ public class MainController {
 
 		return "viewUser";
 	}
+	
+		@GetMapping(path="/demo/employeeReview")
+	public String employeeReviewList(ModelMap model)
+	{
+		
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+
+		List<Request> requests = new ArrayList();
+		requests = requestRepository.findRequestsByEmployer(""+uid);
+		
+		for(int i = 0; i< requests.size(); i++){
+			//check if review exists
+			Request temp = requests.get(i);
+			Integer jobID = temp.getJob();
+			Review test = reviewRepository.lookupReviewByJobID(jobID);
+			
+			//jobID.toString());
+			//if it does, remove from list
+			if(test != null)
+				requests.remove(i);
+			
+		}
+		
+		
+
+		model.addAttribute("type", "Employees");
+		model.addAttribute("results", requests);
+		return "awaitingReview";
+	}
+	
 
 }

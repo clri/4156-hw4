@@ -41,5 +41,8 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 
         @Query(value = "select employee from Request r where r.job = :jid and r.decision = 1", nativeQuery = true)
         Integer findAcceptedEmployee(@Param("jid") String jid);
+		
+		@Query(value = "select * from Request r where r.employer= :empID and r.decision = 1", nativeQuery = true)
+        List<Request> findRequestsByEmployer(@Param("empID") String empID);
 
 }

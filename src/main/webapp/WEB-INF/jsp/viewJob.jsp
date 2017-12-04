@@ -34,7 +34,7 @@
         <input type="text" name="id" value=${jobID} readonly style="display:none;" /><br />
 		<input type="submit" value="contact" />
         </form>
-        <a href="searchJobs.html">Back</a>
+        <a href="../../../searchJobs.html">Back</a>
         </center>
 
     </section>
