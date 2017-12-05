@@ -4,9 +4,10 @@
     <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>JobByID</title>
+	 <link href="../../../css/genericstyle.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-    <header>
+ <header>
 
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
             <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p>
@@ -14,9 +15,21 @@
                     <input type="submit" class="button red big" value="Sign Out" />
             </form>
             <br>
+			
+	
     </header>
+    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;">
+		<ul>
+		<li><a href="../../../homePageLoggedIn.html" >Home</a></li>
+         <li><a href ="../../../searchJobs.html" style="font-size: 15px; font-family: arial">Search Jobs</a></li>
+         <li><a href="../../../PostJob.html" style="font-size: 15px; font-family: arial">Post Job</a></li>
+         <li><a href="" style="font-size: 15px; font-family: arial">Legal</a></li>
+         <li><a href=""style="font-size: 15px; font-family: arial" >FAQ</a></li>
+         <li><a href="../../../notifications" style="font-size: 15px; font-family: arial">Inbox</a></li>
+    </ul>
+    </nav>
 
-    <section>
+    <section id="body" >
     <h2 style="text-align:center;">Enter an ID:</h2>
 
         <form:form method = "GET" action = "/finalPage">
@@ -36,6 +49,10 @@
         </center>
 
     </section>
+	
+	<div class="footer">
+  <p href="" style = "text-align:center; font-size:15px;font-family:arial;">2017 Quick Bucks, ASE Inc</p>
+</div>
     </body>
 </html>
 

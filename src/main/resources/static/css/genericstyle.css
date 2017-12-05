@@ -72,3 +72,40 @@ p5{
 #welcomeSec{
 	min-height: 500px;
 }
+
+#body{
+	min-height: 500px;
+	text-align:center;
+}
+
+#searchTable{
+	border-collapse: collapse;
+	width: 100%
+	text-aight: center;
+}
+
+
+
+#searchTable, #searchth, #searchtd {
+	margin: auto;
+	border: 1px solid black;
+	height: 50% 
+	text-align: center;
+	padding: 15px; 
+	width: 50%;
+}
+
+
+#searchtr:hover {background-color: lightgrey}
+
+.pagination{
+	clear: both;
+	font-size: 18px;
+	text-align: center;
+	
+}
+
+textarea {
+  width: 250px;
+  height: 75px;
+}

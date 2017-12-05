@@ -3,7 +3,7 @@ body.security-app {
     overflow: hidden;
     height: 100%;
     width:100%;
-    background:#edecec;
+    
 }
 
 
@@ -24,13 +24,26 @@ body.security-app {
     
 }
 
+.lc-block2 {
+    padding: 35px 55px 35px;
+    background: #fff;
+    border-radius: 2px;
+    width: 30%;
+    z-index: 10;
+    vertical-align:middle;
+    text-align: center;
+    margin-left: 30%;
+    margin-right: 30%;
+    
+}
+
 body.security-app:before {
     height: 50%;
     width: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    background: #D40047;
+    background:lightblue;
     content: "";
     z-index: 0;
 }
@@ -55,7 +68,7 @@ input[type="text"], input[type="password"]  {
     display: block;
     margin: 0;
     width: 100%;
-    font-family: "Open Sans", sans-serif;
+    font-family: arial;
     font-size: 18px;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -76,14 +89,12 @@ input[type="text"], input[type="password"]  {
 
 .button{
 display:inline-block;
-text-transform:uppercase;
 padding:1em 1.5em 0.75em;
 border-radius:2px;
-font-weight:bold;
-border:none;color:#fff !important;
+border:none;color:#000 !important;
 text-decoration:none;
-font-family:'Open Sans Condensed',sans-serif;
-font-size:14px;
+font-family: arial
+font-size:18px;
 line-height:1;
 cursor:pointer;
 margin-right:10px;
@@ -95,8 +106,7 @@ background-color:#a5d16d;
 box-shadow:0 0 5px #a4cf6c inset, 0 1px 1px #eee
 }
 .button.red{
-background-color:#f4836a;
-box-shadow:0 0 5px #ef7f65 inset, 0 1px 1px #eee
+background-color:#f1f1f1;
 }
 .button.small{font-size:11px}
 .button.big{

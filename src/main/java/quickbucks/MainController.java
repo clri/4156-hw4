@@ -806,7 +806,7 @@ public class MainController {
 	 	}
 	 	else{
 			model.addAttribute("userID", u.getId());
-			model.addAttribute("name", u.getUserFirstName()+u.getUserLastName());
+			model.addAttribute("name", u.getUserFirstName()+" " +u.getUserLastName());
 			model.addAttribute("school", u.getUserSchool());
 			model.addAttribute("degree", u.getUserDegree());
 			model.addAttribute("location", u.getUserLocation());
