@@ -111,6 +111,7 @@ public class MainControllerTest {
                         "abcde", "MS", "ON", "SEAS");
         }
 
+/*
         //sanitizing strings: test to pass
         @Test
         public void testSanitize1() throws Exception {
@@ -137,11 +138,10 @@ public class MainControllerTest {
                 String ans = mainController.sanitizeString("abc;d;;;");
                 assertEquals(ans,"abcd");
         }
-
+*/
         //REGISTRATION
         //test to pass
         //first name capitalized
-
         @Test
         public void aaaatestRegister1() throws Exception {
                 String view = this.mainController.addNewUser(
@@ -268,7 +268,7 @@ public class MainControllerTest {
                         "secnetlkfsdjfsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index2.html");
-        }
+        }/*
 
 
 
@@ -392,7 +392,7 @@ public class MainControllerTest {
                         "secnetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index3.html");
-        }
+        }*/
 
 
         //JOB CREATION
@@ -435,7 +435,7 @@ public class MainControllerTest {
                 assertEquals(view,"viewJob");
         }
 
-
+/*
         //TEST TO FAIL
         //name = 256
         @Test
@@ -494,7 +494,7 @@ public class MainControllerTest {
                 assertEquals(view,"redirect:/generic-error.html");
         }
 
-        /*search*/
+        //
         //test to pass: category and keywords, page
         @Test
         @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
@@ -502,6 +502,10 @@ public class MainControllerTest {
                 String view = this.mainController.searchJobs(model,
                         "keywords", "category", "1");
                 assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"keywords");
+                assertEquals(model.get("cat"),"category");
         }
         //keyword blank
         @Test
@@ -510,6 +514,10 @@ public class MainControllerTest {
                 String view = this.mainController.searchJobs(model,
                         "", "category", "1");
                 assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"");
+                assertEquals(model.get("cat"),"category");
         }
         //category blank
         @Test
@@ -518,6 +526,10 @@ public class MainControllerTest {
                 String view = this.mainController.searchJobs(model,
                         "keywords", "", "1");
                 assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"keywords");
+                assertEquals(model.get("cat"),"");
         }
         //both blank
         @Test
@@ -526,8 +538,74 @@ public class MainControllerTest {
                 String view = this.mainController.searchJobs(model,
                         "", "", "1");
                 assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"");
+                assertEquals(model.get("cat"),"");
         }
-        //@TODO: how to handle negative page numbers?
+        //negative page
+        @Test
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        public void testSearch8() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "", "-1");
+                assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"");
+                assertEquals(model.get("cat"),"");
+        }
+        //zero page
+        @Test
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        public void testSearch9() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "", "0");
+                assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"");
+                assertEquals(model.get("cat"),"");
+        }
+        //larger than number of pages
+        @Test
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        public void testSearch10() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "678", "939", "1234");
+                assertEquals(view,"searchResults");
+                assertEquals(model.get("test"),"hello");
+                assertEquals(model.get("currPage"),"1");
+                assertEquals(model.get("key"),"678");
+                assertEquals(model.get("cat"),"939");
+        }
+
+        //test to fail!
+        //empty string page number
+        @Test
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        public void testSearch5() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "", "");
+                assertEquals(view,"redirect:/generic-error.html");
+        }
+        //noninteger page number
+        @Test
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        public void testSearch6() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "", "4.4");
+                assertEquals(view,"redirect:/generic-error.html");
+        }
+        //nonnumeric page number
+        @Test
+        @WithMockUser(username = "john@columbia.edu", roles = { "USER" })
+        public void testSearch7() throws Exception {
+                String view = this.mainController.searchJobs(model,
+                        "", "", "sdklfjsldkfj");
+                assertEquals(view,"redirect:/generic-error.html");
+        }
+
 
         //viewjob: test to pass
         @Test
@@ -557,9 +635,10 @@ public class MainControllerTest {
                 String view = this.mainController.viewJob(model, jid + "");
                 assertEquals(view, "viewJobError");
                 assertEquals(model.get("jobID"),jid + "");
-        }
+        }*/
 
         //requesting and deciding: pass and fail are mixed togeter
+        //we will add reviewing here too
         //adding requests: test to pass
         //PASS: request job that has not been accepted and not by me
         @Test

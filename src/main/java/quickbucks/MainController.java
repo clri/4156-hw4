@@ -227,6 +227,8 @@ public class MainController {
 			return genericError();
 		}
 
+		if (page < 1)
+			page = 1;
 		if(page > maxPage)
 			page = maxPage;
 
@@ -238,21 +240,13 @@ public class MainController {
 			results = jobRepository.findAllJobs(start, limit);
 			isAll = true;
 		}
-		else if (keywords.equals("")){
-			keywords = "%";
-			keynull = "''";
-			category = "%" + category + "%";
-		}
-		else if (category.equals("")){
-			category = "%";
-			keynull = "''";
-			keywords = "%" + keywords + "%";
-		}
+		else if (keywords.equals(""))
+			keynull = "%";
+		else if (category.equals(""))
+			catnull = "%";
 
 		if(!isAll) {
-			//try {
-				results = jobRepository.findJobByBoth(keywords, category, start, limit);
-			//} catch (Exception e) {}
+			results = jobRepository.findJobByBoth(keynull, catnull, start, limit);
 		}
 
 		int prev = page-1;
@@ -262,10 +256,9 @@ public class MainController {
 		if(next > maxPage)
 			next = maxPage;
 
-
 		model.addAttribute("test", "hello");
 		model.addAttribute("results", results);
-		model.addAttribute("currPage",pageNum);
+		model.addAttribute("currPage", page + "");
 		model.addAttribute("key",keywords);
 		model.addAttribute("cat",category);
 
@@ -302,13 +295,6 @@ public class MainController {
 		return "jobByID";
 
    	}
-
-
-
-
-
-
-
 
    	@RequestMapping(value = "/finalPage", method = RequestMethod.GET)
    	public String viewJob(ModelMap model, @RequestParam String id)
@@ -413,6 +399,19 @@ public class MainController {
 			model.addAttribute("jobID", id);
 			return "reviewJobError";
 	 	}
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		int accid;
+		try {
+			accid = requestRepository.findAcceptedEmployee(id);
+		} catch (Exception ne) {
+			/*no one has accepted this job; access denied*/
+			return "redirect:/403.html";
+		}
+		if (accid != uid && uid != j.getUser())
+			return "redirect:/403.html"; /* someone else accepted */
+
 		model.addAttribute("jobID", j.getId());
 		model.addAttribute("title", j.getJobtitle());
 		model.addAttribute("desc", j. getJobdesc());
@@ -451,6 +450,10 @@ public class MainController {
 			model.addAttribute("errmsg", "rating must be numerical out of five");
 			return createReview(model, id); //invalid input
 		}
+		if (rat < 0.0 || rat > 5.0) {
+			model.addAttribute("errmsg", "rating must be numerical between 1 and five");
+			return createReview(model, id); //invalid input
+		}
 		model.addAttribute("errmsg","");
 
 		Job j = new Job();
@@ -471,18 +474,18 @@ public class MainController {
 			/*no one has accepted this job; access denied*/
 			return "redirect:/403.html";
 		}
-		if (accid != uid)
+		if (accid != uid && uid != j.getUser())
 			return "redirect:/403.html"; /* someone else accepted */
 
 		/*FAIL CASES:
 		Review for this job has already been posted
 		Cannot parse double for rating.
 		reviewBody is too long
-		you were not the person who was accepted for the job
+		you were not the person who was accepted for the job or employer
 		*/
-
-		r.setEmployee(uid);
+		r.setEmployee(accid);
 		r.setEmployer(j.getUser());
+		r.setAuthor(uid);
 		r.setJob(j.getId());
 		r.setReviewBody(reviewBody);
 		r.setRating(rat);
@@ -495,15 +498,25 @@ public class MainController {
 
 		/*mark request as read*/
 		Request req;
-		try{
-			req = requestRepository.findRequestByJobAndEmployee(id, uid);
-		} catch (Exception rex) {
-			return genericError();
+		if (uid == accid) {
+			try{
+				req = requestRepository.findRequestByJobAndEmployee(id, uid);
+			} catch (Exception rex) {
+				return genericError();
+			}
+			if (req == null)
+				return genericError(); /*something happened in the db to delete our record*/
+			req.setEmployeeRead(true);
+		} else {
+			try{
+				req = requestRepository.findRequestByJobAndEmployer(id, uid);
+			} catch (Exception rex) {
+				return genericError();
+			}
+			if (req == null)
+				return genericError(); /*something happened in the db to delete our record*/
+			req.setEmployerRead(true);
 		}
-		if (req == null)
-			return genericError(); /*something happened in the db to delete our record*/
-
-		req.setEmployeeRead(true);
 		try {
 			requestRepository.save(req);
 		} catch(Exception ree) {
