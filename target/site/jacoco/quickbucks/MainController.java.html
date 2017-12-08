@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Quickbucks Maven Webapp</a> &gt; <a href="index.source.html" class="el_package">quickbucks</a> &gt; <span class="el_source">MainController.java</span></div><h1>MainController.java</h1><pre class="source lang-java linenums">package quickbucks;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.RequestMethod;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.ui.ModelMap;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import java.util.UUID;
+import java.lang.NullPointerException;
+
+import quickbucks.User;
+import quickbucks.UserRepository;
+import quickbucks.MvcConfig;
+import quickbucks.ReviewRepository;
+import quickbucks.Review;
+import java.lang.Integer;
+import java.util.List;
+import java.util.ArrayList;
+
+@Controller
+<span class="fc" id="L37">public class MainController {</span>
+
+	private boolean validateInputStrings(int in, String s)
+	{
+<span class="fc bfc" id="L41" title="All 4 branches covered.">		if (s.length() &gt; 255 &amp;&amp; in != 6)</span>
+<span class="fc" id="L42">			return false;</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (!(sanitizeString(s).equals(s)))</span>
+<span class="nc" id="L44">			return false;</span>
+<span class="fc" id="L45">		boolean ans = true;</span>
+		/*in = 1: email; in = 2: password, 3: name, 4: location
+		 *5: non-empty*/
+<span class="fc bfc" id="L48" title="All 6 branches covered.">		switch(in) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			case 1: ans = (!s.equals(&quot;&quot;) &amp;&amp; (</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">				s.matches(&quot;[a-zA-z0-9\\.\\-]+@.*columbia.edu&quot;)</span>
+				||
+<span class="fc bfc" id="L52" title="All 2 branches covered.">				s.matches(&quot;[a-zA-z0-9\\.\\-]+@.*barnard.edu&quot;)));</span>
+<span class="fc" id="L53">				break;</span>
+<span class="fc bfc" id="L54" title="All 4 branches covered.">			case 2: ans = (!s.equals(&quot;&quot;) &amp;&amp; s.length() &gt;= 4);</span>
+<span class="fc" id="L55">				break;</span>
+<span class="fc" id="L56">			case 3: ans = (s.matches(&quot;[a-zA-z\\s\\-]+&quot;));</span>
+<span class="fc" id="L57">				break;</span>
+<span class="fc bfc" id="L58" title="All 4 branches covered.">			case 4: ans = (s.equals(&quot;ON&quot;) || s.equals(&quot;OFF&quot;));</span>
+<span class="fc" id="L59">				break;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			case 5: ans = (!s.equals(&quot;&quot;));</span>
+<span class="fc" id="L61">				break;</span>
+<span class="fc" id="L62">			default: ans = true;</span>
+		}
+<span class="fc" id="L64">		return ans;</span>
+	}
+
+	/* sanitizeString(): remove semicolons and dashes from the given
+	 * string */
+	public String sanitizeString(String input)
+	{
+<span class="fc" id="L71">		String ans = input.replaceAll(&quot;;&quot;,&quot;&quot;);</span>
+<span class="fc" id="L72">		ans = ans.replaceAll(&quot;--&quot;,&quot;&quot;);</span>
+<span class="fc" id="L73">		return ans;</span>
+	}
+
+	/* setRepositories(): for testing
+	 */
+	public void setReposotories(UserRepository u, JobRepository j,
+		RequestRepository r, ReviewRepository re,
+		ResetTokenRepository rt)
+	{
+<span class="fc" id="L82">			userRepository = u;</span>
+<span class="fc" id="L83">			jobRepository = j;</span>
+<span class="fc" id="L84">			requestRepository = r;</span>
+<span class="fc" id="L85">			reviewRepository = re;</span>
+<span class="fc" id="L86">			resetTokenRepository = rt;</span>
+<span class="fc" id="L87">	}</span>
+
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@GetMapping(path=&quot;/demo/adduser&quot;)
+	public String addNewUser (@RequestParam String firstName
+			, @RequestParam String lastName
+			, @RequestParam String email
+			, @RequestParam String password
+			, @RequestParam String degree
+			, @RequestParam String location
+			, @RequestParam String school)
+	{
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (!(validateInputStrings(3,firstName) &amp;&amp;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			validateInputStrings(3,lastName) &amp;&amp;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			validateInputStrings(1,email) &amp;&amp;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			validateInputStrings(2,password) &amp;&amp;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			validateInputStrings(0,degree) &amp;&amp;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			validateInputStrings(4,location) &amp;&amp;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			validateInputStrings(0,school)))</span>
+<span class="fc" id="L109">			return &quot;redirect:/index3.html&quot;;</span>
+
+<span class="fc" id="L111">		firstName = sanitizeString(firstName);</span>
+<span class="fc" id="L112">		lastName = sanitizeString(lastName);</span>
+<span class="fc" id="L113">		email = sanitizeString(email);</span>
+<span class="fc" id="L114">		password = sanitizeString(password);</span>
+<span class="fc" id="L115">		degree = sanitizeString(degree);</span>
+<span class="fc" id="L116">		location = sanitizeString(location);</span>
+<span class="fc" id="L117">		school = sanitizeString(school);</span>
+
+		try {
+<span class="fc" id="L120">			int uid = userRepository.findIDByEmail(email);</span>
+<span class="fc" id="L121">		} catch (Exception e) {</span>
+<span class="fc" id="L122">			User n = new User();</span>
+<span class="fc" id="L123">			n.setUserFirstName(firstName);</span>
+<span class="fc" id="L124">			n.setUserLastName(lastName);</span>
+<span class="fc" id="L125">			n.setUserEmail(email);</span>
+<span class="fc" id="L126">			n.setUserDegree(degree);</span>
+<span class="fc" id="L127">			n.setUserLocation(location);</span>
+<span class="fc" id="L128">			n.setUserSchool(school);</span>
+<span class="fc" id="L129">			BCryptPasswordEncoder passwordEncoder = new</span>
+				BCryptPasswordEncoder();
+<span class="fc" id="L131">			String hashedPassword =</span>
+<span class="fc" id="L132">				passwordEncoder.encode(password);</span>
+<span class="fc" id="L133">			n.setUserPassword(hashedPassword);</span>
+			try {
+<span class="fc" id="L135">				userRepository.save(n);</span>
+<span class="nc" id="L136">			} catch (Exception ee) {</span>
+<span class="nc" id="L137">				return genericError();</span>
+<span class="fc" id="L138">			}</span>
+<span class="fc" id="L139">			return &quot;redirect:/index2.html&quot;;</span>
+<span class="fc" id="L140">		}</span>
+
+<span class="fc" id="L142">		return &quot;redirect:/index3.html&quot;;</span>
+	}
+
+	@Autowired
+	private JobRepository jobRepository;
+
+	@GetMapping(path=&quot;/demo/postJob&quot;)
+	public String addNewJob (ModelMap model, @RequestParam String jobtitle
+			, @RequestParam String jobdesc, String category)
+	{
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		if (!validateInputStrings(5, jobtitle) ||</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">			!validateInputStrings(6, jobdesc) ||</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			!validateInputStrings(5, category))</span>
+<span class="fc" id="L155">			return genericError();</span>
+
+<span class="fc" id="L157">		jobtitle = sanitizeString(jobtitle);</span>
+<span class="fc" id="L158">		jobdesc = sanitizeString(jobdesc);</span>
+<span class="fc bfc" id="L159" title="All 4 branches covered.">		if (jobdesc.length() &gt; 1500 || jobdesc.equals(&quot;&quot;))</span>
+<span class="fc" id="L160">			return genericError();</span>
+<span class="fc" id="L161">		category = sanitizeString(category);</span>
+
+<span class="fc" id="L163">		int uid = -1;</span>
+<span class="fc" id="L164">		Job j = new Job();</span>
+		org.springframework.security.core.userdetails.User user
+<span class="fc" id="L166">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+		try {
+<span class="fc" id="L168">			uid = userRepository.findIDByEmail(user.getUsername());</span>
+<span class="nc" id="L169">		} catch(Exception ee) {</span>
+<span class="nc" id="L170">			return genericError();</span>
+<span class="fc" id="L171">		}</span>
+
+<span class="fc" id="L173">		j.setUser(uid);</span>
+<span class="fc" id="L174">		j.setJobTitle(jobtitle);</span>
+<span class="fc" id="L175">		j.setJobDescription(jobdesc);</span>
+<span class="fc" id="L176">		j.setCategory(category);</span>
+/*		try{
+			double payrate = Double.parseDouble(pay);
+			j.setPay(payrate);
+		}
+		catch(NumberFormatException e){}
+		*/
+
+		//j.setStatus(0); //jobs are created as 'open'
+
+		//set tags, date
+		try {
+<span class="fc" id="L188">			jobRepository.save(j);</span>
+<span class="nc" id="L189">		} catch(Exception ee) {</span>
+<span class="nc" id="L190">			return genericError();</span>
+<span class="fc" id="L191">		}</span>
+
+<span class="fc" id="L193">			model.addAttribute(&quot;jobID&quot;, j.getId());</span>
+<span class="fc" id="L194">			model.addAttribute(&quot;title&quot;, j.getJobtitle());</span>
+<span class="fc" id="L195">			model.addAttribute(&quot;desc&quot;, j. getJobdesc());</span>
+<span class="fc" id="L196">			model.addAttribute(&quot;tags&quot;, j.getCategory());</span>
+
+<span class="fc" id="L198">		return &quot;viewJob&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/demo/search&quot;)
+	public String searchJobs(ModelMap model, @RequestParam String keywords,
+	@RequestParam String category, @RequestParam String pageNum)
+	{
+<span class="fc" id="L205">		keywords = sanitizeString(keywords);</span>
+<span class="fc" id="L206">		category = sanitizeString(category);</span>
+<span class="fc" id="L207">		pageNum = sanitizeString(pageNum);</span>
+
+<span class="fc" id="L209">		String keynull = &quot;%&quot;+keywords+&quot;%&quot;;</span>
+<span class="fc" id="L210">		String catnull = &quot;%&quot;+category+&quot;%&quot;;</span>
+<span class="fc" id="L211">		int limit = 10;</span>
+
+<span class="fc" id="L213">		Integer count = 1;</span>
+		try {
+<span class="fc" id="L215">			count = jobRepository.searchCount(keywords, category);</span>
+<span class="nc" id="L216">		} catch (Exception e) {</span>
+<span class="nc" id="L217">			count = 1;</span>
+<span class="fc" id="L218">		}</span>
+<span class="fc" id="L219">		int maxPage = count/limit;</span>
+<span class="fc" id="L220">		maxPage++; /*limit 1, x; is ok*/</span>
+
+<span class="fc" id="L222">		int page = 1;</span>
+		try{
+<span class="fc" id="L224">			page = Integer.parseInt(pageNum);</span>
+<span class="nc" id="L225">		}catch(NumberFormatException e){</span>
+<span class="nc" id="L226">			System.out.println(&quot;parse error&quot;);</span>
+<span class="nc" id="L227">			return genericError();</span>
+<span class="fc" id="L228">		}</span>
+
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">		if(page &gt; maxPage)</span>
+<span class="nc" id="L231">			page = maxPage;</span>
+
+<span class="fc" id="L233">		int start = (page-1)*limit;</span>
+
+<span class="fc" id="L235">		List results = new ArrayList();</span>
+<span class="fc" id="L236">		boolean isAll = false;</span>
+<span class="fc bfc" id="L237" title="All 4 branches covered.">		if (keywords.equals(&quot;&quot;) &amp;&amp; category.equals(&quot;&quot;)){</span>
+<span class="fc" id="L238">			results = jobRepository.findAllJobs(start, limit);</span>
+<span class="fc" id="L239">			isAll = true;</span>
+		}
+<span class="fc bfc" id="L241" title="All 2 branches covered.">		else if (keywords.equals(&quot;&quot;)){</span>
+<span class="fc" id="L242">			keywords = &quot;%&quot;;</span>
+<span class="fc" id="L243">			keynull = &quot;''&quot;;</span>
+<span class="fc" id="L244">			category = &quot;%&quot; + category + &quot;%&quot;;</span>
+		}
+<span class="fc bfc" id="L246" title="All 2 branches covered.">		else if (category.equals(&quot;&quot;)){</span>
+<span class="fc" id="L247">			category = &quot;%&quot;;</span>
+<span class="fc" id="L248">			keynull = &quot;''&quot;;</span>
+<span class="fc" id="L249">			keywords = &quot;%&quot; + keywords + &quot;%&quot;;</span>
+		}
+
+<span class="fc bfc" id="L252" title="All 2 branches covered.">		if(!isAll) {</span>
+			//try {
+<span class="fc" id="L254">				results = jobRepository.findJobByBoth(keywords, category, start, limit);</span>
+			//} catch (Exception e) {}
+		}
+
+<span class="fc" id="L258">		int prev = page-1;</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">		if(prev &lt;=0)</span>
+<span class="fc" id="L260">			prev = 1;</span>
+<span class="fc" id="L261">		int next = page+1;</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">		if(next &gt; maxPage)</span>
+<span class="fc" id="L263">			next = maxPage;</span>
+
+
+<span class="fc" id="L266">		model.addAttribute(&quot;test&quot;, &quot;hello&quot;);</span>
+<span class="fc" id="L267">		model.addAttribute(&quot;results&quot;, results);</span>
+<span class="fc" id="L268">		model.addAttribute(&quot;currPage&quot;,pageNum);</span>
+<span class="fc" id="L269">		model.addAttribute(&quot;key&quot;,keywords);</span>
+<span class="fc" id="L270">		model.addAttribute(&quot;cat&quot;,category);</span>
+
+<span class="fc" id="L272">		model.addAttribute(&quot;prev&quot;,&quot;&quot;+prev);</span>
+<span class="fc" id="L273">		model.addAttribute(&quot;next&quot;,&quot;&quot;+next);</span>
+<span class="fc" id="L274">		model.addAttribute(&quot;max&quot;,&quot;&quot;+maxPage);</span>
+<span class="fc" id="L275">		return &quot;searchResults&quot;;</span>
+	}
+
+	/*@GetMapping(path=&quot;/demo/viewjob&quot;)
+	public @ResponseBody ModelAndView viewJob(@RequestParam String id) {
+		ModelAndView blep=new ModelAndView();
+		blep.setViewName(&quot;redirect:viewJob&quot;);
+		Job j = findOne(1);
+		redir.addFlashAttribute(&quot;title&quot;, j.getJobTitle());
+
+
+		return jobRepository.findAll();
+	}
+	*/
+
+	@RequestMapping(value = &quot;/employeeReview&quot;, method = RequestMethod.GET)
+	public String lookupJobByID()
+	{
+		//org.springframework.security.core.userdetails.User user
+			//= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+
+
+		//and then from there getUsername() should get you the email
+
+
+
+<span class="nc" id="L302">		return &quot;jobByID&quot;;</span>
+
+   	}
+
+
+
+
+
+
+
+
+   	@RequestMapping(value = &quot;/finalPage&quot;, method = RequestMethod.GET)
+   	public String viewJob(ModelMap model, @RequestParam String id)
+	{
+<span class="fc" id="L316">		id = sanitizeString(id);</span>
+
+<span class="fc" id="L318">	 	Job j = jobRepository.findJobByID(id);</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">	 	if (j == null) {</span>
+<span class="fc" id="L320">			model.addAttribute(&quot;jobID&quot;, id);</span>
+<span class="fc" id="L321">			return &quot;viewJobError&quot;;</span>
+	 	}
+	 	else{
+<span class="fc" id="L324">			model.addAttribute(&quot;jobID&quot;, j.getId());</span>
+<span class="fc" id="L325">			model.addAttribute(&quot;title&quot;, j.getJobtitle());</span>
+<span class="fc" id="L326">			model.addAttribute(&quot;desc&quot;, j. getJobdesc());</span>
+<span class="fc" id="L327">			model.addAttribute(&quot;tags&quot;, j.getCategory());</span>
+	   	}
+
+<span class="fc" id="L330">		return &quot;viewJob&quot;;</span>
+	}
+
+
+	@Autowired
+	private RequestRepository requestRepository;
+
+	//TODO make sure user does not request their own job
+	@GetMapping(path=&quot;/demo/request&quot;) // Map ONLY GET Requests
+	public String addNewJob (@RequestParam String id)
+	{
+<span class="fc" id="L341">		id = sanitizeString(id);</span>
+
+<span class="fc" id="L343">		Job j = jobRepository.findJobByID(id);</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">		if (j == null){</span>
+<span class="fc" id="L345">			System.out.println(&quot;job null&quot;);</span>
+<span class="fc" id="L346">			return &quot;redirect:/searchJobsRF.html&quot;;</span>
+		}
+<span class="fc" id="L348">		int emp = -1;</span>
+		try {
+<span class="fc" id="L350">			emp = requestRepository.findAcceptedEmployee(id);</span>
+<span class="fc" id="L351">		} catch (Exception fae) {}</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">		if (emp != -1)</span>
+<span class="fc" id="L353">			return &quot;redirect:/searchJobsRF.html&quot;; //already requested</span>
+
+		org.springframework.security.core.userdetails.User user
+<span class="fc" id="L356">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="fc" id="L357">		int uid = userRepository.findIDByEmail(user.getUsername());</span>
+
+		/*FAIL CASES:
+		requesting your own job. Should bounce you back to the search
+		page with a message. also you cannot request something you
+		have already requested.*/
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">		if (j.getUser() == uid)</span>
+<span class="nc" id="L364">			return &quot;redirect:/searchJobsRF.html&quot;;</span>
+		Request rr;
+		try {
+<span class="fc" id="L367">			rr = requestRepository.findRequestByJobAndEmployee(j.getId() + &quot;&quot;, uid);</span>
+<span class="nc" id="L368">		} catch (Exception rex) {</span>
+<span class="nc" id="L369">			return genericError();</span>
+<span class="fc" id="L370">		}</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">		if (rr != null){</span>
+<span class="fc" id="L372">			System.out.println(&quot;request already exists&quot;);</span>
+<span class="fc" id="L373">			return &quot;redirect:/searchJobsRF.html&quot;;</span>
+		}
+
+<span class="fc" id="L376">		Request r = new Request();</span>
+<span class="fc" id="L377">		r.setEmployee(uid);</span>
+<span class="fc" id="L378">		r.setTitle(j.getJobtitle());</span>
+<span class="fc" id="L379">		r.setEmployer(j.getUser());</span>
+<span class="fc" id="L380">		r.setJob(j.getId());</span>
+<span class="fc" id="L381">		r.setMsg(&quot;&quot;);</span>
+
+		try {
+<span class="fc" id="L384">			requestRepository.save(r);</span>
+<span class="nc" id="L385">		} catch (Exception ee) {</span>
+<span class="nc" id="L386">			return genericError();</span>
+<span class="fc" id="L387">		}</span>
+<span class="fc" id="L388">		return &quot;redirect:/requestSuccess.html&quot;;</span>
+	}
+
+	@RequestMapping(value=&quot;/logout&quot;, method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request,
+		HttpServletResponse response)
+	{
+		Authentication auth =
+<span class="nc" id="L396">			SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">		if (auth != null) {</span>
+<span class="nc" id="L398">			new SecurityContextLogoutHandler().logout(request,</span>
+				response, auth);
+		}
+<span class="nc" id="L401">		return &quot;redirect:/login?logout&quot;;//You can redirect wherever you want, but generally it's a good practice to show login screen again.</span>
+	}
+
+	@Autowired
+	private ReviewRepository reviewRepository;
+
+	public String createReview(ModelMap model, @RequestParam String id)
+	{
+<span class="nc" id="L409">		id = sanitizeString(id);</span>
+
+<span class="nc" id="L411">	 	Job j = jobRepository.findJobByID(id);</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">	 	if (j ==null) {</span>
+<span class="nc" id="L413">			model.addAttribute(&quot;jobID&quot;, id);</span>
+<span class="nc" id="L414">			return &quot;reviewJobError&quot;;</span>
+	 	}
+<span class="nc" id="L416">		model.addAttribute(&quot;jobID&quot;, j.getId());</span>
+<span class="nc" id="L417">		model.addAttribute(&quot;title&quot;, j.getJobtitle());</span>
+<span class="nc" id="L418">		model.addAttribute(&quot;desc&quot;, j. getJobdesc());</span>
+<span class="nc" id="L419">		model.addAttribute(&quot;tags&quot;, j.getCategory());</span>
+
+<span class="nc" id="L421">		return &quot;createReview&quot;;</span>
+	}
+
+	@RequestMapping(value = &quot;/createAReview&quot;, method = RequestMethod.GET)
+	public String doReview(ModelMap model, @RequestParam String id)
+	{
+<span class="nc" id="L427">		model.addAttribute(&quot;errmsg&quot;,&quot;&quot;); //clean page, no error message</span>
+<span class="nc" id="L428">		return createReview(model, id);</span>
+	}
+
+	@Autowired
+        public JavaMailSender emailSender;
+
+	@GetMapping(path=&quot;/demo/review&quot;) // Map ONLY GET Requests
+	public String addNewReview (ModelMap model, @RequestParam String id,
+		@RequestParam String rating, @RequestParam String reviewBody)
+	{
+<span class="nc" id="L438">		id = sanitizeString(id);</span>
+<span class="nc" id="L439">	 	rating = sanitizeString(rating);</span>
+<span class="nc" id="L440">		reviewBody = sanitizeString(reviewBody);</span>
+<span class="nc" id="L441">		double rat = 0.0;</span>
+
+<span class="nc bnc" id="L443" title="All 4 branches missed.">		if (reviewBody.length() &gt; 1500 || reviewBody.length() &lt; 10) {</span>
+<span class="nc" id="L444">			model.addAttribute(&quot;errmsg&quot;, &quot;review must be between 10 and 100 characters&quot;);</span>
+<span class="nc" id="L445">			return createReview(model, id); //invalid input</span>
+		}
+
+		try {
+<span class="nc" id="L449">			rat = Double.parseDouble(rating);</span>
+<span class="nc" id="L450">		} catch (Exception eee) {</span>
+<span class="nc" id="L451">			model.addAttribute(&quot;errmsg&quot;, &quot;rating must be numerical out of five&quot;);</span>
+<span class="nc" id="L452">			return createReview(model, id); //invalid input</span>
+<span class="nc" id="L453">		}</span>
+<span class="nc" id="L454">		model.addAttribute(&quot;errmsg&quot;,&quot;&quot;);</span>
+
+<span class="nc" id="L456">		Job j = new Job();</span>
+		try {
+<span class="nc" id="L458">			j = jobRepository.findJobByID(id);</span>
+<span class="nc" id="L459">		} catch (Exception e) {</span>
+<span class="nc" id="L460">			return genericError();</span>
+<span class="nc" id="L461">		}</span>
+<span class="nc" id="L462">		Review r = new Review();</span>
+		org.springframework.security.core.userdetails.User user
+<span class="nc" id="L464">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="nc" id="L465">		int uid = userRepository.findIDByEmail(user.getUsername());</span>
+
+		int accid;
+		try {
+<span class="nc" id="L469">			accid = requestRepository.findAcceptedEmployee(id);</span>
+<span class="nc" id="L470">		} catch (Exception ne) {</span>
+			/*no one has accepted this job; access denied*/
+<span class="nc" id="L472">			return &quot;redirect:/403.html&quot;;</span>
+<span class="nc" id="L473">		}</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">		if (accid != uid)</span>
+<span class="nc" id="L475">			return &quot;redirect:/403.html&quot;; /* someone else accepted */</span>
+
+		/*FAIL CASES:
+		Review for this job has already been posted
+		Cannot parse double for rating.
+		reviewBody is too long
+		you were not the person who was accepted for the job
+		*/
+
+<span class="nc" id="L484">		r.setEmployee(uid);</span>
+<span class="nc" id="L485">		r.setEmployer(j.getUser());</span>
+<span class="nc" id="L486">		r.setJob(j.getId());</span>
+<span class="nc" id="L487">		r.setReviewBody(reviewBody);</span>
+<span class="nc" id="L488">		r.setRating(rat);</span>
+
+		try {
+<span class="nc" id="L491">			reviewRepository.save(r);</span>
+<span class="nc" id="L492">		} catch(Exception ee) {</span>
+<span class="nc" id="L493">			return genericError();</span>
+<span class="nc" id="L494">		}</span>
+
+		/*mark request as read*/
+		Request req;
+		try{
+<span class="nc" id="L499">			req = requestRepository.findRequestByJobAndEmployee(id, uid);</span>
+<span class="nc" id="L500">		} catch (Exception rex) {</span>
+<span class="nc" id="L501">			return genericError();</span>
+<span class="nc" id="L502">		}</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">		if (req == null)</span>
+<span class="nc" id="L504">			return genericError(); /*something happened in the db to delete our record*/</span>
+
+<span class="nc" id="L506">		req.setEmployeeRead(true);</span>
+		try {
+<span class="nc" id="L508">			requestRepository.save(req);</span>
+<span class="nc" id="L509">		} catch(Exception ree) {</span>
+<span class="nc" id="L510">			return genericError();</span>
+<span class="nc" id="L511">		}</span>
+
+		try {
+<span class="nc" id="L514">			SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L515">			message.setTo(userRepository.findEmailById(j.getUser()));</span>
+<span class="nc" id="L516">			message.setSubject(&quot;Review posted for job &quot; +</span>
+<span class="nc" id="L517">				j.getId().toString() + &quot; on Quickbucks&quot;);</span>
+<span class="nc" id="L518">			message.setText(&quot;Rating: &quot; + rating + &quot;\n\n\n&quot;</span>
+				+ reviewBody);
+			try {
+<span class="nc" id="L521">				emailSender.send(message);</span>
+<span class="nc" id="L522">			} catch (NullPointerException ne) {}</span>
+<span class="nc" id="L523">		} catch (MailException exception) {</span>
+<span class="nc" id="L524">			exception.printStackTrace();</span>
+<span class="nc" id="L525">		}</span>
+
+<span class="nc" id="L527">		return &quot;redirect:/reviewCreated.html&quot;;</span>
+	}
+
+	@Autowired
+	private ResetTokenRepository resetTokenRepository;
+
+	@GetMapping(path=&quot;/sendForgotEmail&quot;)
+	public String sendForgotEmail (@RequestParam String email)
+	{
+<span class="nc" id="L536">		email = sanitizeString(email);</span>
+
+		try {
+<span class="nc" id="L539">			int uid = userRepository.findIDByEmail(email);</span>
+<span class="nc" id="L540">		} catch (Exception e) {</span>
+			//fail case: not in the respository
+<span class="nc" id="L542">			return &quot;redirect:/notregistered.html&quot;;</span>
+<span class="nc" id="L543">		}</span>
+
+<span class="nc" id="L545">		String token = UUID.randomUUID().toString();</span>
+<span class="nc" id="L546">		token = sanitizeString(token);</span>
+<span class="nc" id="L547">		ResetToken rt = new ResetToken();</span>
+<span class="nc" id="L548">		rt.setToken(token);</span>
+<span class="nc" id="L549">		rt.setUserEmail(email);</span>
+		try {
+<span class="nc" id="L551">			resetTokenRepository.save(rt);</span>
+<span class="nc" id="L552">		} catch (Exception ee) {</span>
+<span class="nc" id="L553">			return genericError();</span>
+<span class="nc" id="L554">		}</span>
+
+		try {
+<span class="nc" id="L557">			SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L558">			message.setTo(email);</span>
+<span class="nc" id="L559">			message.setSubject(&quot;Reset password code from Quickbucks&quot;);</span>
+<span class="nc" id="L560">			message.setText(token);</span>
+			try {
+<span class="nc" id="L562">				emailSender.send(message);</span>
+<span class="nc" id="L563">			} catch (NullPointerException ne) {}</span>
+<span class="nc" id="L564">		} catch (MailException exception) {</span>
+<span class="nc" id="L565">			exception.printStackTrace();</span>
+<span class="nc" id="L566">		}</span>
+
+<span class="nc" id="L568">		return &quot;redirect:/inputToken.html&quot;;</span>
+
+	}
+
+	@GetMapping(path=&quot;/checkReset&quot;)
+	public String checkReset (ModelMap model, @RequestParam String email,
+		@RequestParam String token)
+	{
+<span class="nc" id="L576">		email = sanitizeString(email);</span>
+<span class="nc" id="L577">	 	token = sanitizeString(token);</span>
+
+<span class="nc" id="L579">		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);</span>
+<span class="nc bnc" id="L580" title="All 2 branches missed.">		if (rt == null)</span>
+<span class="nc" id="L581">			return genericError();</span>
+
+<span class="nc" id="L583">		model.addAttribute(&quot;email&quot;, email);</span>
+<span class="nc" id="L584">		model.addAttribute(&quot;token&quot;, token);</span>
+
+<span class="nc" id="L586">		return &quot;doReset&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/demo/reset&quot;)
+	public String doReset (@RequestParam String email, @RequestParam String
+		token, @RequestParam String password)
+	{
+<span class="nc" id="L593">		email = sanitizeString(email);</span>
+<span class="nc" id="L594">	 	token = sanitizeString(token);</span>
+<span class="nc" id="L595">		password = sanitizeString(password);</span>
+
+<span class="nc bnc" id="L597" title="All 2 branches missed.">		if (!(validateInputStrings(2,password))) {</span>
+<span class="nc" id="L598">			return genericError(); //need a better error...</span>
+			//probably something like doReset but with a
+			//&quot;your password must be xyz&quot;
+		}
+<span class="nc" id="L602">		ResetToken rt = resetTokenRepository.lookupRTByBoth(email, token);</span>
+<span class="nc bnc" id="L603" title="All 2 branches missed.">		if (rt == null)</span>
+<span class="nc" id="L604">			return genericError();</span>
+
+<span class="nc" id="L606">		resetTokenRepository.delete(rt);</span>
+
+<span class="nc" id="L608">		User u = new User();</span>
+		try {
+<span class="nc" id="L610">			u = userRepository.findUserByEmail(email);</span>
+<span class="nc" id="L611">		} catch (Exception ee) {</span>
+<span class="nc" id="L612">			return genericError();</span>
+<span class="nc" id="L613">		}</span>
+<span class="nc bnc" id="L614" title="All 2 branches missed.">		if (u == null)</span>
+<span class="nc" id="L615">			return genericError();</span>
+
+<span class="nc" id="L617">		BCryptPasswordEncoder passwordEncoder = new</span>
+			BCryptPasswordEncoder();
+<span class="nc" id="L619">		String hashedPassword = passwordEncoder.encode(password);</span>
+<span class="nc" id="L620">		u.setUserPassword(hashedPassword);</span>
+
+		try {
+<span class="nc" id="L623">			userRepository.save(u);</span>
+<span class="nc" id="L624">		} catch(Exception eee) {</span>
+<span class="nc" id="L625">			return genericError();</span>
+<span class="nc" id="L626">		}</span>
+<span class="nc" id="L627">		return &quot;redirect:/savedreset.html&quot;;</span>
+	}
+
+	private void sendEmailToUser(String e, String subj, String body)
+		throws MailException
+	{
+<span class="fc" id="L633">		SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="fc" id="L634">		message.setTo(e);</span>
+<span class="fc" id="L635">		message.setSubject(subj);</span>
+<span class="fc" id="L636">		message.setText(body);</span>
+		try {
+<span class="nc" id="L638">			emailSender.send(message);</span>
+<span class="pc" id="L639">		} catch (NullPointerException ne) {}</span>
+<span class="fc" id="L640">	}</span>
+
+	@GetMapping(path=&quot;/demo/contact&quot;)
+	public String contactStepOne (ModelMap model, @RequestParam String id)
+	{
+<span class="nc" id="L645">		id = sanitizeString(id);</span>
+
+<span class="nc" id="L647">		model.addAttribute(&quot;id&quot;,id);</span>
+<span class="nc" id="L648">		return &quot;composeMessage&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/demo/sendcontact&quot;)
+	public String contactPoster (@RequestParam String id,
+		@RequestParam String msg)
+	{
+<span class="nc" id="L655">	 	id = sanitizeString(id);</span>
+<span class="nc" id="L656">		msg = sanitizeString(msg);</span>
+
+<span class="nc" id="L658">		Job j = new Job();</span>
+		try {
+<span class="nc" id="L660">			j = jobRepository.findJobByID(id);</span>
+<span class="nc" id="L661">		} catch(Exception e) {</span>
+<span class="nc" id="L662">			return genericError();</span>
+<span class="nc" id="L663">		}</span>
+<span class="nc bnc" id="L664" title="All 2 branches missed.">	 	if (j ==null)</span>
+<span class="nc" id="L665">			return genericError();</span>
+
+<span class="nc" id="L667">		String empl = &quot;&quot;;</span>
+		try {
+<span class="nc" id="L669">			empl = userRepository.findEmailById(j.getUser());</span>
+<span class="nc" id="L670">		} catch(Exception ee) {</span>
+<span class="nc" id="L671">			return genericError(); //null job user</span>
+<span class="nc" id="L672">		}</span>
+
+		org.springframework.security.core.userdetails.User user
+<span class="nc" id="L675">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="nc" id="L676">		String username = user.getUsername();</span>
+
+<span class="nc" id="L678">		String msgbody = &quot;Hi from Quickbucks!\n\nYou've received a new inquiry about your job &quot; +</span>
+			id + &quot; from a potential employee (&quot; + username +
+			&quot;). Their message:\n&quot; + msg + &quot;\n\nLove,\nQuickbucks&quot;;
+
+		try {
+<span class="nc" id="L683">			sendEmailToUser(empl,</span>
+				&quot;Contact from potential employee on Quickbucks&quot;,
+				msgbody);
+<span class="nc" id="L686">		} catch (MailException exception) {</span>
+<span class="nc" id="L687">			exception.printStackTrace();</span>
+<span class="nc" id="L688">			return genericError();</span>
+<span class="nc" id="L689">		}</span>
+
+<span class="nc" id="L691">		return &quot;redirect:/sent.html&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/notifications&quot;)
+	public String displayNotifications(ModelMap model) {
+		org.springframework.security.core.userdetails.User user
+<span class="nc" id="L697">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="nc" id="L698">		String username = user.getUsername();</span>
+<span class="nc" id="L699">		int uid = userRepository.findIDByEmail(username);</span>
+
+<span class="nc" id="L701">		List&lt;Request&gt; notifs = requestRepository.getNotifsByUserID(uid);</span>
+
+<span class="nc" id="L703">		model.addAttribute(&quot;notifs&quot;, notifs);</span>
+<span class="nc" id="L704">		model.addAttribute(&quot;userr&quot;, uid);</span>
+
+<span class="nc" id="L706">		return &quot;notifs&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/read&quot;)
+	public String readDecision(ModelMap model, @RequestParam Integer id)
+	{
+<span class="nc" id="L712">		Request r = requestRepository.findRequestByID(id);</span>
+<span class="nc bnc" id="L713" title="All 2 branches missed.">		if (r == null)</span>
+<span class="nc" id="L714">			return genericError();</span>
+<span class="nc" id="L715">		int jid = r.getJob();</span>
+
+<span class="nc" id="L717">		Job j = jobRepository.findJobByID(jid + &quot;&quot;);</span>
+<span class="nc bnc" id="L718" title="All 2 branches missed.">		if (j == null)</span>
+<span class="nc" id="L719">			return genericError();</span>
+
+		org.springframework.security.core.userdetails.User meUser
+<span class="nc" id="L722">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="nc" id="L723">		String username = meUser.getUsername();</span>
+<span class="nc" id="L724">		int uid = userRepository.findIDByEmail(username);</span>
+
+<span class="nc bnc" id="L726" title="All 2 branches missed.">		if (r.getEmployee() != uid)</span>
+<span class="nc" id="L727">			return &quot;redirect:/403.html&quot;; //unauthorized</span>
+<span class="nc" id="L728">		r.setEmployeeRead(true);</span>
+		try {
+<span class="nc" id="L730">			requestRepository.save(r);</span>
+<span class="nc" id="L731">		} catch(Exception eee) {}</span>
+<span class="nc" id="L732">		return &quot;displayNotifications(model)&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/decide&quot;)
+	public String makeDecision(ModelMap model, @RequestParam Integer id,
+		@RequestParam Integer decision)
+	{
+		/*error cases: decision not 1 or 2, job already decided, job
+		 *not yours to decide (you are not employer), request does not
+		 *exist */
+<span class="fc bfc" id="L742" title="All 4 branches covered.">		if (decision != 1 &amp;&amp; decision != 2)</span>
+<span class="fc" id="L743">			return genericError();</span>
+
+<span class="fc" id="L745">		Request r = requestRepository.findRequestByID(id);</span>
+<span class="fc bfc" id="L746" title="All 2 branches covered.">		if (r == null)</span>
+<span class="fc" id="L747">			return genericError();</span>
+<span class="fc" id="L748">		int jid = r.getJob();</span>
+
+<span class="fc" id="L750">		Job j = new Job();</span>
+		try {
+<span class="fc" id="L752">			j = jobRepository.findJobByID(jid + &quot;&quot;);</span>
+<span class="nc" id="L753">		} catch(Exception ee) {</span>
+<span class="nc" id="L754">			return genericError();</span>
+<span class="fc" id="L755">		}</span>
+<span class="pc bpc" id="L756" title="1 of 2 branches missed.">		if (j == null)</span>
+<span class="nc" id="L757">			return genericError();</span>
+
+		org.springframework.security.core.userdetails.User meUser
+<span class="fc" id="L760">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="fc" id="L761">		String username = meUser.getUsername();</span>
+<span class="fc" id="L762">		int uid = userRepository.findIDByEmail(username);</span>
+
+<span class="fc bfc" id="L764" title="All 2 branches covered.">		if (r.getEmployer() != uid)</span>
+<span class="fc" id="L765">			return &quot;redirect:/403.html&quot;; /*unauthorized*/</span>
+<span class="fc bfc" id="L766" title="All 2 branches covered.">		if (r.getDecision() != 0)</span>
+<span class="fc" id="L767">			return genericError();</span>
+
+<span class="fc" id="L769">		r.decide(decision);</span>
+		try {
+<span class="fc" id="L771">			requestRepository.save(r);</span>
+<span class="nc" id="L772">		} catch (Exception eee) {</span>
+<span class="nc" id="L773">			return genericError();</span>
+<span class="fc" id="L774">		}</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">		if (decision == 1) {</span>
+<span class="fc" id="L776">			String empl = userRepository.findEmailById(r.getEmployee());</span>
+<span class="fc" id="L777">			String msgbody = &quot;Hello!\nUser &quot; + uid + &quot; has accepted&quot;</span>
+				+ &quot; your request for job &quot; + jid + &quot;: &quot;
+<span class="fc" id="L779">				+ j.getJobtitle() + &quot;\n\nCongrats!\n\nLove,\n&quot;</span>
+				+ &quot;Quickbucks&quot;;
+			/*send an email to the user who has been accepted.*/
+			try {
+<span class="fc" id="L783">				sendEmailToUser(empl,</span>
+					&quot;Quickbucks: Your Job Request&quot;,
+					msgbody);
+<span class="nc" id="L786">			} catch (MailException exception) {</span>
+<span class="nc" id="L787">				exception.printStackTrace();</span>
+<span class="fc" id="L788">			}</span>
+			/*then formally reject everyone else*/
+<span class="fc" id="L790">			requestRepository.blanketReject(jid, id);</span>
+		}
+
+<span class="fc" id="L793">		List&lt;Request&gt; notifs = requestRepository.getNotifsByUserID(uid);</span>
+<span class="fc" id="L794">		model.addAttribute(&quot;notifs&quot;, notifs);</span>
+<span class="fc" id="L795">		model.addAttribute(&quot;userr&quot;, uid);</span>
+<span class="fc" id="L796">		return &quot;notifs&quot;;</span>
+	}
+
+	public String genericError() {
+<span class="fc" id="L800">		return &quot;redirect:/generic-error.html&quot;;</span>
+	}
+
+	@RequestMapping(value = &quot;/profile&quot;, method = RequestMethod.GET)
+   	public String viewUser(ModelMap model, @RequestParam String id)
+	{
+<span class="nc" id="L806">	 	User u = userRepository.findByID(id);</span>
+<span class="nc bnc" id="L807" title="All 2 branches missed.">	 	if(u == null){</span>
+			//TODO - change to user error
+<span class="nc" id="L809">			model.addAttribute(&quot;jobID&quot;, id);</span>
+<span class="nc" id="L810">			return &quot;viewJobError&quot;;</span>
+	 	}
+	 	else{
+<span class="nc" id="L813">			model.addAttribute(&quot;userID&quot;, u.getId());</span>
+<span class="nc" id="L814">			model.addAttribute(&quot;name&quot;, u.getUserFirstName()+&quot; &quot; +u.getUserLastName());</span>
+<span class="nc" id="L815">			model.addAttribute(&quot;school&quot;, u.getUserSchool());</span>
+<span class="nc" id="L816">			model.addAttribute(&quot;degree&quot;, u.getUserDegree());</span>
+<span class="nc" id="L817">			model.addAttribute(&quot;location&quot;, u.getUserLocation());</span>
+	   	}
+		//model.addAttribute(&quot;title&quot;, j.getJobTitle());
+
+<span class="nc" id="L821">		return &quot;viewUser&quot;;</span>
+	}
+
+	@GetMapping(path=&quot;/demo/employeeReview&quot;)
+	public String employeeReviewList(ModelMap model)
+	{
+
+		org.springframework.security.core.userdetails.User user
+<span class="nc" id="L829">			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="nc" id="L830">		int uid = userRepository.findIDByEmail(user.getUsername());</span>
+
+<span class="nc" id="L832">		List&lt;Request&gt; requests = new ArrayList();</span>
+<span class="nc" id="L833">		requests = requestRepository.findRequestsByEmployer(&quot;&quot;+uid);</span>
+
+<span class="nc bnc" id="L835" title="All 2 branches missed.">		for(int i = 0; i&lt; requests.size(); i++){</span>
+			//check if review exists
+<span class="nc" id="L837">			Request temp = requests.get(i);</span>
+<span class="nc" id="L838">			Integer jobID = temp.getJob();</span>
+<span class="nc" id="L839">			Review test = reviewRepository.lookupReviewByJobID(jobID);</span>
+
+			//jobID.toString());
+			//if it does, remove from list
+<span class="nc bnc" id="L843" title="All 2 branches missed.">			if(test != null)</span>
+<span class="nc" id="L844">				requests.remove(i);</span>
+
+		}
+
+
+
+<span class="nc" id="L850">		model.addAttribute(&quot;type&quot;, &quot;Employees&quot;);</span>
+<span class="nc" id="L851">		model.addAttribute(&quot;results&quot;, requests);</span>
+<span class="nc" id="L852">		return &quot;awaitingReview&quot;;</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Request.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Quickbucks Maven Webapp</a> &gt; <a href="index.source.html" class="el_package">quickbucks</a> &gt; <span class="el_source">Request.java</span></div><h1>Request.java</h1><pre class="source lang-java linenums">package quickbucks;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.Date;
+
+@Entity
+public class Request {
+        @Id
+        @GeneratedValue(strategy=GenerationType.AUTO)
+        private Integer id; //naming convention this must be id and not userID
+
+        private Integer employee; //id of logged-in user
+        private Integer employer; //id of employer
+        private Integer job; //id of job
+        private String title; //title
+        private String msg;
+
+        /*new columns*/
+        private Boolean employerRead;
+        private Boolean employeeRead;
+        private Date requestTime;
+        private Date decisionTime;
+        private Integer decision;
+
+        public Request()
+<span class="fc" id="L29">        {</span>
+<span class="fc" id="L30">                requestTime = new Date();</span>
+<span class="fc" id="L31">                employerRead = false;</span>
+<span class="fc" id="L32">                decision = 0; //undecided</span>
+<span class="fc" id="L33">        }</span>
+
+        /*
+         * decide(): returns False on invalid param, True otherwise (&amp; in that
+         * case sets decisionTime, employeeRead, and decision)
+         */
+        public boolean decide(int decision) {
+<span class="pc bpc" id="L40" title="1 of 4 branches missed.">                if (decision != 1 &amp;&amp; decision != 2)</span>
+<span class="nc" id="L41">                        return false;</span>
+<span class="fc" id="L42">                this.decision = decision;</span>
+<span class="fc" id="L43">                this.decisionTime = new Date();</span>
+<span class="fc" id="L44">                this.employeeRead = false;</span>
+<span class="fc" id="L45">                this.employerRead = true;</span>
+<span class="fc" id="L46">                return true;</span>
+        }
+
+
+	public Integer getId() {
+<span class="fc" id="L51">		return id;</span>
+	}
+	public void setId(Integer id) {
+<span class="nc" id="L54">		this.id = id;</span>
+<span class="nc" id="L55">	}</span>
+	public Integer getEmployer() {
+<span class="fc" id="L57">		return employer;</span>
+	}
+	public void setEmployer(Integer employer) {
+<span class="fc" id="L60">		this.employer = employer;</span>
+<span class="fc" id="L61">	}</span>
+	public Integer getEmployee() {
+<span class="fc" id="L63">		return employee;</span>
+	}
+	public void setEmployee(Integer employee) {
+<span class="fc" id="L66">		this.employee = employee;</span>
+<span class="fc" id="L67">	}</span>
+	public Integer getJob() {
+<span class="fc" id="L69">		return job;</span>
+	}
+	public void setJob(Integer job) {
+<span class="fc" id="L72">		this.job = job;</span>
+<span class="fc" id="L73">	}</span>
+
+	public String getTitle() {
+<span class="nc" id="L76">		return title;</span>
+	}
+	public void setTitle(String title) {
+<span class="fc" id="L79">		this.title = title;</span>
+<span class="fc" id="L80">	}</span>
+	public String getMsg() {
+<span class="nc" id="L82">		return msg;</span>
+	}
+	public void setMsg(String msg) {
+<span class="fc" id="L85">		this.msg = msg;</span>
+<span class="fc" id="L86">	}</span>
+
+        public void setEmployerRead(Boolean employerRead) {
+<span class="nc" id="L89">                this.employerRead = employerRead;</span>
+<span class="nc" id="L90">        }</span>
+        public void setEmployeeRead(Boolean employeeRead) {
+<span class="nc" id="L92">                this.employeeRead = employeeRead;</span>
+<span class="nc" id="L93">        }</span>
+        public Boolean getEmployerRead() {
+<span class="nc" id="L95">                return employerRead;</span>
+        }
+        public Boolean getEmployeeRead() {
+<span class="nc" id="L98">                return employeeRead;</span>
+        }
+        public Integer getDecision() {
+<span class="fc" id="L101">                return decision;</span>
+        }
+        public Date getDecisionTime() {
+<span class="nc" id="L104">                Date d = new Date();</span>
+<span class="nc" id="L105">                d = decisionTime;</span>
+<span class="nc" id="L106">                return d;</span>
+        }
+        public Date getRequestTime() {
+<span class="nc" id="L109">                Date d = new Date();</span>
+<span class="nc" id="L110">                d = requestTime;</span>
+<span class="nc" id="L111">                return d;</span>
+        }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

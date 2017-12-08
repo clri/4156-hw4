@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationProviderConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Quickbucks Maven Webapp</a> &gt; <a href="index.source.html" class="el_package">quickbucks</a> &gt; <span class="el_source">AuthenticationProviderConfig.java</span></div><h1>AuthenticationProviderConfig.java</h1><pre class="source lang-java linenums">package quickbucks;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+import org.springframework.context.annotation.ComponentScan;
+
+@Configuration
+@ComponentScan(basePackages = {&quot;quickbucks&quot;})
+<span class="nc" id="L12">public class AuthenticationProviderConfig {</span>
+        @Bean(name = &quot;dataSource&quot;)
+        public DriverManagerDataSource dataSource() {
+<span class="nc" id="L15">    	    DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();</span>
+<span class="nc" id="L16">    	    driverManagerDataSource.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);</span>
+<span class="nc" id="L17">    	    driverManagerDataSource.setUrl (&quot;jdbc:mysql://localhost:3306/db_example&quot;);</span>
+<span class="nc" id="L18">    	    driverManagerDataSource.setUsername(&quot;springuser&quot;);</span>
+<span class="nc" id="L19">    	    driverManagerDataSource.setPassword(&quot;ThePassword&quot;);</span>
+<span class="nc" id="L20">    	    return driverManagerDataSource;</span>
+     }
+
+    @Bean(name=&quot;userDetailsService&quot;)
+    public UserDetailsService userDetailsService(){
+<span class="nc" id="L25">    	JdbcDaoImpl jdbcImpl = new JdbcDaoImpl();</span>
+<span class="nc" id="L26">    	jdbcImpl.setDataSource(dataSource());</span>
+<span class="nc" id="L27">    	jdbcImpl.setUsersByUsernameQuery(&quot;select user_email,user_password, 1 as enabled from user where user_email=?&quot;);</span>
+<span class="nc" id="L28">    	jdbcImpl.setAuthoritiesByUsernameQuery(&quot;select b.user_email, a.role from user_roles a, user b where b.user_email=? and a.username=b.id&quot;);</span>
+<span class="nc" id="L29">    	return jdbcImpl;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -161,7 +161,12 @@
 		<artifactId>jstl</artifactId>
 		<version>${jstl.version}</version>
 	</dependency>
-
+<!-- jacoco for coverage -->
+<dependency>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.9</version>
+</dependency>
   <!-- aws -->
   <dependency>
     <groupId>com.amazonaws</groupId>
@@ -227,6 +232,48 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+
+    <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.9</version>
+            <executions>
+                    <execution>
+                            <id>default-prepare-agent</id>
+                            <goals>
+                                    <goal>prepare-agent</goal>
+                            </goals>
+                    </execution>
+                    <execution>
+                            <id>default-report</id>
+                            <goals>
+                                    <goal>report</goal>
+                            </goals>
+                    </execution>
+                    <execution>
+                            <id>default-check</id>
+                            <goals>
+                                    <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                    <rules>
+                                            <rule>
+                                                    <element>BUNDLE</element>
+                                                    <limits>
+                                                            <limit>
+                                                                    <counter>INSTRUCTION</counter>
+                                                                    <value>COVEREDRATIO</value>
+                                                                    <minimum>0.40</minimum>
+                                                            </limit>
+                                                    </limits>
+                                            </rule>
+                                    </rules>
+                            </configuration>
+                    </execution>
+            </executions>
+    </plugin>
 
         </plugins>
 
