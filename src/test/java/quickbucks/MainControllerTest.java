@@ -150,7 +150,7 @@ public class MainControllerTest {
                 assertEquals(view,"redirect:/index2.html");
         }
         //first name all lowercase
-        /*@Test
+        @Test
         public void aaaatestRegisterLowerF() throws Exception {
                 String view = this.mainController.addNewUser(
                         "john", "Secret", "johns@columbia.edu",
@@ -492,7 +492,7 @@ public class MainControllerTest {
                         "job", "a job",
                         "");
                 assertEquals(view,"redirect:/generic-error.html");
-        }*/
+        }
 
         /*search*/
         //test to pass: category and keywords, page
@@ -530,7 +530,7 @@ public class MainControllerTest {
         //@TODO: how to handle negative page numbers?
 
         //viewjob: test to pass
-        /*@Test
+        @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void aaatestViewJob1() throws Exception {
                 String vieww = this.mainController.addNewJob(model,
@@ -730,7 +730,7 @@ public class MainControllerTest {
                 String view = this.mainController.makeDecision(model,
                         req.getId(), 1);
                 assertEquals(view, "redirect:/generic-error.html");
-        }*/
+        }
 
 
         @Configuration
