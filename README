@@ -11,8 +11,8 @@ spring--will be automatically downloaded through maven
 
 HOW TO RUN:
 1. Start MySQL server. Execute export_db.sql; this will create your database.
-4. On the command line, inside the ui directory, run "mvnw spring-boot:run"
-5. go to localhost:8090 in the browser
+2. On the command line, inside the ui directory, run "mvnw spring-boot:run"
+3. go to localhost:8090 in the browser
 
 WORKS CITED
 
@@ -41,4 +41,5 @@ WORKS CITED
 23. http://www.baeldung.com/spring-security-registration-i-forgot-my-password
 24. https://stackoverflow.com/questions/17121620/spring-data-jpa-update-query-not-updating
 25. https://stackoverflow.com/questions/46233872/is-error-path-forbidden-in-spring-via-requestmapping-in-controller-always-ca
-16. https://www.mkyong.com/maven/maven-emma-integration-example/
+26. https://stackoverflow.com/a/36305148/8683263
+27. https://automationrhapsody.com/automated-code-coverage-of-unit-tests-with-jacoco-and-maven/
