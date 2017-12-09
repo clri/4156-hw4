@@ -656,11 +656,15 @@ public class MainController {
 	}
 
 	@GetMapping(path="/demo/sendcontact")
-	public String contactPoster (@RequestParam String id,
+	public String contactPoster(@RequestParam String id,
 		@RequestParam String msg)
 	{
 	 	id = sanitizeString(id);
 		msg = sanitizeString(msg);
+
+		if (msg.length() > 1500 || msg.length() < 10) {
+			return genericError();
+		}
 
 		Job j = new Job();
 		try {
@@ -681,6 +685,8 @@ public class MainController {
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = user.getUsername();
+		if (username.equals(empl))
+			return genericError(); //can't send email to self
 
 		String msgbody = "Hi from Quickbucks!\n\nYou've received a new inquiry about your job " +
 			id + " from a potential employee (" + username +
@@ -692,7 +698,7 @@ public class MainController {
 				msgbody);
 		} catch (MailException exception) {
 			exception.printStackTrace();
-			return genericError();
+			//return genericError()?
 		}
 
 		return "redirect:/sent.html";
@@ -736,7 +742,7 @@ public class MainController {
 		try {
 			requestRepository.save(r);
 		} catch(Exception eee) {}
-		return "displayNotifications(model)";
+		return displayNotifications(model);
 	}
 
 	@GetMapping(path="/decide")
