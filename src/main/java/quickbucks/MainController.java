@@ -451,7 +451,7 @@ public class MainController {
 			return createReview(model, id); //invalid input
 		}
 		if (rat < 0.0 || rat > 5.0) {
-			model.addAttribute("errmsg", "rating must be numerical between 1 and five");
+			model.addAttribute("errmsg", "rating must be numerical between 0 and five");
 			return createReview(model, id); //invalid input
 		}
 		model.addAttribute("errmsg","");
@@ -498,25 +498,19 @@ public class MainController {
 
 		/*mark request as read*/
 		Request req;
-		if (uid == accid) {
-			try{
-				req = requestRepository.findRequestByJobAndEmployee(id, uid);
-			} catch (Exception rex) {
-				return genericError();
-			}
-			if (req == null)
-				return genericError(); /*something happened in the db to delete our record*/
-			req.setEmployeeRead(true);
-		} else {
-			try{
-				req = requestRepository.findRequestByJobAndEmployer(id, uid);
-			} catch (Exception rex) {
-				return genericError();
-			}
-			if (req == null)
-				return genericError(); /*something happened in the db to delete our record*/
-			req.setEmployerRead(true);
+		try {
+			req = requestRepository.findRequestByJobAndEmployee(id, accid);
+		} catch (Exception rex) {
+			return genericError();
 		}
+		if (req == null)
+			return genericError();
+
+		if (uid == accid)
+			req.setEmployeeRead(true);
+		else
+			req.setEmployerRead(true);
+
 		try {
 			requestRepository.save(req);
 		} catch(Exception ree) {

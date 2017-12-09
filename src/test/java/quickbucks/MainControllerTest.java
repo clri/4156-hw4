@@ -733,10 +733,286 @@ public class MainControllerTest {
                         req.getId(), 1);
                 assertEquals(view, "notifs");
         }
+        //PASS: start the review process as an employer
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aa() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+        }
+        //FAIL: invalid rating
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ab() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "adsfj", "this is the reviewBody");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "rating must be numerical out of five");
+        }
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ac() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "-9.2", "this is the reviewBody");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "rating must be numerical between 0 and five");
+        }
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91acna() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "5.0001", "this is the reviewBody");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "rating must be numerical between 0 and five");
+        }
+        //PASS: 0
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aca() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "this is the reviewBody");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //pass: 5
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91acb() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "5", "this is the reviewBody");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //pass: 3.4
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91acc() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "3.4", "this is the reviewBody");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //FAIL: invalid review body length
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ad() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "review must be between 10 and 100 characters");
+        }
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ae() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisisthe");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "review must be between 10 and 100 characters");
+        }
+        //PASS: 10
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91af() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisisther");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //PASS: 11
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ag() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisisthe r");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //PASS: 1499
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ah() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthsistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisisther");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //PASS: 1500
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ai() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisisther");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //FAIL: 1501
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aj() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthissistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisisther");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "review must be between 10 and 100 characters");
+        }
+        //PASS: review an employer
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ajj() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+        }
 
         @Test
         @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
-        public void aatestAddReqest91a() throws Exception {
+        public void aatestAddReqest91ak() throws Exception {
                 int toreq = getAJob();
                 String view = this.mainController.addNewJob(toreq + "");
                 assertEquals(view, "redirect:/requestSuccess.html");
