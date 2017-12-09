@@ -733,10 +733,9 @@ public class MainControllerTest {
                 assertEquals(view, "awaitingReview");
                 //no reviews have occurred, so it should be all accepted request
                 //below does not work; will not toString properly
-
-                //List<Request> reqs = r.findRequestsByEmployer(""+uid);
-                //String rrq = reqs.toString();
-                //assertEquals(model.get("results"),rrq);
+                List<Request> reqs = r.findRequestsByEmployer(""+uid);
+                assertEquals(((List<Request>)(model.get("results"))).size(),
+                        reqs.size());
         }
         //PASS: start the review process as an employer
         @Test
