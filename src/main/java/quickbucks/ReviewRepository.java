@@ -15,7 +15,10 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
 
         @Query(value = "select * from Review r where r.employee = :id", nativeQuery = true)
         List<Review> lookupReviewByUserID(@Param("id") Integer id);
-		
-		@Query(value = "select * from Review r where r.job = :id", nativeQuery = true)
+
+	@Query(value = "select * from Review r where r.job = :id", nativeQuery = true)
         Review lookupReviewByJobID(@Param("id") Integer id);
+
+        @Query(value = "select * from Review r where r.job = :id and r.author = :author", nativeQuery = true)
+        Review lookupReviewByJobAndAuthor(@Param("id") Integer id, @Param("author") Integer author);
 }

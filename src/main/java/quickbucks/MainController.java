@@ -190,10 +190,10 @@ public class MainController {
 			return genericError();
 		}
 
-			model.addAttribute("jobID", j.getId());
-			model.addAttribute("title", j.getJobtitle());
-			model.addAttribute("desc", j. getJobdesc());
-			model.addAttribute("tags", j.getCategory());
+		model.addAttribute("jobID", j.getId());
+		model.addAttribute("title", j.getJobtitle());
+		model.addAttribute("desc", j. getJobdesc());
+		model.addAttribute("tags", j.getCategory());
 
 		return "viewJob";
 	}
@@ -831,19 +831,24 @@ public class MainController {
 	@GetMapping(path="/demo/employeeReview")
 	public String employeeReviewList(ModelMap model)
 	{
-
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
-		List<Request> requests = new ArrayList();
-		requests = requestRepository.findRequestsByEmployer(""+uid);
+		List<Request> requests = requestRepository.findRequestsByEmployer(""+uid);
 
 		for(int i = 0; i< requests.size(); i++){
 			//check if review exists
 			Request temp = requests.get(i);
 			Integer jobID = temp.getJob();
-			Review test = reviewRepository.lookupReviewByJobID(jobID);
+
+			Review test;
+			try {
+				test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
+			} catch (Exception e) {
+				//multiple matches
+				test = new Review();
+			}
 
 			//jobID.toString());
 			//if it does, remove from list
@@ -851,8 +856,6 @@ public class MainController {
 				requests.remove(i);
 
 		}
-
-
 
 		model.addAttribute("type", "Employees");
 		model.addAttribute("results", requests);

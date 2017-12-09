@@ -44,4 +44,13 @@ public interface TestRepository extends CrudRepository<ResetToken, Long> {
                 + "values('cat','desc','title',0.0,:id2),", nativeQuery = true)
         void addJobs(@Param("id1") Integer id1, @Param("id2") Integer id2);
 
+        @Query(value = "select min(j.id) from job j", nativeQuery = true)
+        Integer getAJob();
+
+        @Query(value = "select min(j.id) from request j", nativeQuery = true)
+        Integer getARequest();
+
+        @Query(value = "select r.token from reset_token r where r.user_email = :email", nativeQuery = true)
+        String getTokenByEmail(@Param("email") String email);
+
 }

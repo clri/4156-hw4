@@ -30,6 +30,7 @@ import org.springframework.ui.ModelMap;
 import org.junit.runners.MethodSorters;
 import org.junit.FixMethodOrder;
 import org.springframework.mail.javamail.JavaMailSender;
+import java.util.List;
 
 import quickbucks.User;
 import quickbucks.TestRepository;
@@ -68,20 +69,10 @@ public class MainControllerTest {
         private ModelMap model;
 
         public int getAJob() {
-                int i = 1;
-                Job job = null;
-
-                while (job == null)
-                        job = j.findJobByID(i++ + "");
-                return i - 1;
+                return tst.getAJob();
         }
         public int getARequest() {
-                int i = 1;
-                Request req = null;
-
-                while (req == null)
-                        req = r.findRequestByID(i++);
-                return i - 1;
+                return tst.getARequest();
         }
 
         @Before
@@ -435,7 +426,7 @@ public class MainControllerTest {
                 assertEquals(view,"viewJob");
         }
 
-/*
+
         //TEST TO FAIL
         //name = 256
         @Test
@@ -635,7 +626,7 @@ public class MainControllerTest {
                 String view = this.mainController.viewJob(model, jid + "");
                 assertEquals(view, "viewJobError");
                 assertEquals(model.get("jobID"),jid + "");
-        }*/
+        }
 
         //requesting and deciding: pass and fail are mixed togeter
         //we will add reviewing here too
@@ -733,10 +724,24 @@ public class MainControllerTest {
                         req.getId(), 1);
                 assertEquals(view, "notifs");
         }
-        //PASS: start the review process as an employer
+        //PASS: view reviews when you have some pending
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
         public void aatestAddReqest91aa() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                String view = this.mainController.employeeReviewList(model);
+                assertEquals(view, "awaitingReview");
+                //no reviews have occurred, so it should be all accepted request
+                //below does not work; will not toString properly
+
+                //List<Request> reqs = r.findRequestsByEmployer(""+uid);
+                //String rrq = reqs.toString();
+                //assertEquals(model.get("results"),rrq);
+        }
+        //PASS: start the review process as an employer
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaa() throws Exception {
                 int toreq = getAJob() + 1;
                 Job job = j.findJobByID(toreq + "");
                 String view = this.mainController.createReview(model,
@@ -746,6 +751,177 @@ public class MainControllerTest {
                 assertEquals(model.get("title"), job.getJobtitle());
                 assertEquals(model.get("desc"), job.getJobdesc());
                 assertEquals(model.get("tags"), job.getCategory());
+        }
+        //PASS: call doReview() as employer
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaaa() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.doReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                assertEquals(model.get("errmsg"), "");
+        }
+        //FAIL: call doReview() as unauthorized
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaab() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.doReview(model,
+                        toreq + "");
+                assertEquals(view, "redirect:/403.html");
+                assertEquals(model.get("errmsg"), "");
+        }
+        //FAIL: call doReview() as invalid
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaac() throws Exception {
+                int toreq = getAJob() - 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.doReview(model,
+                        toreq + "");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("errmsg"), "");
+        }
+        //FAIL: start the review process with ID not in db
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aab() throws Exception {
+                int toreq = getAJob() - 1;
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), toreq + "");
+        }
+        //FAIL: do review process with ID not in db
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaba() throws Exception {
+                int toreq = getAJob() - 1;
+                String view = this.mainController.addNewReview(model,
+                        toreq + "", "adsfj", "this is the reviewBody");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), toreq + "");
+        }
+        //FAIL: start the review process with nonnumeric ID
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aac() throws Exception {
+                String view = this.mainController.createReview(model,
+                        "abcdefg");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "abcdefg");
+        }
+        //FAIL: do review process with nonnumeric ID
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaca() throws Exception {
+                String view = this.mainController.addNewReview(model,
+                        "abcdefg", "adsfj", "this is the reviewBody");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "abcdefg");
+        }
+        //FAIL: start the review process with noninteger ID
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aad() throws Exception {
+                String view = this.mainController.createReview(model,
+                        "3.35");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "3.35");
+        }
+        //FAIL: do review process with nonint ID
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aada() throws Exception {
+                String view = this.mainController.addNewReview(model,
+                        "3.35", "adsfj", "this is the reviewBody");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "3.35");
+        }
+        //FAIL: start the review process with negative ID
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aae() throws Exception {
+                String view = this.mainController.createReview(model,
+                        "-5");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "-5");
+        }
+        //FAIL: do review process with negative ID
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaea() throws Exception {
+                String view = this.mainController.addNewReview(model,
+                        "-5", "adsfj", "this is the reviewBody");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "-5");
+        }
+        //FAIL: start the review process with empty id
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaf() throws Exception {
+                String view = this.mainController.createReview(model,
+                        "");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "");
+        }
+        //FAIL: review with empty id
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aafa() throws Exception {
+                String view = this.mainController.addNewReview(model,
+                        "", "adsfj", "this is the reviewBody");
+                assertEquals(view, "reviewJobError");
+                assertEquals(model.get("jobID"), "");
+        }
+        //FAIL: start the review process with brand new job no one's requested
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aag() throws Exception {
+                String view = this.mainController.addNewJob(model,
+                        "job", "a job", "jobs");
+                assertEquals(view,"viewJob");
+                String jid = model.get("jobID") + "";
+                view = this.mainController.createReview(model,
+                        jid);
+                assertEquals(view, "redirect:/403.html");
+        }
+        //FAIL: review with brand new job
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaga() throws Exception {
+                String view = this.mainController.addNewJob(model,
+                        "job", "a job", "jobs");
+                assertEquals(view,"viewJob");
+                String jid = model.get("jobID") + "";
+                view = this.mainController.addNewReview(model,
+                        jid, "adsfj", "this is the reviewBody");
+                assertEquals(view, "redirect:/403.html");
+        }
+        //FAIL: start review process with job you are not employer/employee
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aah() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "redirect:/403.html");
+        }
+        //FAIL: review with job you are not employer/employee
+        @Test
+        @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aaha() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.addNewReview(model,
+                        toreq + "", "adsfj", "this is the reviewBody");
+                assertEquals(view, "redirect:/403.html");
         }
         //FAIL: invalid rating
         @Test
@@ -827,6 +1003,16 @@ public class MainControllerTest {
                 view = this.mainController.addNewReview(model,
                         toreq + "", "0", "this is the reviewBody");
                 assertEquals(view, "redirect:/reviewCreated.html");
+        }
+        //PASS: view reviews when you have none pending
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91acaa() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                String view = this.mainController.employeeReviewList(model);
+                assertEquals(view, "awaitingReview");
+                //no reviews have occurred, so it should be all accepted request
+                assertEquals(((List<Request>)(model.get("results"))).size(), 0);
         }
         //pass: 5
         @Test
@@ -1009,6 +1195,24 @@ public class MainControllerTest {
                 assertEquals(model.get("desc"), job.getJobdesc());
                 assertEquals(model.get("tags"), job.getCategory());
         }
+        //PASS: review an employer, make the actual review
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91ajja() throws Exception {
+                int toreq = getAJob() + 1;
+                Job job = j.findJobByID(toreq + "");
+                String view = this.mainController.createReview(model,
+                        toreq + "");
+                assertEquals(view, "createReview");
+                assertEquals(model.get("jobID"), job.getId());
+                assertEquals(model.get("title"), job.getJobtitle());
+                assertEquals(model.get("desc"), job.getJobdesc());
+                assertEquals(model.get("tags"), job.getCategory());
+                view = this.mainController.addNewReview(model,
+                        toreq + "", "0", "thisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisistherthisisther");
+                assertEquals(view, "redirect:/reviewCreated.html");
+        }
+
 
         @Test
         @WithMockUser(username = "johnsecretzz@columbia.edu", roles = { "USER" })
@@ -1084,6 +1288,114 @@ public class MainControllerTest {
                 Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
                 String view = this.mainController.makeDecision(model,
                         req.getId(), 1);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+
+        //forgot password email!
+        //test to pass: user in db
+        @Test
+        public void testSendForgot1() throws Exception {
+                String view = this.mainController.sendForgotEmail("john@columbia.edu");
+                assertEquals(view, "redirect:/inputToken.html");
+        }
+        //fail: user not in db
+        @Test
+        public void testSendForgot2() throws Exception {
+                String view = this.mainController.sendForgotEmail("joh@columbia.edu");
+                assertEquals(view, "redirect:/notregistered.html");
+        }
+        //fail: user who already has a token
+        @Test
+        public void testSendForgot3() throws Exception {
+                String view = this.mainController.sendForgotEmail("john@columbia.edu");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //checkReset:
+        //fail: incorrect token
+        @Test
+        public void testSreset1() throws Exception {
+                String view = this.mainController.checkReset(model,
+                        "john@columbia.edu", "");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //pass: correct token
+        @Test
+        public void testSreset2() throws Exception {
+                String rtoken = tst.getTokenByEmail("john@columbia.edu");
+                String view = this.mainController.checkReset(model,
+                        "john@columbia.edu", rtoken);
+                assertEquals(view, "doReset");
+                assertEquals(model.get("email"), "john@columbia.edu");
+                assertEquals(model.get("token"), rtoken);
+        }
+        //fail: no token for this user
+        @Test
+        public void testSreset3() throws Exception {
+                String view = this.mainController.checkReset(model,
+                        "johns@columbia.edu", "");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+
+        //doReset()
+        //pass: good password, good token
+        public void testSreset4() throws Exception {
+                String rtoken = tst.getTokenByEmail("john@columbia.edu");
+                String view = this.mainController.checkReset(model,
+                        "john@columbia.edu", rtoken);
+                assertEquals(view, "doReset");
+                assertEquals(model.get("email"), "john@columbia.edu");
+                assertEquals(model.get("token"), rtoken);
+                view =this.mainController.doReset("john@columbia.edu", rtoken, "password");
+                assertEquals(view, "redirect:/savedreset.html");
+        }
+        //fail: correct token, gets deleted after
+        @Test
+        public void testSreset5() throws Exception {
+                String view = this.mainController.sendForgotEmail("john@columbia.edu");
+                String rtoken = tst.getTokenByEmail("john@columbia.edu");
+                view = this.mainController.checkReset(model,
+                        "john@columbia.edu", rtoken);
+                assertEquals(view, "doReset");
+                assertEquals(model.get("email"), "john@columbia.edu");
+                assertEquals(model.get("token"), rtoken);
+                view = this.mainController.checkReset(model,
+                        "john@columbia.edu", rtoken);
+                assertEquals(view, "doReset");
+                view =this.mainController.doReset("john@columbia.edu", rtoken, "password");
+                assertEquals(view, "redirect:/savedreset.html");
+                view = this.mainController.checkReset(model,
+                        "john@columbia.edu", rtoken);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //fail: bad password, good token
+        public void testSreset6() throws Exception {
+                String view = this.mainController.sendForgotEmail("john@columbia.edu");
+                String rtoken = tst.getTokenByEmail("john@columbia.edu");
+                view = this.mainController.checkReset(model,
+                        "john@columbia.edu", rtoken);
+                assertEquals(view, "doReset");
+                assertEquals(model.get("email"), "john@columbia.edu");
+                assertEquals(model.get("token"), rtoken);
+                view =this.mainController.doReset("john@columbia.edu", rtoken, "pw");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //fail: good password, bad token
+        public void testSreset7() throws Exception {
+                String view =this.mainController.doReset("john@columbia.edu", "", "password");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //fail: email and token don't match
+        public void testSreset8() throws Exception {
+                String view = this.mainController.sendForgotEmail("johns@columbia.edu");
+                String rtoken = tst.getTokenByEmail("john@columbia.edu");
+                view = this.mainController.checkReset(model,
+                        "johns@columbia.edu", rtoken);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //fail: email and token don't match
+        public void testSreset9() throws Exception {
+                String rtoken = tst.getTokenByEmail("john@columbia.edu");
+                String view =this.mainController.doReset("john@columbia.edu", rtoken, "password");
                 assertEquals(view, "redirect:/generic-error.html");
         }
 
