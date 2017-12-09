@@ -102,7 +102,7 @@ public class MainControllerTest {
                         "abcde", "MS", "ON", "SEAS");
         }
 
-/*
+
         //sanitizing strings: test to pass
         @Test
         public void testSanitize1() throws Exception {
@@ -129,7 +129,7 @@ public class MainControllerTest {
                 String ans = mainController.sanitizeString("abc;d;;;");
                 assertEquals(ans,"abcd");
         }
-*/
+
         //REGISTRATION
         //test to pass
         //first name capitalized
@@ -259,7 +259,7 @@ public class MainControllerTest {
                         "secnetlkfsdjfsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index2.html");
-        }/*
+        }
 
 
 
@@ -383,7 +383,7 @@ public class MainControllerTest {
                         "secnetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index3.html");
-        }*/
+        }
 
 
         //JOB CREATION
@@ -426,7 +426,7 @@ public class MainControllerTest {
                 assertEquals(view,"viewJob");
         }
 
-/*
+
         //TEST TO FAIL
         //name = 256
         @Test
@@ -629,7 +629,7 @@ public class MainControllerTest {
         }
 
         //requesting and deciding: pass and fail are mixed togeter
-        //we will add reviewing here too
+        //we will add reviewing here too, and readDecision
         //adding requests: test to pass
         //PASS: request job that has not been accepted and not by me
         @Test
@@ -716,12 +716,54 @@ public class MainControllerTest {
         //PASS: accept a job where someone has been rejected from
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void aatestAddReqest91() throws Exception {
+        public void aatestAddReqest90() throws Exception {
                 int toreq = getAJob() + 1;
                 int empl = u.findIDByEmail("johnsecret82@columbia.edu");
                 Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
                 String view = this.mainController.makeDecision(model,
                         req.getId(), 1);
+                assertEquals(view, "notifs");
+        }
+        //FAIL: read a decision when you decided it
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90a() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.readDecision(model,
+                        req.getId());
+                assertEquals(view, "redirect:/403.html");
+        }
+        //FAIL: read a decision with invalid request id
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90aa() throws Exception {
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                String view = this.mainController.readDecision(model,
+                        -5);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //FAIL: read a decision when you are uninvolved with it
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90b() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.readDecision(model,
+                        req.getId());
+                assertEquals(view, "redirect:/403.html");
+        }
+        //PASS: read a decision
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90c() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.readDecision(model,
+                        req.getId());
                 assertEquals(view, "notifs");
         }
         //PASS: view reviews when you have some pending
@@ -1402,7 +1444,7 @@ public class MainControllerTest {
                 String view =this.mainController.doReset("johns@columbia.edu", rtoken, "password");
                 assertEquals(view, "redirect:/generic-error.html");
         }
-*/
+
         //contact!
         //step one: test to pass
         @Test

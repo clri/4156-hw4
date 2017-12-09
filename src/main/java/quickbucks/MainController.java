@@ -267,19 +267,7 @@ public class MainController {
 		model.addAttribute("max",""+maxPage);
 		return "searchResults";
 	}
-
-	/*@GetMapping(path="/demo/viewjob")
-	public @ResponseBody ModelAndView viewJob(@RequestParam String id) {
-		ModelAndView blep=new ModelAndView();
-		blep.setViewName("redirect:viewJob");
-		Job j = findOne(1);
-		redir.addFlashAttribute("title", j.getJobTitle());
-
-
-		return jobRepository.findAll();
-	}
-	*/
-
+	
 	@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
 	public String lookupJobByID()
 	{
