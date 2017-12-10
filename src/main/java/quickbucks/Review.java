@@ -13,7 +13,7 @@ public class Review{
         private Integer id; //naming convention this must be id and not userID
 		//we need to add the author since both employees and employers write reviews
 		//otherwise have to way to differentiate
-	private Integer author;
+		private Integer author;
         private Integer employee; //id of logged-in user
         private Integer employer; //id of employer ye
         private Integer job; //id of job
@@ -27,7 +27,9 @@ public class Review{
         public void setId(Integer id) {
         	this.id = id;
         }
-	public Integer getAuthor() {
+
+		public Integer getAuthor() {
+
         	return author;
         }
         public void setAuthor(Integer author) {

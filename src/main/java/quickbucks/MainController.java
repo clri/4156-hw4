@@ -280,6 +280,8 @@ public class MainController {
 	}
 	*/
 
+	
+	
 	@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
 	public String lookupJobByID()
 	{
@@ -831,12 +833,13 @@ public class MainController {
 	@GetMapping(path="/demo/employeeReview")
 	public String employeeReviewList(ModelMap model)
 	{
+		System.out.println("herhehreherherh");
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
 
 		List<Request> requests = requestRepository.findRequestsByEmployer(""+uid);
-
+		System.out.println(requests.size());
 		for(int i = 0; i< requests.size(); i++){
 			//check if review exists
 			Request temp = requests.get(i);
