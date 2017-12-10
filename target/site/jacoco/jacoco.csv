@@ -1,12 +1,12 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 Quickbucks Maven Webapp,quickbucks,MvcConfig,36,0,0,0,10,0,3,0,3,0
-Quickbucks Maven Webapp,quickbucks,User,61,39,0,0,18,18,9,9,9,9
+Quickbucks Maven Webapp,quickbucks,User,46,54,0,0,13,23,4,14,4,14
 Quickbucks Maven Webapp,quickbucks,CleanStringAdvice,12,0,0,0,4,0,2,0,2,0
-Quickbucks Maven Webapp,quickbucks,MainController,385,1352,35,105,117,334,36,62,7,19
+Quickbucks Maven Webapp,quickbucks,MainController,134,1620,14,132,59,395,15,86,2,24
 Quickbucks Maven Webapp,quickbucks,Review,22,30,0,0,8,14,7,8,7,8
 Quickbucks Maven Webapp,quickbucks,Request,36,84,1,3,13,30,8,15,7,14
 Quickbucks Maven Webapp,quickbucks,AuthenticationProviderConfig,37,0,0,0,12,0,3,0,3,0
-Quickbucks Maven Webapp,quickbucks,WebSecurityConfig,212,0,0,0,33,0,4,0,4,0
+Quickbucks Maven Webapp,quickbucks,WebSecurityConfig,269,0,0,0,39,0,4,0,4,0
 Quickbucks Maven Webapp,quickbucks,MyErrorController,7,0,0,0,3,0,3,0,3,0
 Quickbucks Maven Webapp,quickbucks,ResetToken,11,14,0,0,4,6,3,4,3,4
 Quickbucks Maven Webapp,quickbucks,CleanStringAdvice.StringCleaner,17,0,2,0,6,0,3,0,2,0

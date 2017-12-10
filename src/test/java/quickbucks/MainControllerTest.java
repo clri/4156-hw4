@@ -102,7 +102,7 @@ public class MainControllerTest {
                         "abcde", "MS", "ON", "SEAS");
         }
 
-/*
+
         //sanitizing strings: test to pass
         @Test
         public void testSanitize1() throws Exception {
@@ -129,7 +129,7 @@ public class MainControllerTest {
                 String ans = mainController.sanitizeString("abc;d;;;");
                 assertEquals(ans,"abcd");
         }
-*/
+
         //REGISTRATION
         //test to pass
         //first name capitalized
@@ -259,7 +259,7 @@ public class MainControllerTest {
                         "secnetlkfsdjfsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index2.html");
-        }/*
+        }
 
 
 
@@ -383,7 +383,7 @@ public class MainControllerTest {
                         "secnetlkfsdjflsdkfjsldksdfflkfjsdlfjdklsfjslkdsjflskdfjlsdkfjsdljdsfkjfdjfjfjlskdfjlesirjslidjfsldkfjslkdfjsldkfjsldkfjsleirjlkxdjfalskdfjalsdkfjalskdjflaksdjflkasjdlkfjalsdkfjlaksjdflkajsdfkfjsldkfjsldkfjsdlkfjsldkjdjdjdjdksajdfhlasdifjkalsdi@columbia.edu",
                         "MS", "ON", "SEAS");
                 assertEquals(view,"redirect:/index3.html");
-        }*/
+        }
 
 
         //JOB CREATION
@@ -629,7 +629,7 @@ public class MainControllerTest {
         }
 
         //requesting and deciding: pass and fail are mixed togeter
-        //we will add reviewing here too
+        //we will add reviewing here too, and readDecision
         //adding requests: test to pass
         //PASS: request job that has not been accepted and not by me
         @Test
@@ -716,12 +716,54 @@ public class MainControllerTest {
         //PASS: accept a job where someone has been rejected from
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
-        public void aatestAddReqest91() throws Exception {
+        public void aatestAddReqest90() throws Exception {
                 int toreq = getAJob() + 1;
                 int empl = u.findIDByEmail("johnsecret82@columbia.edu");
                 Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
                 String view = this.mainController.makeDecision(model,
                         req.getId(), 1);
+                assertEquals(view, "notifs");
+        }
+        //FAIL: read a decision when you decided it
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90a() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.readDecision(model,
+                        req.getId());
+                assertEquals(view, "redirect:/403.html");
+        }
+        //FAIL: read a decision with invalid request id
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90aa() throws Exception {
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                String view = this.mainController.readDecision(model,
+                        -5);
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //FAIL: read a decision when you are uninvolved with it
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90b() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.readDecision(model,
+                        req.getId());
+                assertEquals(view, "redirect:/403.html");
+        }
+        //PASS: read a decision
+        @Test
+        @WithMockUser(username = "johnsecret82@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest90c() throws Exception {
+                int toreq = getAJob() + 1;
+                int empl = u.findIDByEmail("johnsecret82@columbia.edu");
+                Request req = r.findRequestByJobAndEmployee(toreq + "", empl);
+                String view = this.mainController.readDecision(model,
+                        req.getId());
                 assertEquals(view, "notifs");
         }
         //PASS: view reviews when you have some pending
@@ -1337,6 +1379,7 @@ public class MainControllerTest {
 
         //doReset()
         //pass: good password, good token
+        @Test
         public void testSreset4() throws Exception {
                 String rtoken = tst.getTokenByEmail("john@columbia.edu");
                 String view = this.mainController.checkReset(model,
@@ -1367,6 +1410,7 @@ public class MainControllerTest {
                 assertEquals(view, "redirect:/generic-error.html");
         }
         //fail: bad password, good token
+        @Test
         public void testSreset6() throws Exception {
                 String view = this.mainController.sendForgotEmail("john@columbia.edu");
                 String rtoken = tst.getTokenByEmail("john@columbia.edu");
@@ -1379,11 +1423,13 @@ public class MainControllerTest {
                 assertEquals(view, "redirect:/generic-error.html");
         }
         //fail: good password, bad token
+        @Test
         public void testSreset7() throws Exception {
                 String view =this.mainController.doReset("john@columbia.edu", "", "password");
                 assertEquals(view, "redirect:/generic-error.html");
         }
         //fail: email and token don't match
+        @Test
         public void testSreset8() throws Exception {
                 String view = this.mainController.sendForgotEmail("johns@columbia.edu");
                 String rtoken = tst.getTokenByEmail("john@columbia.edu");
@@ -1392,12 +1438,146 @@ public class MainControllerTest {
                 assertEquals(view, "redirect:/generic-error.html");
         }
         //fail: email and token don't match
+        @Test
         public void testSreset9() throws Exception {
                 String rtoken = tst.getTokenByEmail("john@columbia.edu");
-                String view =this.mainController.doReset("john@columbia.edu", rtoken, "password");
+                String view =this.mainController.doReset("johns@columbia.edu", rtoken, "password");
                 assertEquals(view, "redirect:/generic-error.html");
         }
 
+        //contact!
+        //step one: test to pass
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact1() throws Exception {
+                String view =this.mainController.contactStepOne(model, "asdf");
+                assertEquals(view, "composeMessage");
+                assertEquals(model.get("id"), "asdf");
+        }
+        //contactPoster: test to pass
+        //valid job
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact2() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "", "hi i am contacting you");
+                assertEquals(view, "redirect:/sent.html");
+        }
+        //PASS: 10, 11, 1499, 1500
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact8() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "","asdfghhjkk");
+                assertEquals(view, "redirect:/sent.html");
+        }
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact9() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "","asdfghhjkkk");
+                assertEquals(view, "redirect:/sent.html");
+        }
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact10() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "",
+                        "RE9s0Q9SsIU62Y75OnkztWjsOP0kyukpwIYPoFLSlpuvvrtgghQ8GO5NB6pXKv2pNAES7xLLkEjvmHWXcxlmwkIMaXoB2Ui17vLfm7z72u6beRmthEz609UFJ8mP9uhcyFo5NnKo0ml7bSqjSc8YQK34lryOOfSRKnULY3eoTOlylv9twV4PnJRRazD1EBgDDyJJD75pYtmWPjfJPyKJRQ9nBbIRFBuyqpsg2L9eCX0pNjVNNI4S4PRPkYYU9lWrJGDbgUKV23f3exeFhubU2eiVlIGI7gwPn14m96HwkIcnwnq1TmZwWlYOsCq8nkN3I3iEP2RxYc0xqHiAqXjUtzgEsbFT4pUrPFL9nSTQiM64Jk78voJpjbuFSapIhGbiGsSU78Fz12nP1G20mYvXFr7Yy4uz7VEEvnlL27VKq0IWs8siA1oiePHUP19qRyIKzkGTEbHD9MOypaloZNGzP3zYOaxJNykfW1JHt9c1rv5pcNLqL7Ah9bHUwa3MrPDBSH6F33zKt4AOQRKEqXxiCWn7wk0Ib9QenVVWZ8g3uQLx3pSzyQoTo402QIUk2Pt2LxMq6iqaW9pIIn0zANJWqKxe1Nh8gOkC5gr1fzl8GI2DibQhZ8jwAanCAIgDG7UegF1IEThSVnP9rr0iHEcApuPoprVcqcRAD5nnkFNlAY9MWVtglA9HHSZbnK5qwYZaYt1x9b6oVx64SENJ85gZ8T819cqQOqcsSiYuiqQ0sB4sbJOTniLB7CxqLe6BNGa19BpwEEqn8VPBXkw6a2ROxa9mUoWByBaxDcYbw9MYaYIg3A1pG3Pnf21cSQor6RgFGlmw1zLAGhlYN8YIiEtG7cMbcm6XLDDTyMpfIXmcU89NQg0PNVvHkF7fYRo5RKIei3V8iWGpJhSk5F0geZ7oBykvVjhroV9jFzXSkV7bhCNUO6qUMICAB3uyuWY4jwXxl4ZpLh8hO2PI8ZrQpf7Yq3EmEHEiHJ1aezj2FQjkCnx1a6pFWEoRiGGxeY9slUIP1uEXK2XWY9kicAfX6iFq2ilke9xPDBnuVCWrQ2Yv1J3mPPtLrehMLPB1t3oslhFG6LZXkON5gvEalqztQ9S9TOZpiBcX7O4O2c0cgH3ffueADtxJeUkM42jI34aY3bxLcnJIm1cxbeSu5XxZbLagZmVggzVeAopG6DwQsl1r7GhSzGyhfbe8ER05XUaKgrqvgbDuZgzw3Dr1OUUUgY2UJyKqCOxc4Se5hkF3BkwLBVOq5pS4ZEwiRyQNwWpBUBmX1gIWlfD6t3fDR9qKV6DtP7fJiiULQjLUQFrVQwEDo3ZovXaAtDPjqyqxU7Qhl5a74GW4ruoCgUalmgQkjDeC5cvCB65ZFyTUl6SbcfRktBsyD0LwDM5gGWpVtpjnghYm3j31GqawTjXvQ4MkJLWDlNj08ytp9x1VB3t5Qt80asqSmZ2RuPe8HxCFUckepP42stqQo7t5aUsiixJ4QhRLvUbBKPgd"
+                        );
+                assertEquals(view, "redirect:/sent.html");
+        }
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact11() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "",
+                        "R9s0Q9SsIU62Y75OnkztWjsOP0kyukpwIYPoFLSlpuvvrtgghQ8GO5NB6pXKv2pNAES7xLLkEjvmHWXcxlmwkIMaXoB2Ui17vLfm7z72u6beRmthEz609UFJ8mP9uhcyFo5NnKo0ml7bSqjSc8YQK34lryOOfSRKnULY3eoTOlylv9twV4PnJRRazD1EBgDDyJJD75pYtmWPjfJPyKJRQ9nBbIRFBuyqpsg2L9eCX0pNjVNNI4S4PRPkYYU9lWrJGDbgUKV23f3exeFhubU2eiVlIGI7gwPn14m96HwkIcnwnq1TmZwWlYOsCq8nkN3I3iEP2RxYc0xqHiAqXjUtzgEsbFT4pUrPFL9nSTQiM64Jk78voJpjbuFSapIhGbiGsSU78Fz12nP1G20mYvXFr7Yy4uz7VEEvnlL27VKq0IWs8siA1oiePHUP19qRyIKzkGTEbHD9MOypaloZNGzP3zYOaxJNykfW1JHt9c1rv5pcNLqL7Ah9bHUwa3MrPDBSH6F33zKt4AOQRKEqXxiCWn7wk0Ib9QenVVWZ8g3uQLx3pSzyQoTo402QIUk2Pt2LxMq6iqaW9pIIn0zANJWqKxe1Nh8gOkC5gr1fzl8GI2DibQhZ8jwAanCAIgDG7UegF1IEThSVnP9rr0iHEcApuPoprVcqcRAD5nnkFNlAY9MWVtglA9HHSZbnK5qwYZaYt1x9b6oVx64SENJ85gZ8T819cqQOqcsSiYuiqQ0sB4sbJOTniLB7CxqLe6BNGa19BpwEEqn8VPBXkw6a2ROxa9mUoWByBaxDcYbw9MYaYIg3A1pG3Pnf21cSQor6RgFGlmw1zLAGhlYN8YIiEtG7cMbcm6XLDDTyMpfIXmcU89NQg0PNVvHkF7fYRo5RKIei3V8iWGpJhSk5F0geZ7oBykvVjhroV9jFzXSkV7bhCNUO6qUMICAB3uyuWY4jwXxl4ZpLh8hO2PI8ZrQpf7Yq3EmEHEiHJ1aezj2FQjkCnx1a6pFWEoRiGGxeY9slUIP1uEXK2XWY9kicAfX6iFq2ilke9xPDBnuVCWrQ2Yv1J3mPPtLrehMLPB1t3oslhFG6LZXkON5gvEalqztQ9S9TOZpiBcX7O4O2c0cgH3ffueADtxJeUkM42jI34aY3bxLcnJIm1cxbeSu5XxZbLagZmVggzVeAopG6DwQsl1r7GhSzGyhfbe8ER05XUaKgrqvgbDuZgzw3Dr1OUUUgY2UJyKqCOxc4Se5hkF3BkwLBVOq5pS4ZEwiRyQNwWpBUBmX1gIWlfD6t3fDR9qKV6DtP7fJiiULQjLUQFrVQwEDo3ZovXaAtDPjqyqxU7Qhl5a74GW4ruoCgUalmgQkjDeC5cvCB65ZFyTUl6SbcfRktBsyD0LwDM5gGWpVtpjnghYm3j31GqawTjXvQ4MkJLWDlNj08ytp9x1VB3t5Qt80asqSmZ2RuPe8HxCFUckepP42stqQo7t5aUsiixJ4QhRLvUbBKPgd"
+                        );
+                assertEquals(view, "redirect:/sent.html");
+        }
+        //FAIL: empty string, 9, 1501
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact5() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "", "");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact6() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "","asdfghhjk");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact7() throws Exception {
+                int toreq = getAJob();
+                String view =this.mainController.contactPoster(
+                        toreq + "",
+                        "REO9s0Q9SsIU62Y75OnkztWjsOP0kyukpwIYPoFLSlpuvvrtgghQ8GO5NB6pXKv2pNAES7xLLkEjvmHWXcxlmwkIMaXoB2Ui17vLfm7z72u6beRmthEz609UFJ8mP9uhcyFo5NnKo0ml7bSqjSc8YQK34lryOOfSRKnULY3eoTOlylv9twV4PnJRRazD1EBgDDyJJD75pYtmWPjfJPyKJRQ9nBbIRFBuyqpsg2L9eCX0pNjVNNI4S4PRPkYYU9lWrJGDbgUKV23f3exeFhubU2eiVlIGI7gwPn14m96HwkIcnwnq1TmZwWlYOsCq8nkN3I3iEP2RxYc0xqHiAqXjUtzgEsbFT4pUrPFL9nSTQiM64Jk78voJpjbuFSapIhGbiGsSU78Fz12nP1G20mYvXFr7Yy4uz7VEEvnlL27VKq0IWs8siA1oiePHUP19qRyIKzkGTEbHD9MOypaloZNGzP3zYOaxJNykfW1JHt9c1rv5pcNLqL7Ah9bHUwa3MrPDBSH6F33zKt4AOQRKEqXxiCWn7wk0Ib9QenVVWZ8g3uQLx3pSzyQoTo402QIUk2Pt2LxMq6iqaW9pIIn0zANJWqKxe1Nh8gOkC5gr1fzl8GI2DibQhZ8jwAanCAIgDG7UegF1IEThSVnP9rr0iHEcApuPoprVcqcRAD5nnkFNlAY9MWVtglA9HHSZbnK5qwYZaYt1x9b6oVx64SENJ85gZ8T819cqQOqcsSiYuiqQ0sB4sbJOTniLB7CxqLe6BNGa19BpwEEqn8VPBXkw6a2ROxa9mUoWByBaxDcYbw9MYaYIg3A1pG3Pnf21cSQor6RgFGlmw1zLAGhlYN8YIiEtG7cMbcm6XLDDTyMpfIXmcU89NQg0PNVvHkF7fYRo5RKIei3V8iWGpJhSk5F0geZ7oBykvVjhroV9jFzXSkV7bhCNUO6qUMICAB3uyuWY4jwXxl4ZpLh8hO2PI8ZrQpf7Yq3EmEHEiHJ1aezj2FQjkCnx1a6pFWEoRiGGxeY9slUIP1uEXK2XWY9kicAfX6iFq2ilke9xPDBnuVCWrQ2Yv1J3mPPtLrehMLPB1t3oslhFG6LZXkON5gvEalqztQ9S9TOZpiBcX7O4O2c0cgH3ffueADtxJeUkM42jI34aY3bxLcnJIm1cxbeSu5XxZbLagZmVggzVeAopG6DwQsl1r7GhSzGyhfbe8ER05XUaKgrqvgbDuZgzw3Dr1OUUUgY2UJyKqCOxc4Se5hkF3BkwLBVOq5pS4ZEwiRyQNwWpBUBmX1gIWlfD6t3fDR9qKV6DtP7fJiiULQjLUQFrVQwEDo3ZovXaAtDPjqyqxU7Qhl5a74GW4ruoCgUalmgQkjDeC5cvCB65ZFyTUl6SbcfRktBsyD0LwDM5gGWpVtpjnghYm3j31GqawTjXvQ4MkJLWDlNj08ytp9x1VB3t5Qt80asqSmZ2RuPe8HxCFUckepP42stqQo7t5aUsiixJ4QhRLvUbBKPgd");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //to fail: invalid job
+        @Test
+        @WithMockUser(username = "johns@columbia.edu", roles = { "USER" })
+        public void testContact3() throws Exception {
+                String view =this.mainController.contactPoster(
+                        "blah", "hi i am contacting you");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+        //FAIL: self contact
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testContact4() throws Exception {
+                int toreq = getAJob() + 1;
+                String view = this.mainController.contactPoster(
+                        toreq + "", "hi i am contacting you");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+
+        //displayNotifs(): test to pass only
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testNotif() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                List<Request> notifs = r.getNotifsByUserID(uid);
+                String view = this.mainController.displayNotifications(model);
+                assertEquals(view, "notifs");
+                assertEquals(((List<Request>)(model.get("notifs"))).size(),
+                        notifs.size());
+                assertEquals(model.get("userr"), uid);
+        }
+
+        //viewUser(): user in DB (pass), user not in DB (fail)
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testView1() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                User user = u.findByID(uid + "");
+                String view = this.mainController.viewUser(model, uid + "");
+                assertEquals(view, "viewUser");
+                assertEquals(model.get("userID"), uid);
+                assertEquals(model.get("name"), user.getUserFirstName()+" " +user.getUserLastName());
+                assertEquals(model.get("school"), user.getUserSchool());
+                assertEquals(model.get("degree"), user.getUserDegree());
+                assertEquals(model.get("location"), user.getUserLocation());
+        }
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testView2() throws Exception {
+                String view = this.mainController.viewUser(model, "-1");
+                assertEquals(view, "viewJobError");
+        }
 
         @Configuration
         static class MainControllerTestConfiguration {
