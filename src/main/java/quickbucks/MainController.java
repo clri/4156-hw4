@@ -830,11 +830,41 @@ public class MainController {
 
 		return "viewUser";
 	}
+	
+	@RequestMapping(value = "/myprofile", method = RequestMethod.GET)
+   	public String viewUser(ModelMap model)
+	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+	 	User u = userRepository.findByID(uid+"");
+	 	if(u == null){
+			//TODO - change to user error
+			String hello = "" + uid + "";
+			model.addAttribute("jobID", hello);
+			return "viewJobError";
+	 	}
+	 	else{
+			List reviews = new ArrayList();
+			reviews = reviewRepository.getUserReviews(u.getId());
+			System.out.println(reviews.size());
+			System.out.println(u.getId());
+			model.addAttribute("userID", u.getId());
+			model.addAttribute("name", u.getUserFirstName()+" " +u.getUserLastName());
+			model.addAttribute("school", u.getUserSchool());
+			model.addAttribute("degree", u.getUserDegree());
+			model.addAttribute("location", u.getUserLocation());
+			model.addAttribute("reviews", reviews);
+	   	}
+		//model.addAttribute("title", j.getJobTitle());
+
+		return "viewUser";
+	}
 
 	@GetMapping(path="/demo/employeeReview")
 	public String employeeReviewList(ModelMap model)
 	{
-		System.out.println("herhehreherherh");
+		//System.out.println("herhehreherherh");
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
@@ -851,7 +881,7 @@ public class MainController {
 				test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
 			} catch (Exception e) {
 				//multiple matches
-				test = new Review();
+				test = new Review(); 
 			}
 
 			//jobID.toString());
