@@ -12,7 +12,7 @@
 <header>
 
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
-            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, user!</p>
+            <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, <a href="/myprofile">user!</a></p>
             <form action="/logout" method="get">
                     <input type="submit" class="button red big" value="Sign Out" />
             </form>
