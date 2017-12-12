@@ -17,8 +17,8 @@
                     <input type="submit" class="button red big" value="Sign Out" />
             </form>
             <br>
-			
-	
+
+
     </header>
     <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;">
 		<ul>
@@ -40,7 +40,7 @@
         <p>Description: ${desc} </p>
 
 
-        <center>
+        <div style="padding-left: 120px;"> <center>
         <form id="request" action="/demo/request" style = "margin: 20px 15px 0 0;float:none;">
         <input style="visibility:hidden;"type="text" name="id" value=${jobID} readonly /><br />
 		<input type="submit" value="request">
@@ -48,9 +48,9 @@
         <form id="contact"   action="/demo/contact" style = "margin: 20px 15px 0 0;float:none;">
         <input type="text" name="id" value=${jobID} readonly style="display:none;" /><br />
 		<input type="submit" value="contact" />
-        </form>
+        </form> <br />
         <a href="../../../searchJobs.html">Back</a>
-        </center>
+</center> </div>
 
     </section>
 		<div class="footer">
