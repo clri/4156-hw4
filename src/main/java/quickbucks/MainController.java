@@ -189,7 +189,8 @@ public class MainController {
 		} catch(Exception ee) {
 			return genericError();
 		}
-
+		model.addAttribute("user", uid);
+		model.addAttribute("userEmail", user);
 		model.addAttribute("jobID", j.getId());
 		model.addAttribute("title", j.getJobtitle());
 		model.addAttribute("desc", j. getJobdesc());
@@ -295,6 +296,9 @@ public class MainController {
 			return "viewJobError";
 	 	}
 	 	else{
+			String email = userRepository.findEmailById(j.getUser());
+			model.addAttribute("user", j.getUser());
+			model.addAttribute("userEmail", email);
 			model.addAttribute("jobID", j.getId());
 			model.addAttribute("title", j.getJobtitle());
 			model.addAttribute("desc", j. getJobdesc());
@@ -475,7 +479,7 @@ public class MainController {
 		r.setEmployer(j.getUser());
 		r.setAuthor(uid);
 		r.setJob(j.getId());
-		r.setReviewBody(reviewBody);
+		r.setReviewbody(reviewBody);
 		r.setRating(rat);
 
 		try {
@@ -811,11 +815,16 @@ public class MainController {
 			return "viewJobError";
 	 	}
 	 	else{
+			List reviews = new ArrayList();
+			reviews = reviewRepository.getUserReviews(u.getId());
+			System.out.println(reviews.size());
+			System.out.println(u.getId());
 			model.addAttribute("userID", u.getId());
 			model.addAttribute("name", u.getUserFirstName()+" " +u.getUserLastName());
 			model.addAttribute("school", u.getUserSchool());
 			model.addAttribute("degree", u.getUserDegree());
 			model.addAttribute("location", u.getUserLocation());
+			model.addAttribute("reviews", reviews);
 	   	}
 		//model.addAttribute("title", j.getJobTitle());
 

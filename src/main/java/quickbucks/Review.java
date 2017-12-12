@@ -60,10 +60,10 @@ public class Review{
         public void setRating(Double rating) {
         	this.rating = rating;
         }
-        public String getReviewBody() {
+        public String getReviewbody() {
         	return reviewBody;
         }
-        public void setReviewBody(String reviewBody) {
+        public void setReviewbody(String reviewBody) {
         	this.reviewBody = reviewBody;
         }
 

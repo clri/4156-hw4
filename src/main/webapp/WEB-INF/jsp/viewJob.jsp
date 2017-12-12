@@ -35,6 +35,7 @@
     <h2 style="text-align:center;">Job ID: ${jobID}</h2>
 
         <p>Job Title: ${title} </p>
+		<p>Employer: <a href = "../profile?id=${user}">${userEmail}</a></p>
         <p>Tags: ${tags} </p>
         <p>Description: ${desc} </p>
 

@@ -1,5 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -38,20 +40,13 @@
         <p>Degree: ${degree}</p>
 		<p>Location: ${location}</p>
 		
-    <h3 style="text-align:center;">Reviews:</h2>
-
-  
-     <!--<table>
+    <h3 style="text-align:center;">Reviews:</h3>
 	
-        <c:forEach items="${reviews}" var="rev">
-            <tr>
-                <td><c:out value="${rev.user}" /></td>
-                <td><c:out value="${rev.jobdesc}" /></td>
-                <td><c:out value="${job.category}" /></td>
-            </tr>
-        </c:forEach>
+		<c:forEach items="${reviews}" var="review">
+		<h4 style="text-align:left;"><a href = "../finalPage?id=${review.job}">Job</a> Rating: <c:out value="${review.rating}" /></h4>
+		<p style="text-align:left;"><c:out value="${review.reviewbody}" /></p>
 
-    </table>-->
+		</c:forEach>
 
 
 
