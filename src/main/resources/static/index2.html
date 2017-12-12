@@ -6,60 +6,62 @@
 </head>
 <body>
 <header>
-        
+
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
             <a style = "float:right;display: inline-block;margin: 0 0 15px 15px;float: right;text-align:right; font-size:20px;font-family:arial;" href="/homePageLoggedIn.html">Sign In</a>
-            <a href="/registration.html" style = "float:right;display: inline-block;text-align:right; font-size:20px;font-family:arial;">Register</a> 
+            <a href="/registration.html" style = "float:right;display: inline-block;text-align:right; font-size:20px;font-family:arial;">Register</a>
             <br>
-			
+
 			<link href="css/genericstyle.css" rel="stylesheet" type="text/css">
     </header>
-    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;"> 
+    <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;">
         <ul>
 		 <li><a href="/homepage.html" >Home</a></li>
-         
+
          <li><a href="" style="font-size: 15px; font-family: arial">Legal</a></li>
          <li><a href=""style="font-size: 15px; font-family: arial" >FAQ</a></li>
-      
+
 		</ul>
         <br>
     </nav>
-	
-<section id="body">	
+
+<section id="body">
 <h2>Data saved!</h2>
 
-	<center>
+<div style="padding-left: 120px;">
+<center>
+<h2>User Registration</h2>
 <form action="/demo/adduser" method="get">
-	<p>
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName" name="firstName" placeholder="your first name"/>
-	</p>
-	<p>
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" name="lastName" placeholder="your last name"/>
-	</p>
-	<p>
-    <label for="email">Columbia or Barnard email</label>
-    <input type="text" id="email" name="email" placeholder="email@columbia.edu"/>
-    	</p>
-	<p>
-    <label for="password">Password</label>
-    <input type="text" id="password" name="password" placeholder="*****"/>
-  	</p>
-	<p>
-    <label for="degree">Degree</label>
-    <input type="text" id="degree" name="degree" placeholder="BS, MA, PhD, etc"/>
-	</p>
- 	<p>
-    <label for="location">Location</label>
-    <input type="text" id="location" name="location" placeholder="ON or OFF (campus)"/>
-	</p>
-	<p>
-    <label for="school">School</label>
-    <input type="text" id="school" name="school" placeholder="SEAS, Barnard, Teachers' College..."/>
-    	</p>
-    <div style="width: 200px;"><input type="submit" placeholder="Submit Request" style="display: block;"></div>
- </form></center>
+<p>
+<label for="firstName">First Name</label>
+<input type="text" id="firstName" name="firstName" placeholder="your first name"/>
+</p>
+<p>
+<label for="lastName">Last Name</label>
+<input type="text" id="lastName" name="lastName" placeholder="your last name"/>
+</p>
+<p>
+<label for="email">Columbia or Barnard email</label>
+<input type="text" id="email" name="email" placeholder="email@columbia.edu"/>
+</p>
+<p>
+<label for="password">Password</label>
+<input type="text" id="password" name="password" placeholder="*****"/>
+</p>
+<p>
+<label for="degree">Degree</label>
+<input type="text" id="degree" name="degree" placeholder="BS, MA, PhD, etc"/>
+</p>
+<p>
+<label for="location">Location</label>
+<input type="text" id="location" name="location" placeholder="ON or OFF (campus)"/>
+</p>
+<p>
+<label for="school">School</label>
+<input type="text" id="school" name="school" placeholder="SEAS, Barnard, Teachers' College..."/>
+</p>
+<div style="width: 200px;"><input type="submit" placeholder="Submit Request" style="display: block;"></div>
+</form></center> </div>
 </section>
 <div class="footer">
   <p href="" style = "text-align:center; font-size:15px;font-family:arial;">2017 Quick Bucks, ASE Inc</p>
