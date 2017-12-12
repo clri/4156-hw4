@@ -47,10 +47,10 @@
                 </td>
                 <td>
                         <c:if test="${req.employee == userr}">
-                                <c:out value="User ${req.employer}" />
+                        <a href = "../profile?id=${req.employer}"><c:out value="User ${req.employer}" /></a>
                         </c:if>
                         <c:if test="${req.employee != userr}">
-                                <c:out value="User ${req.employee}" />
+							<a href = "../profile?id=${req.employee}"><c:out value="User ${req.employee}" /></a>
                         </c:if>
                 </td>
                 <td><c:choose>

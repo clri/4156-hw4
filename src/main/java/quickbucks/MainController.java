@@ -190,7 +190,7 @@ public class MainController {
 			return genericError();
 		}
 		model.addAttribute("user", uid);
-		model.addAttribute("userEmail", user);
+		model.addAttribute("userEmail", user.getUsername());
 		model.addAttribute("jobID", j.getId());
 		model.addAttribute("title", j.getJobtitle());
 		model.addAttribute("desc", j. getJobdesc());
