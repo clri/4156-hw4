@@ -19,8 +19,8 @@
                     <input type="submit" class="button red big" value="Sign Out" />
             </form>
             <br>
-			
-	
+
+
     </header>
     <nav style = "margin: 15px 15px 0 0;display:inline;text-align:right; font-size:16px;font-family:arial;">
 		<ul>
@@ -40,19 +40,19 @@
         <p>School: ${school}</p>
         <p>Degree: ${degree}</p>
 		<p>Location: ${location}</p>
-		
+
     <h3 style="text-align:center;">Reviews:</h3>
-	
+	<div style="padding-left: 120px;"> <center>
 		<c:forEach items="${reviews}" var="review">
-		<h4 style="text-align:left;"><a href = "../finalPage?id=${review.job}">Job</a> Rating: <c:out value="${review.rating}" /></h4>
-		<p style="text-align:left;"><c:out value="${review.reviewbody}" /></p>
+		<h4><a href = "../finalPage?id=${review.job}">Job</a> Rating: <c:out value="${review.rating}" /></h4>
+		<p><c:out value="${review.reviewbody}" /></p>
 
 		</c:forEach>
-
+        </center></div>
 
 
     </section>
-		
+
 	<div class="footer">
   <p href="" style = "text-align:center; font-size:15px;font-family:arial;">2017 Quick Bucks, ASE Inc</p>
 </div>

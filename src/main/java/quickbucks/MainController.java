@@ -268,7 +268,7 @@ public class MainController {
 		model.addAttribute("max",""+maxPage);
 		return "searchResults";
 	}
-	
+
 	@RequestMapping(value = "/employeeReview", method = RequestMethod.GET)
 	public String lookupJobByID()
 	{
@@ -817,8 +817,8 @@ public class MainController {
 	 	else{
 			List reviews = new ArrayList();
 			reviews = reviewRepository.getUserReviews(u.getId());
-			System.out.println(reviews.size());
-			System.out.println(u.getId());
+			//System.out.println(reviews.size());
+			//System.out.println(u.getId());
 			model.addAttribute("userID", u.getId());
 			model.addAttribute("name", u.getUserFirstName()+" " +u.getUserLastName());
 			model.addAttribute("school", u.getUserSchool());
