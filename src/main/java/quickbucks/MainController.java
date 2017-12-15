@@ -376,7 +376,7 @@ public class MainController {
 			new SecurityContextLogoutHandler().logout(request,
 				response, auth);
 		}
-		return "redirect:/login?logout";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+		return "logoutPage";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
 	@Autowired
@@ -895,6 +895,255 @@ public class MainController {
 		model.addAttribute("results", requests);
 		return "awaitingReview";
 	}
+	
+	@GetMapping(path="/demo/openjobs")
+	public String employerJobs(ModelMap model)
+	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		
+
+		List<JobDecision> openJobs = new ArrayList<JobDecision>();
+		List<Integer> searchedJobs = new ArrayList<Integer>();
+		List<Request> requests = requestRepository.findRequestsByEmployer(""+uid);
+		
+		for(int i = 0; i< requests.size(); i++){
+			//include if decision not made
+			Request temp = requests.get(i);
+			if(searchedJobs.contains(temp.getJob())){
+				continue;
+			}
+			
+			if(temp.getDecision() == 0){
+				openJobs.add(new JobDecision(temp.getJob(), 0, temp.getTitle()));
+			}
+			
+			else{
+				Review test;
+				try {
+					test = reviewRepository.lookupReviewByJobAndAuthor(temp.getJob(), uid);
+				} catch (Exception e) {
+					//multiple matches
+					test = new Review(); 
+				}
+				if(test == null)
+					openJobs.add(new JobDecision(temp.getJob(), 1, temp.getTitle()));
+			}
+			
+			searchedJobs.add(temp.getJob());
 
 
+		}
+		
+		List<Job> allJobs = new ArrayList<Job>();
+		allJobs = jobRepository.findAllUsersJobs(uid);
+		for(int i = 0; i< allJobs.size(); i++){
+			Job temp = allJobs.get(i);
+			if(searchedJobs.contains(temp.getId())){
+				continue;
+			}
+			else{
+				openJobs.add(new JobDecision(temp.getId(), 0, temp.getJobtitle()));
+			}
+		}
+		
+		model.addAttribute("jobs", openJobs);
+		return "openjobs";
+	}
+	
+	@RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
+   	public String cancelJob(ModelMap model, @RequestParam String id)
+	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		Job temp;
+		try {
+			temp = jobRepository.findJobByID(id);
+		} catch(Exception ee) {
+			System.out.println("LOOKUP"+id);
+			return genericError();
+			
+		}
+		if(temp == null){
+			System.out.println("NULL"+id);
+			return genericError();
+			
+		}
+		
+		else{
+			if(temp.getUser() != uid)
+				model.addAttribute("msg", "Error: cannot delete someone else's job");
+			else{
+				
+				
+				try{
+					jobRepository.delete(temp);
+					List<Request> requests2 = requestRepository.findRequestsByJob(id);
+					for(int i = 0; i<requests2.size(); i++){
+						requestRepository.delete(requests2.get(i));
+					}
+				} catch(Exception ee) {
+				System.out.println("DELETE"+id);
+				return genericError();
+				}
+				model.addAttribute("msg", "Job successfully deleted.");
+			}
+		}
+		
+		return "cancel";
+			
+	}
+	
+		@GetMapping(path="/demo/employerReview")
+	public String employerReviewList(ModelMap model)
+	{
+		
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+
+		List<Request> requests = requestRepository.findRequestsByEmployee(""+uid);
+		System.out.println(requests.size());
+		for(int i = 0; i< requests.size(); i++){
+			//check if review exists
+			Request temp = requests.get(i);
+			Integer jobID = temp.getJob();
+
+			Review test;
+			try {
+				test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
+			} catch (Exception e) {
+				//multiple matches
+				test = new Review(); 
+			}
+
+			//jobID.toString());
+			//if it does, remove from list
+			if(test != null)
+				requests.remove(i);
+
+		}
+
+		model.addAttribute("type", "Employeers");
+		model.addAttribute("results", requests);
+		return "awaitingReview";
+	}
+
+	
+		@GetMapping(path="/demo/upcoming")
+	public String employeeAccepted(ModelMap model)
+	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		
+
+		
+		List<Request> requests = requestRepository.findRequestsByEmployee(""+uid);
+			for(int i = 0; i<requests.size(); i++){
+				Request temp = requests.get(i);
+				Integer jobID = temp.getJob();
+
+					Review test;
+					try {
+						test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
+					} catch (Exception e) {
+						//multiple matches
+						test = new Review(); 
+					}
+
+					if(test != null)
+						requests.remove(i);
+			}
+		
+		
+	
+		model.addAttribute("title", "Hired Jobs");
+		model.addAttribute("jobs", requests);
+		return "employeeJobs";
+	}
+	
+			@GetMapping(path="/demo/pending")
+	public String employeePending(ModelMap model)
+	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		
+
+		
+		List<Request> requests = requestRepository.findRequestsByEmployeeUndecided(""+uid);
+		
+	
+		model.addAttribute("title", "Pending Requests");
+		model.addAttribute("jobs", requests);
+		return "employeeJobs";
+	}
+
+	@RequestMapping(value = "/cancelReq", method = RequestMethod.GET)
+   	public String cancelReq(ModelMap model, @RequestParam String id)
+	{
+		org.springframework.security.core.userdetails.User user
+			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int uid = userRepository.findIDByEmail(user.getUsername());
+		Request temp;
+		try {
+			temp = requestRepository.findRequestByIDString(id);
+		} catch(Exception ee) {
+			System.out.println("LOOKUP"+id);
+			return genericError();
+			
+		}
+		if(temp == null){
+			return genericError();
+			
+		}
+		
+		else{
+			if(temp.getEmployee()!= uid)
+				model.addAttribute("msg", "Error: cannot delete someone else's request");
+			else if(temp.getDecision() == 1){
+				
+				Integer jobID = temp.getJob();
+
+				Review test;
+				try {
+					test = reviewRepository.lookupReviewByJobID(jobID);
+				} catch (Exception e) {
+					//multiple matches
+					test = new Review(); 
+				}
+
+				if(test != null)
+					model.addAttribute("msg", "Error: cannot delete request for a completed job!");
+				else{
+					try{
+					requestRepository.delete(temp);
+					} catch(Exception ee) {
+					return genericError();
+					}
+					model.addAttribute("msg", "Request successfully deleted.");
+				}
+			}
+			else{
+				
+				
+				try{
+					requestRepository.delete(temp);
+				} catch(Exception ee) {
+				return genericError();
+				}
+				model.addAttribute("msg", "Request successfully deleted.");
+			}
+		}
+		
+		return "cancel";
+			
+	}
+	
+	
 }
+
+

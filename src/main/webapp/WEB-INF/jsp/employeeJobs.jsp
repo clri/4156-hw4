@@ -1,15 +1,17 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>ViewJob</title>
-	<link href="../../../css/genericstyle.css" rel="stylesheet" type="text/css">
+    <title>Notifications</title>
+	 <link href="../../../css/genericstyle.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-<header>
+    <header>
 
             <h1 style="display: inline-block;text-align:left; font-size:30px;font-family:arial;">QuickBucks</h1>
             <p href="" style = "float:right;display: inline-block;text-align:right; font-size:15px;font-family:arial;">Welcome, <a href="/myprofile">user!</a></p>
@@ -33,28 +35,33 @@
     </nav>
 
     <section id="body" >
-    <h2 style="text-align:center;">Job ID: ${jobID}</h2>
+    <h2 style="text-align:center;">${title}</h2>
 
-        <p>Job Title: ${title} </p>
-        <p>Tags: ${tags} </p>
-        <p>Description: ${desc} </p>
-        <p> ${errmsg} </p>
+         <table id = "searchTable">
+		  <tr id="searchtr">
+		   <th id="searchth">Job</th>
+		   <th id="searchth">Cancel?</th>
+		 </tr>
+	
+        <c:forEach items="${jobs}" var="request">
+
+		
+            <tr id = "searchtr">
+                <td id="searchtd"><a href = "../finalPage?id=${request.job}"><c:out value="${request.title}" /></a></td>
+                <td id="searchtd"><a href = "../cancelReq?id=${request.id}">Cancel?</a></td>
+            </tr>
+			
+			                      
+        </c:forEach>
+
+    </table>
 
         <center>
-        <form id="review"   action="/demo/review" style = "margin: 20px 15px 0 0;float:none;">
-        <input type="text" name="id" value=${jobID} readonly><br>
-        <p>
-                <label for="rating">Rating</label><input type="text" id="rating" name="rating" value=""><br>
-        </p><p>
-                <label for="reviewBody">Review</label><input type="text" id="reviewBody" name="reviewBody" value=""><br>
-        </p>
-                <input type="submit" value="review">
-        </form>
-        <a href="../../../homepage.html">Home</a>
+        <a href="../../../mypage.html">Back</a> 
         </center>
 
     </section>
-	<div class="footer">
+		<div class="footer">
   <p href="" style = "text-align:center; font-size:15px;font-family:arial;">2017 Quick Bucks, ASE Inc</p>
 </div>
     </body>

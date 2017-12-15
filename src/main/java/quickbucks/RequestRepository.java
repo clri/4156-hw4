@@ -35,13 +35,25 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
         @Query(value = "select * from Request r where r.id = :id", nativeQuery = true)
 	Request findRequestByID(@Param("id") Integer id);
 
+	 @Query(value = "select * from Request r where r.id = :id", nativeQuery = true)
+	Request findRequestByIDString(@Param("id") String id);
+	
         @Query(value = "select * from Request r where r.job = :jid and r.employee = :eid", nativeQuery = true)
 	Request findRequestByJobAndEmployee(@Param("jid") String jid, @Param("eid") Integer eid);
 
         @Query(value = "select employee from Request r where r.job = :jid and r.decision = 1", nativeQuery = true)
         Integer findAcceptedEmployee(@Param("jid") String jid);
+		
+		@Query(value = "select * from Request r where r.employee= :empID and r.decision = 1", nativeQuery = true)
+        List<Request> findRequestsByEmployee(@Param("empID") String empID);
+		
+		@Query(value = "select * from Request r where r.employee= :empID and r.decision = 0", nativeQuery = true)
+        List<Request> findRequestsByEmployeeUndecided(@Param("empID") String empID);
 
 	@Query(value = "select * from Request r where r.employer= :empID and r.decision = 1", nativeQuery = true)
         List<Request> findRequestsByEmployer(@Param("empID") String empID);
+
+		@Query(value = "select * from Request r where r.job = :jid", nativeQuery = true)
+		List<Request> findRequestsByJob(@Param("jid") String jid);
 
 }

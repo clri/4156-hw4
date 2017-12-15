@@ -31,6 +31,8 @@ public interface JobRepository extends CrudRepository<Job, Long> {
 	@Query(value = "select * from Job limit :start, :num", nativeQuery = true)
 	List<Job> findAllJobs(@Param("start") int start, @Param("num") int num);
 
+	@Query(value = "select * from Job where userid = :emp", nativeQuery = true)
+	List<Job> findAllUsersJobs(@Param("emp") int emp);
 
 
 

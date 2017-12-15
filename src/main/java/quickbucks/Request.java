@@ -23,7 +23,7 @@ public class Request {
         private Boolean employeeRead;
         private Date requestTime;
         private Date decisionTime;
-        private Integer decision;
+        private Integer decision; //0 for not decided, 1 for accept, 2 for rejects
 
         public Request()
         {
