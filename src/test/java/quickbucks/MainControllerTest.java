@@ -779,6 +779,17 @@ public class MainControllerTest {
                 assertEquals(((List<Request>)(model.get("results"))).size(),
                         reqs.size());
         }
+        //PASS: view reviews when you have some pending as employer
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aa1() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                String view = this.mainController.employerReviewList(model);
+                assertEquals(view, "awaitingReview");
+                List<Request> reqs = r.findRequestsByEmployee(""+uid);
+                assertEquals(((List<Request>)(model.get("results"))).size(),
+                        reqs.size());
+        }
         //PASS: start the review process as an employer
         @Test
         @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
@@ -963,6 +974,28 @@ public class MainControllerTest {
                 String view = this.mainController.addNewReview(model,
                         toreq + "", "adsfj", "this is the reviewBody");
                 assertEquals(view, "redirect:/403.html");
+        }
+        //pass: upcoming
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aahb() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                String view = this.mainController.employeeAccepted(model);
+                assertEquals(view, "employeeJobs");
+                List<Request> reqs = r.findRequestsByEmployee(""+uid);
+                assertEquals(((List<Request>)(model.get("jobs"))).size(),
+                        reqs.size());
+        }
+        //pass: pending
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void aatestAddReqest91aahc() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                String view = this.mainController.employeePending(model);
+                assertEquals(view, "employeeJobs");
+                List<Request> reqs = r.findRequestsByEmployeeUndecided(""+uid);
+                assertEquals(((List<Request>)(model.get("jobs"))).size(),
+                        reqs.size());
         }
         //FAIL: invalid rating
         @Test
@@ -1578,6 +1611,64 @@ public class MainControllerTest {
                 String view = this.mainController.viewUser(model, "-1");
                 assertEquals(view, "viewJobError");
         }
+
+        //self: test to pass
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testViewSelf1() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                User user = u.findByID(uid + "");
+                String view = this.mainController.viewUser(model);
+                assertEquals(view, "viewUser");
+                assertEquals(model.get("userID"), uid);
+                assertEquals(model.get("name"), user.getUserFirstName()+" " +user.getUserLastName());
+                assertEquals(model.get("school"), user.getUserSchool());
+                assertEquals(model.get("degree"), user.getUserDegree());
+                assertEquals(model.get("location"), user.getUserLocation());
+        }
+        //test to fail: invalid uid
+        @Test
+        @WithMockUser(username = "jcret@columbia.edu", roles = { "USER" })
+        public void testViewSelf2() throws Exception {
+                String view = this.mainController.viewUser(model);
+                assertEquals(view, "viewJobError");
+                assertEquals(model.get("jobID"), "-1");
+        }
+
+        //OpenJobs: test to pass
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testOpenJobs1() throws Exception {
+                int uid = u.findIDByEmail("johnsecret@columbia.edu");
+                User user = u.findByID(uid + "");
+                String view = this.mainController.employerJobs(model);
+                assertEquals(view, "openjobs");
+                /*assertEquals(model.get("userID"), uid);
+                assertEquals(model.get("name"), user.getUserFirstName()+" " +user.getUserLastName());
+                assertEquals(model.get("school"), user.getUserSchool());
+                assertEquals(model.get("degree"), user.getUserDegree());
+                assertEquals(model.get("location"), user.getUserLocation());*/
+        }
+
+        //cancelJob: test to pass, valid job
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testCancel1() throws Exception {
+                String view = this.mainController.addNewJob(model,
+                        "job", "a job", "jobs");
+                assertEquals(view,"viewJob");
+                String jid = model.get("jobID") + "";
+                view = this.mainController.cancelJob(model, jid + "");
+                assertEquals(view, "cancel");
+        }
+        //fail: invalid job id
+        @Test
+        @WithMockUser(username = "johnsecret@columbia.edu", roles = { "USER" })
+        public void testCancel2() throws Exception {
+                String view = this.mainController.cancelJob(model, "-1");
+                assertEquals(view, "redirect:/generic-error.html");
+        }
+
 
         @Configuration
         static class MainControllerTestConfiguration {

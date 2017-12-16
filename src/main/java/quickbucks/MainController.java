@@ -312,7 +312,6 @@ public class MainController {
 	@Autowired
 	private RequestRepository requestRepository;
 
-	//TODO make sure user does not request their own job
 	@GetMapping(path="/demo/request") // Map ONLY GET Requests
 	public String addNewJob (@RequestParam String id)
 	{
@@ -810,7 +809,6 @@ public class MainController {
 	{
 	 	User u = userRepository.findByID(id);
 	 	if(u == null){
-			//TODO - change to user error
 			model.addAttribute("jobID", id);
 			return "viewJobError";
 	 	}
@@ -830,16 +828,21 @@ public class MainController {
 
 		return "viewUser";
 	}
-	
+
 	@RequestMapping(value = "/myprofile", method = RequestMethod.GET)
    	public String viewUser(ModelMap model)
 	{
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		int uid = userRepository.findIDByEmail(user.getUsername());
+		int uid;
+		try {
+			uid = userRepository.findIDByEmail(user.getUsername());
+		} catch (NullPointerException npe) {
+			model.addAttribute("jobID", "-1");
+			return "viewJobError";
+		}
 	 	User u = userRepository.findByID(uid+"");
 	 	if(u == null){
-			//TODO - change to user error
 			String hello = "" + uid + "";
 			model.addAttribute("jobID", hello);
 			return "viewJobError";
@@ -881,9 +884,8 @@ public class MainController {
 				test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
 			} catch (Exception e) {
 				//multiple matches
-				test = new Review(); 
+				test = new Review();
 			}
-
 			//jobID.toString());
 			//if it does, remove from list
 			if(test != null)
@@ -895,47 +897,40 @@ public class MainController {
 		model.addAttribute("results", requests);
 		return "awaitingReview";
 	}
-	
+
 	@GetMapping(path="/demo/openjobs")
 	public String employerJobs(ModelMap model)
 	{
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
-		
 
 		List<JobDecision> openJobs = new ArrayList<JobDecision>();
 		List<Integer> searchedJobs = new ArrayList<Integer>();
 		List<Request> requests = requestRepository.findRequestsByEmployer(""+uid);
-		
+
 		for(int i = 0; i< requests.size(); i++){
 			//include if decision not made
 			Request temp = requests.get(i);
-			if(searchedJobs.contains(temp.getJob())){
+			if(searchedJobs.contains(temp.getJob()))
 				continue;
-			}
-			
-			if(temp.getDecision() == 0){
+
+			if(temp.getDecision() == 0)
 				openJobs.add(new JobDecision(temp.getJob(), 0, temp.getTitle()));
-			}
-			
 			else{
 				Review test;
 				try {
 					test = reviewRepository.lookupReviewByJobAndAuthor(temp.getJob(), uid);
 				} catch (Exception e) {
 					//multiple matches
-					test = new Review(); 
+					test = new Review();
 				}
 				if(test == null)
 					openJobs.add(new JobDecision(temp.getJob(), 1, temp.getTitle()));
 			}
-			
 			searchedJobs.add(temp.getJob());
-
-
 		}
-		
+
 		List<Job> allJobs = new ArrayList<Job>();
 		allJobs = jobRepository.findAllUsersJobs(uid);
 		for(int i = 0; i< allJobs.size(); i++){
@@ -947,11 +942,11 @@ public class MainController {
 				openJobs.add(new JobDecision(temp.getId(), 0, temp.getJobtitle()));
 			}
 		}
-		
+
 		model.addAttribute("jobs", openJobs);
 		return "openjobs";
 	}
-	
+
 	@RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
    	public String cancelJob(ModelMap model, @RequestParam String id)
 	{
@@ -964,20 +959,20 @@ public class MainController {
 		} catch(Exception ee) {
 			System.out.println("LOOKUP"+id);
 			return genericError();
-			
+
 		}
 		if(temp == null){
 			System.out.println("NULL"+id);
 			return genericError();
-			
+
 		}
-		
+
 		else{
 			if(temp.getUser() != uid)
 				model.addAttribute("msg", "Error: cannot delete someone else's job");
 			else{
-				
-				
+
+
 				try{
 					jobRepository.delete(temp);
 					List<Request> requests2 = requestRepository.findRequestsByJob(id);
@@ -991,15 +986,15 @@ public class MainController {
 				model.addAttribute("msg", "Job successfully deleted.");
 			}
 		}
-		
+
 		return "cancel";
-			
+
 	}
-	
+
 		@GetMapping(path="/demo/employerReview")
 	public String employerReviewList(ModelMap model)
 	{
-		
+
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
@@ -1016,7 +1011,7 @@ public class MainController {
 				test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
 			} catch (Exception e) {
 				//multiple matches
-				test = new Review(); 
+				test = new Review();
 			}
 
 			//jobID.toString());
@@ -1031,16 +1026,16 @@ public class MainController {
 		return "awaitingReview";
 	}
 
-	
+
 		@GetMapping(path="/demo/upcoming")
 	public String employeeAccepted(ModelMap model)
 	{
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
-		
 
-		
+
+
 		List<Request> requests = requestRepository.findRequestsByEmployee(""+uid);
 			for(int i = 0; i<requests.size(); i++){
 				Request temp = requests.get(i);
@@ -1051,32 +1046,32 @@ public class MainController {
 						test = reviewRepository.lookupReviewByJobAndAuthor(jobID, uid);
 					} catch (Exception e) {
 						//multiple matches
-						test = new Review(); 
+						test = new Review();
 					}
 
 					if(test != null)
 						requests.remove(i);
 			}
-		
-		
-	
+
+
+
 		model.addAttribute("title", "Hired Jobs");
 		model.addAttribute("jobs", requests);
 		return "employeeJobs";
 	}
-	
+
 			@GetMapping(path="/demo/pending")
 	public String employeePending(ModelMap model)
 	{
 		org.springframework.security.core.userdetails.User user
 			= (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		int uid = userRepository.findIDByEmail(user.getUsername());
-		
 
-		
+
+
 		List<Request> requests = requestRepository.findRequestsByEmployeeUndecided(""+uid);
-		
-	
+
+
 		model.addAttribute("title", "Pending Requests");
 		model.addAttribute("jobs", requests);
 		return "employeeJobs";
@@ -1094,56 +1089,43 @@ public class MainController {
 		} catch(Exception ee) {
 			System.out.println("LOOKUP"+id);
 			return genericError();
-			
 		}
-		if(temp == null){
+		if(temp == null)
 			return genericError();
-			
-		}
-		
-		else{
-			if(temp.getEmployee()!= uid)
-				model.addAttribute("msg", "Error: cannot delete someone else's request");
-			else if(temp.getDecision() == 1){
-				
-				Integer jobID = temp.getJob();
 
-				Review test;
-				try {
-					test = reviewRepository.lookupReviewByJobID(jobID);
-				} catch (Exception e) {
-					//multiple matches
-					test = new Review(); 
-				}
-
-				if(test != null)
-					model.addAttribute("msg", "Error: cannot delete request for a completed job!");
-				else{
-					try{
-					requestRepository.delete(temp);
-					} catch(Exception ee) {
-					return genericError();
-					}
-					model.addAttribute("msg", "Request successfully deleted.");
-				}
+		if(temp.getEmployee()!= uid)
+			model.addAttribute("msg", "Error: cannot delete someone else's request");
+		else if(temp.getDecision() == 1){
+			Integer jobID = temp.getJob();
+			Review test;
+			try {
+				test = reviewRepository.lookupReviewByJobID(jobID);
+			} catch (Exception e) {
+				//multiple matches
+				test = new Review();
 			}
+			if(test != null)
+				model.addAttribute("msg", "Error: cannot delete request for a completed job!");
 			else{
-				
-				
 				try{
-					requestRepository.delete(temp);
+				requestRepository.delete(temp);
 				} catch(Exception ee) {
 				return genericError();
 				}
 				model.addAttribute("msg", "Request successfully deleted.");
 			}
 		}
-		
+		else{
+			try{
+				requestRepository.delete(temp);
+			} catch(Exception ee) {
+			return genericError();
+			}
+			model.addAttribute("msg", "Request successfully deleted.");
+		}
 		return "cancel";
-			
+
 	}
-	
-	
+
+
 }
-
-
